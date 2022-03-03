@@ -4,6 +4,7 @@ namespace game {
         WIRE=1,
         AND,
         OR,
+        XOR,
         NOT,
         OUT,
         IN,
@@ -29,6 +30,8 @@ namespace game {
                     return new FlipFlop();
                 case (types.BUT):
                     return new Button();
+                case (types.XOR):
+                    return new XorComp();
                 default:
                     return new WireComp();
             }

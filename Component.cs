@@ -98,7 +98,7 @@ namespace game {
         }
     }
 
-        class OrComp : Component {
+    class OrComp : Component {
         public OrComp() : base() {}
         public override void update() {
             bool value = false;
@@ -122,6 +122,25 @@ namespace game {
         }
     }
 
+    class XorComp : Component {
+        public XorComp() : base() {}
+        public override void update() {
+            bool i1 = false;
+            bool i2 = false;
+            if (inputs.Count > 0){i1 = inputs[0].isActive();}
+            if (inputs.Count > 1){i2 = inputs[1].isActive();}
+            active = i1 ^ i2;
+            foreach (Connection o in outputs) {
+                o.setActive(active);
+            }
+        }
+        public override void draw(int gridsize, int xoff, int yoff){
+            Color color = active? new Color(125,255,0,255) : new Color(125,125,0,255);
+            foreach (Pos pos in blocks) {
+                Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
+            }
+        }
+    }
 
     class BatComp : Component {
         public BatComp() : base() {
