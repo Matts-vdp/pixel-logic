@@ -64,6 +64,7 @@ namespace game
                 bool sel = (i + 1) == selected;
                 Raylib.DrawText(ComponentFactory.items[i], 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
+            Raylib.DrawFPS(Raylib.GetScreenWidth()-80, 0);
         }
 
         public static void drawMouse(){
@@ -76,7 +77,9 @@ namespace game
 
         public static void Main()
         {
-            Raylib.InitWindow(800, 800, "Test");
+            Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
+            Raylib.InitWindow(800, 800, "Pixel Logic");
+            Raylib.SetWindowMinSize(300,300);
             Raylib.SetTargetFPS(60);
 
             Grid grid = new Grid(200, 200, GRIDSIZE);
