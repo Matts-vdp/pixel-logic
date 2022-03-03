@@ -1,7 +1,9 @@
 
-namespace game {
-        enum types {
-        WIRE=1,
+namespace game
+{
+    enum types
+    {
+        WIRE = 1,
         AND,
         OR,
         XOR,
@@ -13,11 +15,15 @@ namespace game {
         FF,
         BUT,
     }
-    static class ComponentFactory{
-        public static String[] items = {"Wire", "And", "Or", "Exor", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button"};
 
-        public static Component NewComponent(types type){
-            switch (type) {
+    static class ComponentFactory
+    {
+        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button" };
+
+        public static Component NewComponent(types type)
+        {
+            switch (type)
+            {
                 case (types.BATTERY):
                     return new BatComp();
                 case (types.AND):
@@ -38,15 +44,15 @@ namespace game {
                     return new WireComp();
             }
         }
-        public static Connection NewConnection(types type, Pos pos){
-            switch (type) {
+        public static Connection NewConnection(types type, Pos pos)
+        {
+            switch (type)
+            {
                 case (types.OUT):
                     return new OutConnection(pos);
                 default:
                     return new InConnection(pos);
             }
         }
-
-        
     }
 }

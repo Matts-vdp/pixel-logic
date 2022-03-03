@@ -1,35 +1,39 @@
 using Raylib_cs;
-namespace game {
-    abstract class Connection {
+namespace game
+{
+    abstract class Connection
+    {
         public Component? output;
         public Component? input;
-
         public Pos pos;
         public bool active;
-
-        public Connection(Pos p) {
+        
+        public Connection(Pos p)
+        {
             pos = p;
             active = false;
         }
-
-        public void addInput(Component inp) {
+        public void addInput(Component inp)
+        {
             inp.addOutput(this);
             input = inp;
         }
-        public void addOutput(Component outp) {
+        public void addOutput(Component outp)
+        {
             outp.addInput(this);
             output = outp;
         }
-
-        public void update(){
+        public void update()
+        {
             input?.update();
             output?.update();
         }
-
-        public bool isActive(){
+        public bool isActive()
+        {
             return active;
         }
-        public void setActive(bool value){
+        public void setActive(bool value)
+        {
             active = value;
             // output?.update();
         }
@@ -38,34 +42,44 @@ namespace game {
         public abstract void addOther(Component c);
     }
 
-    class OutConnection : Connection {
-        public OutConnection(Pos p) : base(p){
+    class OutConnection : Connection
+    {
+        public OutConnection(Pos p) : base(p)
+        {
         }
-        public override void draw(int gridsize, int xoff, int yoff){
-            Color color = active? Color.BLUE : Color.DARKBLUE;
-            Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = active ? Color.BLUE : Color.DARKBLUE;
+            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
         }
-        public override void addWire(Component c){
+        public override void addWire(Component c)
+        {
             addOutput(c);
         }
-        public override void addOther(Component c){
+        public override void addOther(Component c)
+        {
             addInput(c);
         }
     }
 
-    class InConnection : Connection {
-        public InConnection(Pos p) : base(p){
+    class InConnection : Connection
+    {
+        public InConnection(Pos p) : base(p)
+        {
         }
 
-        public override void draw(int gridsize, int xoff, int yoff){
-            Color color = active? Color.RED : Color.MAROON;
-            Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = active ? Color.RED : Color.MAROON;
+            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
         }
 
-        public override void addWire(Component c){
+        public override void addWire(Component c)
+        {
             addInput(c);
         }
-        public override void addOther(Component c){
+        public override void addOther(Component c)
+        {
             addOutput(c);
         }
     }
