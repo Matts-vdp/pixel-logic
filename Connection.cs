@@ -1,8 +1,8 @@
 using Raylib_cs;
 namespace game {
     abstract class Connection {
-        Component? output;
-        Component? input;
+        public Component? output;
+        public Component? input;
 
         public Pos pos;
         public bool active;

@@ -1,16 +1,5 @@
 using Raylib_cs;
 namespace game {
-    enum types {
-        WIRE=1,
-        BATTERY,
-        AND,
-        OR,
-        NOT,
-        OUT,
-        IN,
-        CLK,
-    }
-
     abstract class Component {
         public List<Pos> blocks;
         public List<Connection> inputs;
@@ -169,6 +158,48 @@ namespace game {
         }
         public override void draw(int gridsize, int xoff, int yoff){
             Color color = Color.MAGENTA;
+            foreach (Pos pos in blocks) {
+                Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
+            }
+        }
+    }
+
+    class FlipFlop : Component {
+
+        bool lastState = false;
+        public FlipFlop() : base() {
+        }
+        public override void update() {
+            if (inputs.Count==0) {return;}
+            if (inputs.Last()!.isActive() && !lastState){
+                active = inputs[0].isActive();
+            }
+            foreach (Connection o in outputs) {
+                o.setActive(active);
+            }
+            lastState = inputs.Last()!.isActive();
+        }
+        public override void draw(int gridsize, int xoff, int yoff){
+            Color color = active? new Color(0,255,255,255): new Color(0,100,100,255);
+            foreach (Pos pos in blocks) {
+                Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
+            }
+        }
+    }
+    
+    class Button : Component {
+        public Button() : base() {
+        }
+        public override void update() {
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_B)) {
+                active = !active;
+                foreach (Connection o in outputs) {
+                    o.setActive(active);
+                }
+            }
+        }
+        public override void draw(int gridsize, int xoff, int yoff){
+            Color color = active? new Color(0,255,255,255): new Color(0,100,100,255);
             foreach (Pos pos in blocks) {
                 Raylib.DrawRectangle(pos.x*gridsize-xoff, pos.y*gridsize-yoff, gridsize, gridsize, color);
             }

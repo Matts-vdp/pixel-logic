@@ -9,46 +9,26 @@ namespace game {
         }
 
         static int GRIDSIZE = 32;
-        static types selected = types.WIRE;
+        static int selected = 1;
         static int xoff = 0;
         static int yoff = 0;
 
         public static void Input(Grid grid){
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){
                     Vector2 pos = Raylib.GetMousePosition();
-                    grid.add(pos, selected, GRIDSIZE);
+                    grid.add(pos, (types)selected, GRIDSIZE);
                 }
                 if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
                     Vector2 pos = Raylib.GetMousePosition();
                     grid.del(pos, GRIDSIZE);
                 }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_ONE)){
-                    selected = types.WIRE;
+                selected -= (int)Raylib.GetMouseWheelMove();
+                int max = Enum.GetValues(typeof(types)).Cast<int>().Max();
+                if (selected > max){
+                    selected = max;
                 }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_TWO)){
-                    selected = types.BATTERY;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_THREE)){
-                    selected = types.IN;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_FOUR)){
-                    selected = types.OUT;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_FIVE)){
-                    selected = types.AND;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_SIX)){
-                    selected = types.CLK;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_SEVEN)){
-                    selected = types.OR;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_EIGHT)){
-                    selected = types.NOT;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.KEY_NINE)){
-                    selected = types.CLK;
-                }
+                if (selected < 1) {selected = 1;}
+
                 if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_ADD)){
                     GRIDSIZE += 1;
                 }
@@ -71,8 +51,16 @@ namespace game {
                 }
         }
 
+        public static void drawUI(){
+            String[] items = {"Wire", "And", "Or", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button"};
+            for (int i=0; i<items.Length; i++) {
+                bool sel = (i+1) == selected;
+                Raylib.DrawText(items[i], 20,20*(i+1),20,sel? Color.WHITE: Color.GRAY);
+            }
+        }
+
         public static void Main() {
-            Raylib.InitWindow(800, 400, "Test");
+            Raylib.InitWindow(800, 800, "Test");
             Raylib.SetTargetFPS(60);
 
             Grid grid = new Grid(200,200,GRIDSIZE);
@@ -85,6 +73,7 @@ namespace game {
 
                 grid.update();
                 grid.draw(GRIDSIZE, xoff, yoff);
+                drawUI();
 
                 Vector2 mpos = Raylib.GetMousePosition();
                 int x = grid.toGrid(mpos.X, GRIDSIZE);
