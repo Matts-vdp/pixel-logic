@@ -16,11 +16,11 @@ namespace game {
         public static void Input(Grid grid){
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)){
                     Vector2 pos = Raylib.GetMousePosition();
-                    grid.add(pos, (types)selected, GRIDSIZE);
+                    grid.add(pos, (types)selected, GRIDSIZE, xoff, yoff);
                 }
                 if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT)){
                     Vector2 pos = Raylib.GetMousePosition();
-                    grid.del(pos, GRIDSIZE);
+                    grid.del(pos, GRIDSIZE, xoff, yoff);
                 }
                 selected -= (int)Raylib.GetMouseWheelMove();
                 int max = Enum.GetValues(typeof(types)).Cast<int>().Max();
@@ -52,7 +52,6 @@ namespace game {
         }
 
         public static void drawUI(){
-            
             for (int i=0; i<ComponentFactory.items.Length; i++) {
                 bool sel = (i+1) == selected;
                 Raylib.DrawText(ComponentFactory.items[i], 20,20*(i+1),20,sel? Color.WHITE: Color.GRAY);
@@ -76,9 +75,9 @@ namespace game {
                 drawUI();
 
                 Vector2 mpos = Raylib.GetMousePosition();
-                int x = grid.toGrid(mpos.X, GRIDSIZE);
-                int y = grid.toGrid(mpos.Y, GRIDSIZE);
-                Raylib.DrawRectangle(x*GRIDSIZE,y*GRIDSIZE, GRIDSIZE, GRIDSIZE, new Color(255,255,255,25));
+                int x = (int)(mpos.X+xoff)/GRIDSIZE;
+                int y = (int)(mpos.Y+yoff)/GRIDSIZE;
+                Raylib.DrawRectangle(x*GRIDSIZE-xoff,y*GRIDSIZE-yoff, GRIDSIZE, GRIDSIZE, new Color(255,255,255,25));
 
                 Raylib.EndDrawing();
             }

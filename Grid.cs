@@ -26,14 +26,14 @@ namespace game {
             height = h;
         }
 
-        public int toGrid(float pos, int gridsize) {
-            pos =  pos/gridsize;
+        public int toGrid(float pos, int gridsize, int off) {
+            pos =  (pos+off)/gridsize;
             return (int) pos;
         }
 
-        public void add(Vector2 pos, types t, int gridsize) {
-            int x = toGrid(pos.X, gridsize);
-            int y = toGrid(pos.Y, gridsize);
+        public void add(Vector2 pos, types t, int gridsize, int xoff, int yoff) {
+            int x = toGrid(pos.X, gridsize, xoff);
+            int y = toGrid(pos.Y, gridsize, yoff);
             add(x, y, t);
         }
         public void add(int x, int y, types t) {
@@ -43,9 +43,9 @@ namespace game {
             grid[y,x] = t;
             buildObjects();
         }
-        public void del(Vector2 pos, int gridsize) {
-            int x = toGrid(pos.X, gridsize);
-            int y = toGrid(pos.Y, gridsize);
+        public void del(Vector2 pos, int gridsize, int xoff, int yoff) {
+            int x = toGrid(pos.X, gridsize, xoff);
+            int y = toGrid(pos.Y, gridsize, yoff);
             if (x<0 || x>=width){return;}
             if (y<0 || y>=height){return;}
             grid[y,x] = 0;
