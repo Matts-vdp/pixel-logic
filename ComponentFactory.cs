@@ -14,6 +14,8 @@ namespace game {
         BUT,
     }
     static class ComponentFactory{
+        public static String[] items = {"Wire", "And", "Or", "Exor", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button"};
+
         public static Component NewComponent(types type){
             switch (type) {
                 case (types.BATTERY):

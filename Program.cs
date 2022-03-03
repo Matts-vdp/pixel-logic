@@ -52,10 +52,10 @@ namespace game {
         }
 
         public static void drawUI(){
-            String[] items = {"Wire", "And", "Or", "Exor", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button"};
-            for (int i=0; i<items.Length; i++) {
+            
+            for (int i=0; i<ComponentFactory.items.Length; i++) {
                 bool sel = (i+1) == selected;
-                Raylib.DrawText(items[i], 20,20*(i+1),20,sel? Color.WHITE: Color.GRAY);
+                Raylib.DrawText(ComponentFactory.items[i], 20,20*(i+1),20,sel? Color.WHITE: Color.GRAY);
             }
         }
 
