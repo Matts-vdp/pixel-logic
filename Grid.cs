@@ -18,6 +18,7 @@ namespace game
         types[,] grid;
         int[,] labels;
         Dictionary<int, Component> components;
+        List<Button> buttons;
         List<Connection> connections;
         int width, height;
 
@@ -27,6 +28,7 @@ namespace game
             labels = new int[h, w];
             components = new Dictionary<int, Component>();
             connections = new List<Connection>();
+            buttons = new List<Button>();
             width = w;
             height = h;
         }
@@ -100,6 +102,7 @@ namespace game
         public void makeComponents()
         {
             components = new Dictionary<int, Component>();
+            buttons = new List<Button>();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -113,6 +116,9 @@ namespace game
                     {
                         Component c = ComponentFactory.NewComponent(grid[y, x]);
                         c.add(new Pos(x, y));
+                        if (grid[y,x] == types.BUT) {
+                            buttons.Add((Button) c);
+                        }
                         components.Add(labels[y, x], c);
                     }
                 }
@@ -204,6 +210,15 @@ namespace game
             {
                 c.update();
             }
+        }
+        public void Input(){
+            int key = 49;
+            for (int i=0; i<buttons.Count && i<9; i++) {
+                if (Raylib.IsKeyPressed((KeyboardKey) (key+i))) {
+                    buttons[i].toggle();
+                }
+            }
+            
         }
         public void draw(int gridsize, int xoff, int yoff)
         {

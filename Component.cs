@@ -269,13 +269,13 @@ namespace game
         }
         public override void update()
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_B))
+        }
+
+        public void toggle(){
+            active = !active;
+            foreach (Connection o in outputs)
             {
-                active = !active;
-                foreach (Connection o in outputs)
-                {
-                    o.setActive(active);
-                }
+                o.setActive(active);
             }
         }
         public override void draw(int gridsize, int xoff, int yoff)

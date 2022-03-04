@@ -91,6 +91,7 @@ namespace game
                 Raylib.ClearBackground(Color.BLACK);
                 // check mouse and keyboard input
                 Input(grid);
+                grid.Input();
                 // update objects
                 grid.update();
                 // draw
