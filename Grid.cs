@@ -95,14 +95,36 @@ namespace game
         }
         public void buildObjects()
         {
+            labels = new int[height, width];
+            components = new Dictionary<int, Component>();
+            connections = new List<Connection>();
+            buttons = new List<Button>();
             connectedComponents();
+            crossConnect();
             makeComponents();
             makeConnections();
         }
+
+        public void crossConnect() {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (labels[y,x] != -2) {continue;}
+                    Connection c = ComponentFactory.NewConnection(grid[y,x], new Pos(x,y));
+                    connections.Add(c);
+                    if (GetBlock(x-1,y) == types.WIRE && GetBlock(x+1,y) == types.WIRE) {
+                        changeLabel(labels[y,x+1], labels[y,x-1], labels);
+                    }
+                    if (GetBlock(x,y-1) == types.WIRE && GetBlock(x,y+1) == types.WIRE) {
+                        changeLabel(labels[y+1,x], labels[y-1,x], labels);
+                    }
+                }
+            }
+        }
+
         public void makeComponents()
         {
-            components = new Dictionary<int, Component>();
-            buttons = new List<Button>();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
@@ -126,13 +148,11 @@ namespace game
         }
         public void makeConnections()
         {
-            connections = new List<Connection>();
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     if (labels[y, x] != -1) { continue; }
-
                     bool wiref = false;
                     bool otherf = false;
                     Pos[] neighbors = { new Pos(x - 1, y), new Pos(x, y - 1), new Pos(x + 1, y), new Pos(x, y + 1) };
@@ -158,7 +178,6 @@ namespace game
         }
         public void connectedComponents()
         {
-            labels = new int[height, width];
             int label = 1;
             bool changed = true;
             while (changed)
@@ -175,6 +194,12 @@ namespace game
                         if (grid[y, x] == types.OUT || grid[y, x] == types.IN)
                         {
                             labels[y, x] = -1;
+                            changed = true;
+                            continue;
+                        }
+                        if (grid[y, x] == types.CROSS)
+                        {
+                            labels[y, x] = -2;
                             changed = true;
                             continue;
                         }

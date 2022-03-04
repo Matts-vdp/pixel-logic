@@ -10,6 +10,7 @@ namespace game
         NOT,
         OUT,
         IN,
+        CROSS,
         BATTERY,
         CLK,
         FF,
@@ -18,7 +19,7 @@ namespace game
 
     static class ComponentFactory
     {
-        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Battery", "Clock", "Flip Flop", "Button" };
+        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button" };
 
         public static Component NewComponent(types type)
         {
@@ -50,6 +51,8 @@ namespace game
             {
                 case (types.OUT):
                     return new OutConnection(pos);
+                case (types.CROSS):
+                    return new CrossConnection(pos);
                 default:
                     return new InConnection(pos);
             }

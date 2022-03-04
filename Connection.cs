@@ -83,4 +83,24 @@ namespace game
             addOutput(c);
         }
     }
+
+    class CrossConnection : Connection
+    {
+        public CrossConnection(Pos p) : base(p)
+        {
+        }
+
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = active ? Color.GRAY : Color.GRAY;
+            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+        }
+
+        public override void addWire(Component c)
+        {
+        }
+        public override void addOther(Component c)
+        {
+        }
+    }
 }
