@@ -7,7 +7,7 @@ namespace game
         public Component? input;
         public Pos pos;
         public bool active;
-        
+
         public Connection(Pos p)
         {
             pos = p;
@@ -23,9 +23,12 @@ namespace game
             outp.addInput(this);
             output = outp;
         }
-        public void update()
+        public void updateIn()
         {
             input?.update();
+        }
+        public void updateOut()
+        {
             output?.update();
         }
         public bool isActive()

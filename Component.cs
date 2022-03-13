@@ -271,7 +271,8 @@ namespace game
         {
         }
 
-        public void toggle(){
+        public void toggle()
+        {
             active = !active;
             foreach (Connection o in outputs)
             {

@@ -112,19 +112,22 @@ namespace game
             makeConnections();
         }
 
-        public void crossConnect() {
+        public void crossConnect()
+        {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    if (labels[y,x] != -2) {continue;}
-                    Connection c = ComponentFactory.NewConnection(grid[y,x], new Pos(x,y));
+                    if (labels[y, x] != -2) { continue; }
+                    Connection c = ComponentFactory.NewConnection(grid[y, x], new Pos(x, y));
                     connections.Add(c);
-                    if (GetBlock(x-1,y) == types.WIRE && GetBlock(x+1,y) == types.WIRE) {
-                        changeLabel(labels[y,x+1], labels[y,x-1], labels);
+                    if (GetBlock(x - 1, y) == types.WIRE && GetBlock(x + 1, y) == types.WIRE)
+                    {
+                        changeLabel(labels[y, x + 1], labels[y, x - 1], labels);
                     }
-                    if (GetBlock(x,y-1) == types.WIRE && GetBlock(x,y+1) == types.WIRE) {
-                        changeLabel(labels[y+1,x], labels[y-1,x], labels);
+                    if (GetBlock(x, y - 1) == types.WIRE && GetBlock(x, y + 1) == types.WIRE)
+                    {
+                        changeLabel(labels[y + 1, x], labels[y - 1, x], labels);
                     }
                 }
             }
@@ -145,8 +148,9 @@ namespace game
                     {
                         Component c = ComponentFactory.NewComponent(grid[y, x]);
                         c.add(new Pos(x, y));
-                        if (grid[y,x] == types.BUT) {
-                            buttons.Add((Button) c);
+                        if (grid[y, x] == types.BUT)
+                        {
+                            buttons.Add((Button)c);
                         }
                         components.Add(labels[y, x], c);
                     }
@@ -195,13 +199,13 @@ namespace game
                     for (int x = 0; x < width; x++)
                     {
                         if (grid[y, x] == 0) continue;
-                        if (labels[y,x] == 0 && (grid[y, x] == types.OUT || grid[y, x] == types.IN))
+                        if (labels[y, x] == 0 && (grid[y, x] == types.OUT || grid[y, x] == types.IN))
                         {
                             labels[y, x] = -1;
                             changed = true;
                             continue;
                         }
-                        if (labels[y,x] == 0 && grid[y, x] == types.CROSS)
+                        if (labels[y, x] == 0 && grid[y, x] == types.CROSS)
                         {
                             labels[y, x] = -2;
                             changed = true;
@@ -214,7 +218,7 @@ namespace game
                             found = true;
                             changed = true;
                         }
-                        if (GetBlock(x, y - 1) == grid[y, x] && labels[y, x] != labels[y-1, x])
+                        if (GetBlock(x, y - 1) == grid[y, x] && labels[y, x] != labels[y - 1, x])
                         {
                             if (GetBlock(x - 1, y) == grid[y, x])
                             {
@@ -224,7 +228,7 @@ namespace game
                             found = true;
                             changed = true;
                         }
-                        if (!found && labels[y,x] == 0)
+                        if (!found && labels[y, x] == 0)
                         {
                             labels[y, x] = label++;
                             changed = true;
@@ -237,17 +241,24 @@ namespace game
         {
             foreach (Connection c in connections)
             {
-                c.update();
+                c.updateIn();
+            }
+            foreach (Connection c in connections)
+            {
+                c.updateOut();
             }
         }
-        public void Input(){
+        public void Input()
+        {
             int key = 49;
-            for (int i=0; i<buttons.Count && i<9; i++) {
-                if (Raylib.IsKeyPressed((KeyboardKey) (key+i))) {
+            for (int i = 0; i < buttons.Count && i < 9; i++)
+            {
+                if (Raylib.IsKeyPressed((KeyboardKey)(key + i)))
+                {
                     buttons[i].toggle();
                 }
             }
-            
+
         }
         public void draw(int gridsize, int xoff, int yoff)
         {
@@ -261,27 +272,34 @@ namespace game
             }
         }
 
-        public string toText(){
+        public string toText()
+        {
             string str = "";
-            for(int y=0; y<height; y++) {
-                for(int x=0; x<width; x++) {
-                    str += ((int)grid[y,x]).ToString() + ' ';
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    str += ((int)grid[y, x]).ToString() + ' ';
                 }
                 str += ';';
             }
             return str;
         }
-        public void fromText(string text){
-            int y=0; int x=0;
+        public void fromText(string text)
+        {
+            int y = 0; int x = 0;
             string num = "";
-            for (int i=0; i<text.Length; i++){
-                if (text[i].Equals(' ')){
-                    grid[y,x] = (types)Int32.Parse(num);
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i].Equals(' '))
+                {
+                    grid[y, x] = (types)Int32.Parse(num);
                     num = "";
                     x++;
                     continue;
                 }
-                if (text[i].Equals(';')){
+                if (text[i].Equals(';'))
+                {
                     y++;
                     x = 0;
                     continue;
@@ -291,21 +309,28 @@ namespace game
             buildObjects();
         }
 
-        public Grid copy(int xstart, int ystart, int xend, int yend, int gridsize) {
-            Grid newGrid = new Grid(xend-xstart+1, yend-ystart+1, gridsize);
-            for (int y=ystart; y<yend+1; y++){
-                for (int x=xstart; x<xend+1; x++){
-                    newGrid.grid[y-ystart, x-xstart] = grid[y,x];
+        public Grid copy(int xstart, int ystart, int xend, int yend, int gridsize)
+        {
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, gridsize);
+            for (int y = ystart; y < yend + 1; y++)
+            {
+                for (int x = xstart; x < xend + 1; x++)
+                {
+                    newGrid.grid[y - ystart, x - xstart] = grid[y, x];
                 }
             }
             newGrid.buildObjects();
             return newGrid;
         }
-        public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff) {
-            for (int y=0; y<other.height; y++) {
-                for (int x=0; x<other.width; x++) {
-                    if (other.grid[y,x] != types.NONE) {
-                        addNoUpdate(pos, other.grid[y,x], gridsize, xoff+x*gridsize, yoff+y*gridsize);
+        public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff)
+        {
+            for (int y = 0; y < other.height; y++)
+            {
+                for (int x = 0; x < other.width; x++)
+                {
+                    if (other.grid[y, x] != types.NONE)
+                    {
+                        addNoUpdate(pos, other.grid[y, x], gridsize, xoff + x * gridsize, yoff + y * gridsize);
                     }
                 }
             }
