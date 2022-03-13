@@ -8,6 +8,10 @@ namespace game
         static int selected = 1;
         static int xoff = 0;
         static int yoff = 0;
+        static int xsel = 0;
+        static int ysel = 0;
+
+        static Grid? cloneGrid;
 
         public static void Input(Grid grid)
         {
@@ -55,6 +59,27 @@ namespace game
                 xoff -= 4;
                 if (xoff < 0) { xoff = 0; }
             }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
+            {
+                save(grid);
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_L))
+            {
+                load(grid);
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_C))
+            {
+                Vector2 pos = Raylib.GetMousePosition();
+                xsel = grid.toGrid(pos.X, GRIDSIZE, xoff);
+                ysel = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+            }
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_C))
+            {
+                Vector2 pos = Raylib.GetMousePosition();
+                int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                cloneGrid = grid.copy(xsel,ysel,xend,yend, GRIDSIZE);
+            }
         }
 
         public static void drawUI()
@@ -73,6 +98,14 @@ namespace game
             int y = (int)(mpos.Y + yoff) / GRIDSIZE;
             Raylib.DrawRectangle(x * GRIDSIZE - xoff, y * GRIDSIZE - yoff, GRIDSIZE, GRIDSIZE, new Color(255, 255, 255, 25));
 
+        }
+
+        public static void save(Grid grid){
+            File.WriteAllTextAsync("save.data", grid.toText());
+        }
+        public static void load(Grid grid){
+            string txt = File.ReadAllText("save.data");
+            grid.fromText(txt);
         }
 
         public static void Main()

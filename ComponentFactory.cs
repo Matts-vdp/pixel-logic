@@ -3,7 +3,8 @@ namespace game
 {
     enum types
     {
-        WIRE = 1,
+        NONE,
+        WIRE,
         AND,
         OR,
         XOR,

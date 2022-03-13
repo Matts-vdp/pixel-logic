@@ -1,5 +1,6 @@
 using Raylib_cs;
 using System.Numerics;
+using System.Text.Json;
 namespace game
 {
     public struct Pos
@@ -256,5 +257,47 @@ namespace game
                 c.draw(gridsize, xoff, yoff);
             }
         }
+
+        public string toText(){
+            string str = "";
+            for(int y=0; y<height; y++) {
+                for(int x=0; x<width; x++) {
+                    str += ((int)grid[y,x]).ToString() + ' ';
+                }
+                str += ';';
+            }
+            return str;
+        }
+        public void fromText(string text){
+            int y=0; int x=0;
+            string num = "";
+            for (int i=0; i<text.Length; i++){
+                if (text[i].Equals(' ')){
+                    grid[y,x] = (types)Int32.Parse(num);
+                    num = "";
+                    x++;
+                    continue;
+                }
+                if (text[i].Equals(';')){
+                    y++;
+                    x = 0;
+                    continue;
+                }
+                num += text[i];
+            }
+            buildObjects();
+        }
+
+        public Grid copy(int xstart, int ystart, int xend, int yend, int gridsize) {
+            Grid newGrid = new Grid(xend-xstart, yend-ystart, gridsize);
+            for (int y=ystart; y<yend; y++){
+                for (int x=xstart; x<xend; x++){
+                    newGrid.grid[y-ystart, x-xstart] = grid[y,x];
+                }
+            }
+            return newGrid;
+        }
     }
+
+
 }
