@@ -279,13 +279,15 @@ namespace game
         }
         public void update()
         {
-            foreach (Connection c in connections)
+            foreach (Component c in components.Values) 
             {
-                c.updateIn();
+                if (!(c is WireComp))
+                    c.update();
             }
-            foreach (Connection c in connections)
+            foreach (Component c in components.Values) 
             {
-                c.updateOut();
+                if (c is WireComp)
+                    c.update();
             }
         }
         public void Input()
