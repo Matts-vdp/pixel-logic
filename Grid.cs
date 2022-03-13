@@ -322,6 +322,22 @@ namespace game
             newGrid.buildObjects();
             return newGrid;
         }
+
+        public Grid cut(int xstart, int ystart, int xend, int yend, int gridsize)
+        {
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, gridsize);
+            for (int y = ystart; y < yend + 1; y++)
+            {
+                for (int x = xstart; x < xend + 1; x++)
+                {
+                    newGrid.grid[y - ystart, x - xstart] = grid[y, x];
+                    grid[y,x] = types.NONE;
+                }
+            }
+            newGrid.buildObjects();
+            return newGrid;
+        }
+
         public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff)
         {
             for (int y = 0; y < other.height; y++)

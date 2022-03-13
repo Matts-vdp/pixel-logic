@@ -80,9 +80,11 @@ namespace game
                 Vector2 mpos = Raylib.GetMousePosition();
                 int x = (int)(mpos.X + xoff) / GRIDSIZE;
                 int y = (int)(mpos.Y + yoff) / GRIDSIZE;
+                int xstart = Math.Min(xsel,x); 
+                int ystart = Math.Min(ysel,y); 
                 Raylib.DrawRectangle(
-                    xsel * GRIDSIZE - xoff,
-                    ysel * GRIDSIZE - yoff,
+                    xstart * GRIDSIZE - xoff,
+                    ystart * GRIDSIZE - yoff,
                     (Math.Abs(x - xsel) + 1) * GRIDSIZE,
                     (Math.Abs(y - ysel) + 1) * GRIDSIZE,
                     new Color(255, 255, 255, 50)
