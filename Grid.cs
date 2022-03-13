@@ -43,6 +43,13 @@ namespace game
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
             add(x, y, t);
+            buildObjects();
+        }
+        public void addNoUpdate(Vector2 pos, types t, int gridsize, int xoff, int yoff)
+        {
+            int x = toGrid(pos.X, gridsize, xoff);
+            int y = toGrid(pos.Y, gridsize, yoff);
+            add(x, y, t);
         }
         public void add(int x, int y, types t)
         {
@@ -50,7 +57,6 @@ namespace game
             if (y < 0 || y >= height) { return; }
             if (grid[y, x] == t) { return; }
             grid[y, x] = t;
-            buildObjects();
         }
         public void del(Vector2 pos, int gridsize, int xoff, int yoff)
         {
@@ -63,7 +69,7 @@ namespace game
         }
         public types GetBlock(int x, int y)
         {
-            if (x < 0 || x > width || y < 0 || y > height)
+            if (x < 0 || x >= width || y < 0 || y >= height)
             {
                 return 0;
             }
@@ -183,35 +189,32 @@ namespace game
             bool changed = true;
             while (changed)
             {
+                changed = false;
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
-                        changed = false;
-                        if (grid[y, x] == 0)
-                        {
-                            continue;
-                        }
-                        if (grid[y, x] == types.OUT || grid[y, x] == types.IN)
+                        if (grid[y, x] == 0) continue;
+                        if (labels[y,x] == 0 && (grid[y, x] == types.OUT || grid[y, x] == types.IN))
                         {
                             labels[y, x] = -1;
                             changed = true;
                             continue;
                         }
-                        if (grid[y, x] == types.CROSS)
+                        if (labels[y,x] == 0 && grid[y, x] == types.CROSS)
                         {
                             labels[y, x] = -2;
                             changed = true;
                             continue;
                         }
                         bool found = false;
-                        if (GetBlock(x - 1, y) == grid[y, x])
+                        if (GetBlock(x - 1, y) == grid[y, x] && labels[y, x] != labels[y, x - 1])
                         {
                             labels[y, x] = labels[y, x - 1];
                             found = true;
                             changed = true;
                         }
-                        if (GetBlock(x, y - 1) == grid[y, x])
+                        if (GetBlock(x, y - 1) == grid[y, x] && labels[y, x] != labels[y-1, x])
                         {
                             if (GetBlock(x - 1, y) == grid[y, x])
                             {
@@ -221,7 +224,7 @@ namespace game
                             found = true;
                             changed = true;
                         }
-                        if (!found)
+                        if (!found && labels[y,x] == 0)
                         {
                             labels[y, x] = label++;
                             changed = true;
@@ -289,13 +292,24 @@ namespace game
         }
 
         public Grid copy(int xstart, int ystart, int xend, int yend, int gridsize) {
-            Grid newGrid = new Grid(xend-xstart, yend-ystart, gridsize);
-            for (int y=ystart; y<yend; y++){
-                for (int x=xstart; x<xend; x++){
+            Grid newGrid = new Grid(xend-xstart+1, yend-ystart+1, gridsize);
+            for (int y=ystart; y<yend+1; y++){
+                for (int x=xstart; x<xend+1; x++){
                     newGrid.grid[y-ystart, x-xstart] = grid[y,x];
                 }
             }
+            newGrid.buildObjects();
             return newGrid;
+        }
+        public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff) {
+            for (int y=0; y<other.height; y++) {
+                for (int x=0; x<other.width; x++) {
+                    if (other.grid[y,x] != types.NONE) {
+                        addNoUpdate(pos, other.grid[y,x], gridsize, xoff+x*gridsize, yoff+y*gridsize);
+                    }
+                }
+            }
+            buildObjects();
         }
     }
 

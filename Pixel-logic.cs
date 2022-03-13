@@ -8,8 +8,8 @@ namespace game
         static int selected = 1;
         static int xoff = 0;
         static int yoff = 0;
-        static int xsel = 0;
-        static int ysel = 0;
+        static int xsel = -1;
+        static int ysel = -1;
 
         static Grid? cloneGrid;
 
@@ -59,11 +59,11 @@ namespace game
                 xoff -= 4;
                 if (xoff < 0) { xoff = 0; }
             }
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
                 save(grid);
             }
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_L))
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
                 load(grid);
             }
@@ -72,13 +72,41 @@ namespace game
                 Vector2 pos = Raylib.GetMousePosition();
                 xsel = grid.toGrid(pos.X, GRIDSIZE, xoff);
                 ysel = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                Console.WriteLine(xsel);
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_C))
+            {
+                Vector2 mpos = Raylib.GetMousePosition();
+                int x = (int)(mpos.X + xoff) / GRIDSIZE;
+                int y = (int)(mpos.Y + yoff) / GRIDSIZE;
+                Raylib.DrawRectangle(
+                    xsel * GRIDSIZE - xoff, 
+                    ysel * GRIDSIZE - yoff, 
+                    (Math.Abs(x-xsel)+1)*GRIDSIZE, 
+                    (Math.Abs(y-ysel)+1)*GRIDSIZE, 
+                    new Color(255, 255, 255, 50)
+                );
+
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_C))
             {
                 Vector2 pos = Raylib.GetMousePosition();
                 int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
                 int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
-                cloneGrid = grid.copy(xsel,ysel,xend,yend, GRIDSIZE);
+                cloneGrid = grid.copy(Math.Min(xsel, xend),Math.Min(ysel, yend),Math.Max(xsel, xend),Math.Max(ysel, yend), GRIDSIZE);
+                xsel = -1; ysel = -1;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
+            {
+                drawCloneGrid();
+            }
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_V))
+            {
+                if (cloneGrid != null) {
+                    Vector2 pos = Raylib.GetMousePosition();
+                    grid.merge(cloneGrid, pos, GRIDSIZE, xoff, yoff);
+                    return;
+                }
             }
         }
 
@@ -97,7 +125,14 @@ namespace game
             int x = (int)(mpos.X + xoff) / GRIDSIZE;
             int y = (int)(mpos.Y + yoff) / GRIDSIZE;
             Raylib.DrawRectangle(x * GRIDSIZE - xoff, y * GRIDSIZE - yoff, GRIDSIZE, GRIDSIZE, new Color(255, 255, 255, 25));
+        }
 
+        public static void drawCloneGrid(){
+            if (cloneGrid == null) return;
+            Vector2 mpos = Raylib.GetMousePosition();
+            int x = (int)(mpos.X + xoff) / GRIDSIZE;
+            int y = (int)(mpos.Y + yoff) / GRIDSIZE;
+            cloneGrid?.draw(GRIDSIZE, -x * GRIDSIZE, -y * GRIDSIZE);
         }
 
         public static void save(Grid grid){
