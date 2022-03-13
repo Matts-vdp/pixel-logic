@@ -40,6 +40,7 @@ namespace game
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_SUBTRACT))
             {
                 GRIDSIZE -= 1;
+                if(GRIDSIZE <= 0) GRIDSIZE = 1;
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))
             {
@@ -132,7 +133,7 @@ namespace game
             Vector2 mpos = Raylib.GetMousePosition();
             int x = (int)(mpos.X + xoff) / GRIDSIZE;
             int y = (int)(mpos.Y + yoff) / GRIDSIZE;
-            cloneGrid?.draw(GRIDSIZE, -x * GRIDSIZE, -y * GRIDSIZE);
+            cloneGrid?.draw(GRIDSIZE, (-x * GRIDSIZE)+xoff, (-y * GRIDSIZE)+yoff);
         }
 
         public static void save(Grid grid){
