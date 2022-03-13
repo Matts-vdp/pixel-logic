@@ -12,5 +12,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 save.data
+clipboard.data
 #vscode
 .vscode/

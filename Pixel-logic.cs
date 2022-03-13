@@ -62,20 +62,20 @@ namespace game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
-                save(grid);
+                save(grid, "save.data");
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
                 load(grid);
             }
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_C))
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
                 xsel = grid.toGrid(pos.X, GRIDSIZE, xoff);
                 ysel = grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 Console.WriteLine(xsel);
             }
-            if (Raylib.IsKeyDown(KeyboardKey.KEY_C))
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_C) || Raylib.IsKeyDown(KeyboardKey.KEY_X))
             {
                 Vector2 mpos = Raylib.GetMousePosition();
                 int x = (int)(mpos.X + xoff) / GRIDSIZE;
@@ -96,7 +96,16 @@ namespace game
                 Vector2 pos = Raylib.GetMousePosition();
                 int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
                 int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
-                cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend), GRIDSIZE);
+                cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
+                xsel = -1; ysel = -1;
+                save(cloneGrid, "clipboard.data");
+            }
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
+            {
+                Vector2 pos = Raylib.GetMousePosition();
+                int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                cloneGrid = grid.cut(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
@@ -141,16 +150,26 @@ namespace game
             cloneGrid?.draw(GRIDSIZE, (-x * GRIDSIZE) + xoff, (-y * GRIDSIZE) + yoff);
         }
 
-        public static void save(Grid grid)
+        public static void save(Grid grid, string filename)
         {
-            File.WriteAllTextAsync("save.data", grid.toText());
+            File.WriteAllTextAsync(filename, grid.toText());
         }
         public static void load(Grid grid)
         {
             string txt = File.ReadAllText("save.data");
-            grid.fromText(txt);
+            grid.clear();
+            grid.mergeZero(new Grid(txt));
         }
-
+        public static void filecheck()
+        {
+            if (Raylib.IsFileDropped())
+            {
+                string[] files = Raylib.GetDroppedFiles();
+                string txt = File.ReadAllText(files[0]);
+                cloneGrid = new Grid(txt);
+                Raylib.ClearDroppedFiles();
+            }
+        }
         public static void Main()
         {
             Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
@@ -158,7 +177,7 @@ namespace game
             Raylib.SetWindowMinSize(300, 300);
             Raylib.SetTargetFPS(60);
 
-            Grid grid = new Grid(200, 200, GRIDSIZE);
+            Grid grid = new Grid(200, 200);
 
             while (!Raylib.WindowShouldClose())
             {
@@ -168,6 +187,7 @@ namespace game
                 // check mouse and keyboard input
                 Input(grid);
                 grid.Input();
+                filecheck();
                 // update objects
                 grid.update();
                 // draw

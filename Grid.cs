@@ -23,7 +23,7 @@ namespace game
         List<Connection> connections;
         int width, height;
 
-        public Grid(int w, int h, int size)
+        public Grid(int w, int h)
         {
             grid = new types[h, w];
             labels = new int[h, w];
@@ -33,6 +33,48 @@ namespace game
             width = w;
             height = h;
         }
+        public Grid(string text){
+            grid = new types[0,0];
+            int y = -1; int x = 0;
+            int h = 0; int w = 0;
+            string num = "";
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i].Equals(' '))
+                {
+                    if (h == 0) 
+                    {
+                        h = Int32.Parse(num);
+                    }
+                    else if (w == 0) {
+                        w = Int32.Parse(num);
+                        height = h;
+                        width = w;
+                        grid = new types[h,w];
+                    }
+                    else if (num != "")
+                    {
+                        grid[y, x] = (types)Int32.Parse(num);
+                        x++;
+                    }
+                    num = "";
+                    continue;
+                }
+                if (text[i].Equals('\n'))
+                {
+                    y++;
+                    x = 0;
+                    continue;
+                }
+                num += text[i];
+            }
+            labels = new int[h, w];
+            components = new Dictionary<int, Component>();
+            connections = new List<Connection>();
+            buttons = new List<Button>();
+            buildObjects();
+        }
+
         public int toGrid(float pos, int gridsize, int off)
         {
             pos = (pos + off) / gridsize;
@@ -111,7 +153,6 @@ namespace game
             makeComponents();
             makeConnections();
         }
-
         public void crossConnect()
         {
             for (int y = 0; y < height; y++)
@@ -132,7 +173,6 @@ namespace game
                 }
             }
         }
-
         public void makeComponents()
         {
             for (int y = 0; y < height; y++)
@@ -271,47 +311,24 @@ namespace game
                 c.draw(gridsize, xoff, yoff);
             }
         }
-
         public string toText()
         {
             string str = "";
+            str += height.ToString() + " " + width.ToString() + " \n";
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     str += ((int)grid[y, x]).ToString() + ' ';
                 }
-                str += ';';
+                str += '\n';
             }
             return str;
         }
-        public void fromText(string text)
-        {
-            int y = 0; int x = 0;
-            string num = "";
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (text[i].Equals(' '))
-                {
-                    grid[y, x] = (types)Int32.Parse(num);
-                    num = "";
-                    x++;
-                    continue;
-                }
-                if (text[i].Equals(';'))
-                {
-                    y++;
-                    x = 0;
-                    continue;
-                }
-                num += text[i];
-            }
-            buildObjects();
-        }
 
-        public Grid copy(int xstart, int ystart, int xend, int yend, int gridsize)
+        public Grid copy(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, gridsize);
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1);
             for (int y = ystart; y < yend + 1; y++)
             {
                 for (int x = xstart; x < xend + 1; x++)
@@ -323,9 +340,9 @@ namespace game
             return newGrid;
         }
 
-        public Grid cut(int xstart, int ystart, int xend, int yend, int gridsize)
+        public Grid cut(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, gridsize);
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1);
             for (int y = ystart; y < yend + 1; y++)
             {
                 for (int x = xstart; x < xend + 1; x++)
@@ -334,6 +351,7 @@ namespace game
                     grid[y,x] = types.NONE;
                 }
             }
+            buildObjects();
             newGrid.buildObjects();
             return newGrid;
         }
@@ -351,6 +369,24 @@ namespace game
                 }
             }
             buildObjects();
+        }
+        public void mergeZero(Grid other)
+        {
+            for (int y = 0; y < other.height; y++)
+            {
+                for (int x = 0; x < other.width; x++)
+                {
+                    if (other.grid[y, x] != types.NONE)
+                    {
+                        add(x, y, other.grid[y,x]);
+                    }
+                }
+            }
+            buildObjects();
+        }
+        public void clear()
+        {
+            grid = new types[height, width];
         }
     }
 
