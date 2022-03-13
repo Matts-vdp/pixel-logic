@@ -16,11 +16,12 @@ namespace game
         CLK,
         FF,
         BUT,
+        SEG,
     }
 
     static class ComponentFactory
     {
-        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button" };
+        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
 
         public static Component NewComponent(types type)
         {
@@ -42,6 +43,8 @@ namespace game
                     return new Button();
                 case (types.XOR):
                     return new XorComp();
+                case (types.SEG):
+                    return new Seg7();
                 default:
                     return new WireComp();
             }

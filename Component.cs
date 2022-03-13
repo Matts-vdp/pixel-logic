@@ -289,4 +289,33 @@ namespace game
         }
     }
 
+    class Seg7 : Component
+    {
+        private int value;
+        public Seg7() : base()
+        {
+        }
+        public override void update()
+        {
+            int num = 0;
+            for (int i=0; i<inputs.Count; i++) 
+            {
+                if (inputs[i].isActive())
+                {
+                    num += (int)Math.Pow(2, i);
+                }
+            }
+            value = num;
+        }
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = active ? new Color(78, 255, 50, 255) : new Color(0, 100, 0, 255);
+            foreach (Pos pos in blocks)
+            {
+                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+                Raylib.DrawText(value.ToString(),pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
+            }
+        }
+    }
+
 }
