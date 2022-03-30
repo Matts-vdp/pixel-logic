@@ -1,5 +1,8 @@
 ﻿using Raylib_cs;
 using System.Numerics;
+
+
+
 namespace game
 {
     static class Game
@@ -18,7 +21,7 @@ namespace game
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                grid.add(pos, (types)selected, GRIDSIZE, xoff, yoff);
+                grid.add(pos, selected, GRIDSIZE, xoff, yoff);
             }
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
             {
@@ -26,7 +29,7 @@ namespace game
                 grid.del(pos, GRIDSIZE, xoff, yoff);
             }
             selected -= (int)Raylib.GetMouseWheelMove();
-            int max = Enum.GetValues(typeof(types)).Cast<int>().Max();
+            int max = ComponentFactory.items.Count;
             if (selected > max)
             {
                 selected = max;
@@ -125,7 +128,7 @@ namespace game
 
         public static void drawUI()
         {
-            for (int i = 0; i < ComponentFactory.items.Length; i++)
+            for (int i = 0; i < ComponentFactory.items.Count; i++)
             {
                 bool sel = (i + 1) == selected;
                 Raylib.DrawText(ComponentFactory.items[i], 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
@@ -160,13 +163,28 @@ namespace game
             grid.clear();
             grid.mergeZero(new Grid(txt));
         }
+
+        public static void loadCs(string filename) {
+            CCode c = new CCode(filename);
+            List<bool> inp = new List<bool>();
+            inp.Add(true);
+            List<bool> alp = c.run(inp);
+            Console.WriteLine(alp[0]);
+        }        
+
         public static void filecheck()
         {
             if (Raylib.IsFileDropped())
             {
                 string[] files = Raylib.GetDroppedFiles();
                 string txt = File.ReadAllText(files[0]);
-                cloneGrid = new Grid(txt);
+                if (Raylib.IsFileExtension(files[0], ".data")) {
+                    cloneGrid = new Grid(txt);
+                }
+                else if (Raylib.IsFileExtension(files[0], ".script")) {
+                    string name = Path.GetFileNameWithoutExtension(files[0]);
+                    Codes.add(name);
+                }
                 Raylib.ClearDroppedFiles();
             }
         }
@@ -175,7 +193,7 @@ namespace game
             Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
             Raylib.InitWindow(800, 800, "Pixel Logic");
             Raylib.SetWindowMinSize(300, 300);
-            Raylib.SetTargetFPS(60);
+            Raylib.SetTargetFPS(10);
 
             Grid grid = new Grid(200, 200);
 

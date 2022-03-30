@@ -16,16 +16,17 @@ namespace game
 
     class Grid
     {
-        types[,] grid;
+        int[,] grid;
         int[,] labels;
         Dictionary<int, Component> components;
+        
         List<Button> buttons;
         List<Connection> connections;
         int width, height;
 
         public Grid(int w, int h)
         {
-            grid = new types[h, w];
+            grid = new int[h, w];
             labels = new int[h, w];
             components = new Dictionary<int, Component>();
             connections = new List<Connection>();
@@ -34,7 +35,7 @@ namespace game
             height = h;
         }
         public Grid(string text){
-            grid = new types[0,0];
+            grid = new int[0,0];
             int y = -1; int x = 0;
             int h = 0; int w = 0;
             string num = "";
@@ -50,11 +51,11 @@ namespace game
                         w = Int32.Parse(num);
                         height = h;
                         width = w;
-                        grid = new types[h,w];
+                        grid = new int[h,w];
                     }
                     else if (num != "")
                     {
-                        grid[y, x] = (types)Int32.Parse(num);
+                        grid[y, x] = (int)Int32.Parse(num);
                         x++;
                     }
                     num = "";
@@ -80,20 +81,20 @@ namespace game
             pos = (pos + off) / gridsize;
             return (int)pos;
         }
-        public void add(Vector2 pos, types t, int gridsize, int xoff, int yoff)
+        public void add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
             add(x, y, t);
             buildObjects();
         }
-        public void addNoUpdate(Vector2 pos, types t, int gridsize, int xoff, int yoff)
+        public void addNoUpdate(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
             add(x, y, t);
         }
-        public void add(int x, int y, types t)
+        public void add(int x, int y, int t)
         {
             if (x < 0 || x >= width) { return; }
             if (y < 0 || y >= height) { return; }
@@ -109,7 +110,7 @@ namespace game
             grid[y, x] = 0;
             buildObjects();
         }
-        public types GetBlock(int x, int y)
+        public int GetBlock(int x, int y)
         {
             if (x < 0 || x >= width || y < 0 || y >= height)
             {
@@ -162,11 +163,11 @@ namespace game
                     if (labels[y, x] != -2) { continue; }
                     Connection c = ComponentFactory.NewConnection(grid[y, x], new Pos(x, y));
                     connections.Add(c);
-                    if (GetBlock(x - 1, y) == types.WIRE && GetBlock(x + 1, y) == types.WIRE)
+                    if (GetBlock(x - 1, y) == (int)types.WIRE && GetBlock(x + 1, y) == (int)types.WIRE)
                     {
                         changeLabel(labels[y, x + 1], labels[y, x - 1], labels);
                     }
-                    if (GetBlock(x, y - 1) == types.WIRE && GetBlock(x, y + 1) == types.WIRE)
+                    if (GetBlock(x, y - 1) == (int)types.WIRE && GetBlock(x, y + 1) == (int)types.WIRE)
                     {
                         changeLabel(labels[y + 1, x], labels[y - 1, x], labels);
                     }
@@ -188,7 +189,7 @@ namespace game
                     {
                         Component c = ComponentFactory.NewComponent(grid[y, x]);
                         c.add(new Pos(x, y));
-                        if (grid[y, x] == types.BUT)
+                        if (grid[y, x] == (int) types.BUT)
                         {
                             buttons.Add((Button)c);
                         }
@@ -210,14 +211,14 @@ namespace game
                     Connection con = ComponentFactory.NewConnection(grid[y, x], new Pos(x, y));
                     foreach (Pos pos in neighbors)
                     {
-                        types block = GetBlock(pos.x, pos.y);
+                        int block = GetBlock(pos.x, pos.y);
                         if (block == 0) { continue; }
-                        if (!wiref && block == types.WIRE)
+                        if (!wiref && block == (int) types.WIRE)
                         {
                             con.addWire(components[labels[pos.y, pos.x]]);
                             wiref = true;
                         }
-                        else if (!otherf && labels[pos.y, pos.x] >= 0 && block != types.WIRE)
+                        else if (!otherf && labels[pos.y, pos.x] >= 0 && block != (int) types.WIRE)
                         {
                             con.addOther(components[labels[pos.y, pos.x]]);
                             otherf = true;
@@ -239,13 +240,13 @@ namespace game
                     for (int x = 0; x < width; x++)
                     {
                         if (grid[y, x] == 0) continue;
-                        if (labels[y, x] == 0 && (grid[y, x] == types.OUT || grid[y, x] == types.IN))
+                        if (labels[y, x] == 0 && (grid[y, x] == (int)types.OUT || grid[y, x] == (int)types.IN))
                         {
                             labels[y, x] = -1;
                             changed = true;
                             continue;
                         }
-                        if (labels[y, x] == 0 && grid[y, x] == types.CROSS)
+                        if (labels[y, x] == 0 && grid[y, x] == (int)types.CROSS)
                         {
                             labels[y, x] = -2;
                             changed = true;
@@ -350,7 +351,7 @@ namespace game
                 for (int x = xstart; x < xend + 1; x++)
                 {
                     newGrid.grid[y - ystart, x - xstart] = grid[y, x];
-                    grid[y,x] = types.NONE;
+                    grid[y,x] = (int)types.NONE;
                 }
             }
             buildObjects();
@@ -364,7 +365,7 @@ namespace game
             {
                 for (int x = 0; x < other.width; x++)
                 {
-                    if (other.grid[y, x] != types.NONE)
+                    if (other.grid[y, x] != (int) types.NONE)
                     {
                         addNoUpdate(pos, other.grid[y, x], gridsize, xoff + x * gridsize, yoff + y * gridsize);
                     }
@@ -378,7 +379,7 @@ namespace game
             {
                 for (int x = 0; x < other.width; x++)
                 {
-                    if (other.grid[y, x] != types.NONE)
+                    if (other.grid[y, x] != (int) types.NONE)
                     {
                         add(x, y, other.grid[y,x]);
                     }
@@ -388,7 +389,7 @@ namespace game
         }
         public void clear()
         {
-            grid = new types[height, width];
+            grid = new int[height, width];
         }
     }
 

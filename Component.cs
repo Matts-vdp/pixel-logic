@@ -318,4 +318,47 @@ namespace game
         }
     }
 
+    class ScriptComp : Component
+    {
+        public int id;
+        bool lastState = false;
+        public ScriptComp(int i) : base()
+        {
+            id = i;
+        }
+        public List<bool> getInputs(){
+            List<bool> inp = new List<bool>();
+            foreach (Connection c in inputs) {
+                inp.Add(c.isActive());
+            }
+            return inp;
+        }
+        public void setOutput(List<bool> list) {
+            for (int i=0; i<outputs.Count; i++) {
+                bool status = false;
+                if (i < list.Count)
+                    status = list[i];
+                outputs[i].setActive(status);
+            }
+        }
+        public override void update()
+        {  
+            if (!Codes.codeMap.ContainsKey(id))
+                return;
+            List<bool> output = Codes.codeMap[id].run(getInputs());
+            setOutput(output);
+        }
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = new Color(100, 100, 100, 255);
+            var a = Codes.codeMap;
+            string s = Codes.codeMap[id].file[0].ToString();
+            foreach (Pos pos in blocks)
+            {
+                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+                Raylib.DrawText(s ,pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
+            }
+        }
+    }
+
 }

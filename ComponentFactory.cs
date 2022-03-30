@@ -21,12 +21,14 @@ namespace game
 
     static class ComponentFactory
     {
-        public static String[] items = { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
+        public static List<string> items = new List<string>{ "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
 
-        public static Component NewComponent(types type)
+        public static Component NewComponent(int type)
         {
-            switch (type)
+            switch ((types) type)
             {
+                case (types.WIRE):
+                    return new WireComp();
                 case (types.BATTERY):
                     return new BatComp();
                 case (types.AND):
@@ -46,12 +48,12 @@ namespace game
                 case (types.SEG):
                     return new Seg7();
                 default:
-                    return new WireComp();
+                    return new ScriptComp(type);
             }
         }
-        public static Connection NewConnection(types type, Pos pos)
+        public static Connection NewConnection(int type, Pos pos)
         {
-            switch (type)
+            switch ((types) type)
             {
                 case (types.OUT):
                     return new OutConnection(pos);
