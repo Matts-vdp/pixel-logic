@@ -71,8 +71,9 @@ namespace game {
         public Script<List<bool>>? loadCs(string filename) {
             string txt = File.ReadAllText(filename);
             var opt = ScriptOptions.Default;
-            opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
-            opt.AddImports("System");
+            // opt.WithMetadataResolver(ScriptMetadataResolver.Default.WithBaseDirectory("./"));
+            // opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
+            // opt.AddImports("System");
             var script = CSharpScript.Create<List<bool>>(txt, opt, typeof(Input));
             script.Compile();
             
