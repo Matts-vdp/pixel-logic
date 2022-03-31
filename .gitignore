@@ -11,7 +11,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-*.data
-*.script
+*.dpl
+*.cpl
+*.ppl
 #vscode
 .vscode/

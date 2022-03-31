@@ -65,7 +65,7 @@ namespace game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
-                save(grid, "save.data");
+                save(grid, "save.dpl");
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
@@ -76,7 +76,6 @@ namespace game
                 Vector2 pos = Raylib.GetMousePosition();
                 xsel = grid.toGrid(pos.X, GRIDSIZE, xoff);
                 ysel = grid.toGrid(pos.Y, GRIDSIZE, yoff);
-                Console.WriteLine(xsel);
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_C) || Raylib.IsKeyDown(KeyboardKey.KEY_X))
             {
@@ -101,7 +100,7 @@ namespace game
                 int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
-                save(cloneGrid, "clipboard.data");
+                save(cloneGrid, "clipboard.dpl");
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
@@ -159,7 +158,7 @@ namespace game
         }
         public static void load(Grid grid)
         {
-            string txt = File.ReadAllText("save.data");
+            string txt = File.ReadAllText("save.dpl");
             grid.clear();
             grid.mergeZero(new Grid(txt));
         }
@@ -169,7 +168,6 @@ namespace game
             List<bool> inp = new List<bool>();
             inp.Add(true);
             List<bool> alp = c.run(inp);
-            Console.WriteLine(alp[0]);
         }        
 
         public static void filecheck()
@@ -178,11 +176,11 @@ namespace game
             {
                 string[] files = Raylib.GetDroppedFiles();
                 string txt = File.ReadAllText(files[0]);
-                if (Raylib.IsFileExtension(files[0], ".data")) {
+                if (Raylib.IsFileExtension(files[0], ".dpl")) {
                     cloneGrid = new Grid(txt);
                 }
-                else if (Raylib.IsFileExtension(files[0], ".script")) {
-                    string name = Path.GetFileNameWithoutExtension(files[0]);
+                else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl")) {
+                    string name = Path.GetFileName(files[0]);
                     Codes.add(name);
                 }
                 Raylib.ClearDroppedFiles();
@@ -193,7 +191,7 @@ namespace game
             Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
             Raylib.InitWindow(800, 800, "Pixel Logic");
             Raylib.SetWindowMinSize(300, 300);
-            Raylib.SetTargetFPS(10);
+            Raylib.SetTargetFPS(60);
 
             Grid grid = new Grid(200, 200);
 

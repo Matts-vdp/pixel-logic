@@ -240,7 +240,7 @@ namespace game
                     for (int x = 0; x < width; x++)
                     {
                         if (grid[y, x] == 0) continue;
-                        if (labels[y, x] == 0 && (grid[y, x] == (int)types.OUT || grid[y, x] == (int)types.IN))
+                        if (labels[y, x] == 0 && (grid[y, x] == (int)types.OUT || grid[y, x] == (int)types.IN || grid[y, x] == (int)types.CLKIN))
                         {
                             labels[y, x] = -1;
                             changed = true;

@@ -6,6 +6,7 @@ namespace game
         public List<Pos> blocks;
         public List<Connection> inputs;
         public List<Connection> outputs;
+        public Connection? clockIn;
         public bool active = false;
 
         public Component()
@@ -26,6 +27,11 @@ namespace game
         {
             outputs.Add(c);
         }
+
+        public virtual void addClock(Connection c) {
+            inputs.Add(c);
+        }
+
         public abstract void update();
         public abstract void draw(int gridsize, int xoff, int yoff);
     }
@@ -241,16 +247,16 @@ namespace game
         }
         public override void update()
         {
-            if (inputs.Count == 0) { return; }
-            if (inputs.Last()!.isActive() && !lastState)
-            {
+            if (inputs.Count == 0) return;
+            if (clockIn == null) return;
+
+            if (clockIn.isActive() && !lastState) {
                 active = inputs[0].isActive();
+            
+                foreach (Connection o in outputs)
+                    o.setActive(active);
             }
-            foreach (Connection o in outputs)
-            {
-                o.setActive(active);
-            }
-            lastState = inputs.Last()!.isActive();
+            lastState = clockIn.isActive();
         }
         public override void draw(int gridsize, int xoff, int yoff)
         {
@@ -259,6 +265,9 @@ namespace game
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
             }
+        }
+        public override void addClock(Connection c){
+            clockIn = c;
         }
     }
 
@@ -318,11 +327,61 @@ namespace game
         }
     }
 
-    class ScriptComp : Component
+    class ProgComp : Component
     {
         public int id;
         bool lastState = false;
-        public ScriptComp(int i) : base()
+        public ProgComp(int i) : base()
+        {
+            id = i;
+        }
+
+        public override void addClock(Connection c)
+        {
+            clockIn = c;
+        }
+        public List<bool> getInputs(){
+            List<bool> inp = new List<bool>();
+            foreach (Connection c in inputs) {
+                inp.Add(c.isActive());
+            }
+            return inp;
+        }
+        public void setOutput(List<bool> list) {
+            for (int i=0; i<outputs.Count; i++) {
+                bool status = false;
+                if (i < list.Count)
+                    status = list[i];
+                outputs[i].setActive(status);
+            }
+        }
+        public override void update()
+        {  
+            if (clockIn == null) return;
+            if (!Codes.codeMap.ContainsKey(id))
+                return;
+            if (clockIn.isActive() && !lastState) {
+                List<bool> output = Codes.codeMap[id].run(getInputs());
+                setOutput(output);
+            }
+            lastState = clockIn.isActive();
+        }
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = new Color(100, 100, 100, 255);
+            var a = Codes.codeMap;
+            string s = Codes.codeMap[id].file[0].ToString();
+            foreach (Pos pos in blocks)
+            {
+                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+                Raylib.DrawText(s ,pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
+            }
+        }
+    }
+    class CondComp : Component
+    {
+        public int id;
+        public CondComp(int i) : base()
         {
             id = i;
         }

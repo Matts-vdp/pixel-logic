@@ -87,6 +87,29 @@ namespace game
         }
     }
 
+    class ClockIn : Connection
+    {
+        public ClockIn(Pos p) : base(p)
+        {
+        }
+
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = active ? new Color(255,50,100, 255) : Color.RED;
+            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+        }
+
+        public override void addWire(Component c)
+        {
+            addInput(c);
+        }
+        public override void addOther(Component c)
+        {
+            output = c;
+            c.addClock(this);
+        }
+    }
+
     class CrossConnection : Connection
     {
         public CrossConnection(Pos p) : base(p)

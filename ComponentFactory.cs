@@ -1,4 +1,4 @@
-
+using Raylib_cs;
 namespace game
 {
     enum types
@@ -11,6 +11,7 @@ namespace game
         NOT,
         OUT,
         IN,
+        CLKIN,
         CROSS,
         BATTERY,
         CLK,
@@ -21,7 +22,7 @@ namespace game
 
     static class ComponentFactory
     {
-        public static List<string> items = new List<string>{ "Wire", "And", "Or", "Exor", "Not", "Out", "In", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
+        public static List<string> items = new List<string>{ "Wire", "And", "Or", "Exor", "Not", "Out", "In", "ClkIn", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
 
         public static Component NewComponent(int type)
         {
@@ -48,7 +49,10 @@ namespace game
                 case (types.SEG):
                     return new Seg7();
                 default:
-                    return new ScriptComp(type);
+                    string ext = Codes.codeMap[type].ext;
+                    if (ext == ".cpl")
+                        return new CondComp(type);
+                    return new ProgComp(type);
             }
         }
         public static Connection NewConnection(int type, Pos pos)
@@ -57,6 +61,8 @@ namespace game
             {
                 case (types.OUT):
                     return new OutConnection(pos);
+                case (types.CLKIN):
+                    return new ClockIn(pos);
                 case (types.CROSS):
                     return new CrossConnection(pos);
                 default:
