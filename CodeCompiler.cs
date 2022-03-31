@@ -64,7 +64,7 @@ namespace game {
         private long PC = 0;
         public ScriptState<List<bool>>? state;
         public CCode(string filename){
-            script = loadCs(filename);
+            script = loadCs("customComponents/"+filename);
             file = filename;
             ext = Path.GetExtension(filename);
         }

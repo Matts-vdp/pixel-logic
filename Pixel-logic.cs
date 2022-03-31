@@ -154,11 +154,11 @@ namespace game
 
         public static void save(Grid grid, string filename)
         {
-            File.WriteAllTextAsync(filename, grid.toText());
+            File.WriteAllTextAsync("saves/"+filename, grid.toText());
         }
         public static void load(Grid grid)
         {
-            string txt = File.ReadAllText("save.dpl");
+            string txt = File.ReadAllText("saves/save.dpl");
             grid.clear();
             grid.mergeZero(new Grid(txt));
         }
