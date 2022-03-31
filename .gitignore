@@ -11,7 +11,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-save.data
-clipboard.data
+*.dpl
+*.cpl
+*.ppl
 #vscode
 .vscode/
