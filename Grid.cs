@@ -85,8 +85,9 @@ namespace game
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
-            add(x, y, t);
-            buildObjects();
+            bool changed = add(x, y, t);
+            if (changed)
+                buildObjects();
         }
         public void addNoUpdate(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
@@ -94,12 +95,13 @@ namespace game
             int y = toGrid(pos.Y, gridsize, yoff);
             add(x, y, t);
         }
-        public void add(int x, int y, int t)
+        public bool add(int x, int y, int t)
         {
-            if (x < 0 || x >= width) { return; }
-            if (y < 0 || y >= height) { return; }
-            if (grid[y, x] == t) { return; }
+            if (x < 0 || x >= width) { return false; }
+            if (y < 0 || y >= height) { return false; }
+            if (grid[y, x] == t) { return false; }
             grid[y, x] = t;
+            return true;
         }
         public void del(Vector2 pos, int gridsize, int xoff, int yoff)
         {
