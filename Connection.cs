@@ -8,10 +8,13 @@ namespace game
         public Pos pos;
         public bool active;
 
+        private bool changed;
+
         public Connection(Pos p)
         {
             pos = p;
             active = false;
+            changed = true;
         }
         public void addInput(Component inp)
         {
@@ -33,12 +36,16 @@ namespace game
         }
         public bool isActive()
         {
+            changed = false;
             return active;
         }
         public void setActive(bool value)
         {
+            changed = value != active;
             active = value;
-            // output?.update();
+        }
+        public bool isChanged(){
+            return changed;
         }
         public abstract void draw(int gridsize, int xoff, int yoff);
         public abstract void addWire(Component c);

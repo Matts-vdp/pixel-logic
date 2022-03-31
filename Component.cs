@@ -402,6 +402,14 @@ namespace game
         }
         public override void update()
         {  
+            bool change = false;
+            foreach (Connection c in inputs) {
+                if (c.isChanged()) {
+                    change = true;
+                    break;
+                }
+            }
+            if (!change) return;
             if (!Codes.codeMap.ContainsKey(id))
                 return;
             List<bool> output = Codes.codeMap[id].run(getInputs());
