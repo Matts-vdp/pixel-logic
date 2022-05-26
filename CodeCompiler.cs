@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Scripting;
 
 
 namespace game {
-    public class Input {
+    class Input {
 
         public List<bool> i;
         public List<bool> o;
@@ -66,17 +66,8 @@ namespace game {
         }
     }
 
-    public class Codes {
-        public static Dictionary<int, CCode> codeMap = new Dictionary<int, CCode>();
-        public static void add(string filename) {
-            ComponentFactory.items.Add(Path.GetFileNameWithoutExtension(filename));
-            codeMap.Add(ComponentFactory.items.Count, new CCode(filename));
-        }
-    }
-
-    public class CCode {
+    class CCode : CustomComponent{
         public Script<List<bool>>? script;
-        public string file;
         public string ext;
         private long PC = 0;
 
@@ -84,7 +75,7 @@ namespace game {
         public ScriptState<List<bool>>? state;
         public CCode(string filename){
             script = loadCs("customComponents/"+filename);
-            file = filename;
+            name = filename;
             ext = Path.GetExtension(filename);
             mem = new Dictionary<string, object>();
         }
@@ -107,6 +98,11 @@ namespace game {
             PC = param.PC;
             mem = param.MEM;
             return state.ReturnValue;
+        }
+        public override Component toComponent(int type){
+            if (ext == ".cpl")
+                return new CondComp(type);
+            return new ProgComp(type);
         }
     }
 

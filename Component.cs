@@ -27,7 +27,7 @@ namespace game
         {
             outputs.Add(c);
         }
-
+        // add clock to inputs subClasses can override this to use clock
         public virtual void addClock(Connection c) {
             inputs.Add(c);
         }
@@ -327,6 +327,7 @@ namespace game
         }
     }
 
+    // component with custom code that only gets updated on positive clk 
     class ProgComp : Component
     {
         public int id;
@@ -358,10 +359,10 @@ namespace game
         public override void update()
         {  
             if (clockIn == null) return;
-            if (!Codes.codeMap.ContainsKey(id))
+            if (!ComponentList.components.ContainsKey(id))
                 return;
             if (clockIn.isActive() && !lastState) {
-                List<bool> output = Codes.codeMap[id].run(getInputs());
+                List<bool> output = ((CCode)ComponentList.components[id]).run(getInputs());
                 setOutput(output);
             }
             lastState = clockIn.isActive();
@@ -369,8 +370,8 @@ namespace game
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
-            var a = Codes.codeMap;
-            string s = Codes.codeMap[id].file[0].ToString();
+            var a = ComponentList.components;
+            string s = ComponentList.components[id].name[0].ToString();
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
@@ -378,6 +379,8 @@ namespace game
             }
         }
     }
+    
+    // component with custom code that works 'instant'
     class CondComp : Component
     {
         public int id;
@@ -410,16 +413,16 @@ namespace game
                 }
             }
             if (!change) return;
-            if (!Codes.codeMap.ContainsKey(id))
+            if (!ComponentList.components.ContainsKey(id))
                 return;
-            List<bool> output = Codes.codeMap[id].run(getInputs());
+            List<bool> output = ((CCode)ComponentList.components[id]).run(getInputs());
             setOutput(output);
         }
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
-            var a = Codes.codeMap;
-            string s = Codes.codeMap[id].file[0].ToString();
+            var a = ComponentList.components;
+            string s = ComponentList.components[id].name[0].ToString();
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
@@ -428,4 +431,45 @@ namespace game
         }
     }
 
+    // component that contains a circuit of components
+    class SubComponent : Component
+    {
+        private List<Connection> subInp;
+
+        private List<Connection> subOutp;
+        private Connection? clock;
+
+        private Grid grid;
+
+        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk) : base()
+        {   
+            grid = g;
+            subInp = inp;
+            subOutp = outp;
+            clock = clk;
+        }
+        public override void addClock(Connection c)
+        {
+            clockIn = c;
+        }
+        public override void update()
+        {
+            for (int i=0; i<inputs.Count && i<subInp.Count; i++) 
+                subInp[i].setActive(inputs[i].isActive());
+            if (clockIn != null)
+                clock?.setActive(clockIn.isActive());
+            grid.update();
+            for (int i=0; i<outputs.Count && i<subOutp.Count; i++) 
+                outputs[i].setActive(subOutp[i].isActive());
+        }
+        public override void draw(int gridsize, int xoff, int yoff)
+        {
+            Color color = new Color(78, 255, 50, 255);
+            foreach (Pos pos in blocks)
+            {
+                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+                Raylib.DrawText("S", pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
+            }
+        }
+    }
 }

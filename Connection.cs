@@ -47,6 +47,11 @@ namespace game
         public bool isChanged(){
             return changed;
         }
+
+        public bool isFull() {
+            return (input != null) && (output != null);
+        }
+
         public abstract void draw(int gridsize, int xoff, int yoff);
         public abstract void addWire(Component c);
         public abstract void addOther(Component c);

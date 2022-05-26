@@ -123,6 +123,14 @@ namespace game
                     return;
                 }
             }
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_S))
+            {
+                if (cloneGrid != null)
+                {
+                    Component comp = cloneGrid.toComponent();
+                    ComponentList.add("sub", cloneGrid);
+                }
+            }
         }
 
         public static void drawUI()
@@ -181,7 +189,7 @@ namespace game
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl")) {
                     string name = Path.GetFileName(files[0]);
-                    Codes.add(name);
+                    ComponentList.add(name, new CCode(name));
                 }
                 Raylib.ClearDroppedFiles();
             }

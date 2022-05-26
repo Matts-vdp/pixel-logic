@@ -49,10 +49,7 @@ namespace game
                 case (types.SEG):
                     return new Seg7();
                 default:
-                    string ext = Codes.codeMap[type].ext;
-                    if (ext == ".cpl")
-                        return new CondComp(type);
-                    return new ProgComp(type);
+                    return ComponentList.components[type].toComponent(type);
             }
         }
         public static Connection NewConnection(int type, Pos pos)

@@ -14,7 +14,7 @@ namespace game
         }
     }
 
-    class Grid
+    class Grid: CustomComponent
     {
         int[,] grid;
         int[,] labels;
@@ -389,10 +389,35 @@ namespace game
             }
             buildObjects();
         }
+
+        public override Component toComponent(int type = 0) {
+            buildObjects();
+            List<Connection> inp = new List<Connection>();
+            List<Connection> outp = new List<Connection>();
+            Connection? clock = null;
+
+            foreach (Connection i in connections) {
+                if (!i.isFull()){
+                    if (i.GetType() ==  typeof(InConnection)) {
+                        outp.Add(i);
+                    } 
+                    else if (i.GetType() ==  typeof(OutConnection)) {
+                        inp.Add(i);
+                    }
+                    else if (i.GetType() ==  typeof(ClockIn)) {
+                        clock = i;
+                    }
+                }
+            }
+            // TODO: hier benk gesropt
+            return new SubComponent(this, inp, outp, clock);
+        }
+
         public void clear()
         {
             grid = new int[height, width];
         }
+
     }
 
 
