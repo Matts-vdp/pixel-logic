@@ -470,7 +470,7 @@ namespace game
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText("S", pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
+                Raylib.DrawText(grid.name[0].ToString(), pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
             }
         }
     }

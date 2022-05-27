@@ -15,6 +15,7 @@ namespace game
         static int ysel = -1;
         Grid? cloneGrid;
         Grid grid = new Grid(200, 200);
+        string filename = "";
 
         public void Input()
         {
@@ -65,7 +66,7 @@ namespace game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
-                grid.save("save.dpl");
+                grid.save("save.json");
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
@@ -100,7 +101,7 @@ namespace game
                 int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
-                cloneGrid.save("clipboard.dpl");
+                cloneGrid.save("clipboard.json");
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
@@ -125,7 +126,7 @@ namespace game
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_O))
             {
-                
+                grid.list.add(filename);
             }
             grid.Input();
         }
@@ -171,9 +172,9 @@ namespace game
             if (Raylib.IsFileDropped())
             {
                 string[] files = Raylib.GetDroppedFiles();
-                string txt = File.ReadAllText(files[0]);
-                if (Raylib.IsFileExtension(files[0], ".dpl")) {
-                    cloneGrid = new Grid(txt);
+                if (Raylib.IsFileExtension(files[0], ".json")) {
+                    cloneGrid = new Grid(files[0]);
+                    filename = files[0];
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl")) {
                     string name = Path.GetFileName(files[0]);

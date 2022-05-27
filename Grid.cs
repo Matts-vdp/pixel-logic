@@ -76,8 +76,9 @@ namespace game
 
         public Grid(string text)
         {
-            name = text;
-            SaveData save = SaveData.fromJson(text);
+            name = Path.GetFileName(text);
+            string js = File.ReadAllText("saves/"+name);
+            SaveData save = SaveData.fromJson(js);
             grid = fromArray(save.width, save.height, save.blocks);
             list = ComponentList.fromDict(save.components);
             width = save.width;
@@ -476,7 +477,7 @@ namespace game
 
         public void load()
         {
-            string txt = File.ReadAllText("saves/save.dpl");
+            string txt = File.ReadAllText("saves/save.json");
             clear();
             mergeZero(new Grid(txt));
         }

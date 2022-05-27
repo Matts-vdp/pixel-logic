@@ -38,7 +38,7 @@ namespace game
             string ext = Path.GetExtension(filename);
             CustomComponent c;
             switch (ext) {
-                case ".dpl":
+                case ".json":
                     c = new Grid(filename);
                     break;
                 default:
