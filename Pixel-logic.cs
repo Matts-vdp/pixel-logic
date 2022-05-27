@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace game
 {
-    static class Game
+    class Game
     {
         static int GRIDSIZE = 32;
         static int selected = 1;
@@ -13,10 +13,11 @@ namespace game
         static int yoff = 0;
         static int xsel = -1;
         static int ysel = -1;
+        Grid? cloneGrid;
+        Grid grid = new Grid(200, 200);
+        string filename = "";
 
-        static Grid? cloneGrid;
-
-        public static void Input(Grid grid)
+        public void Input()
         {
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
             {
@@ -29,7 +30,7 @@ namespace game
                 grid.del(pos, GRIDSIZE, xoff, yoff);
             }
             selected -= (int)Raylib.GetMouseWheelMove();
-            int max = ComponentFactory.items.Count;
+            int max = grid.list.items.Count;
             if (selected > max)
             {
                 selected = max;
@@ -65,11 +66,11 @@ namespace game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
-                save(grid, "save.dpl");
+                grid.save("save.json");
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
-                load(grid);
+                grid.load();
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
@@ -100,7 +101,7 @@ namespace game
                 int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
-                save(cloneGrid, "clipboard.dpl");
+                cloneGrid.save("clipboard.json");
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
@@ -123,27 +124,24 @@ namespace game
                     return;
                 }
             }
-            if (Raylib.IsKeyReleased(KeyboardKey.KEY_S))
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_O))
             {
-                if (cloneGrid != null)
-                {
-                    Component comp = cloneGrid.toComponent();
-                    ComponentList.add("sub", cloneGrid);
-                }
+                grid.list.add(filename);
             }
+            grid.Input();
         }
 
-        public static void drawUI()
+        public void drawUI()
         {
-            for (int i = 0; i < ComponentFactory.items.Count; i++)
+            for (int i = 0; i < grid.list.items.Count; i++)
             {
                 bool sel = (i + 1) == selected;
-                Raylib.DrawText(ComponentFactory.items[i], 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
+                Raylib.DrawText(grid.list.items[i], 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
             Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
         }
 
-        public static void drawMouse()
+        public void drawMouse()
         {
             Vector2 mpos = Raylib.GetMousePosition();
             int x = (int)(mpos.X + xoff) / GRIDSIZE;
@@ -151,7 +149,7 @@ namespace game
             Raylib.DrawRectangle(x * GRIDSIZE - xoff, y * GRIDSIZE - yoff, GRIDSIZE, GRIDSIZE, new Color(255, 255, 255, 25));
         }
 
-        public static void drawCloneGrid()
+        public void drawCloneGrid()
         {
             if (cloneGrid == null) return;
             Vector2 mpos = Raylib.GetMousePosition();
@@ -160,36 +158,27 @@ namespace game
             cloneGrid?.draw(GRIDSIZE, (-x * GRIDSIZE) + xoff, (-y * GRIDSIZE) + yoff);
         }
 
-        public static void save(Grid grid, string filename)
-        {
-            File.WriteAllTextAsync("saves/"+filename, grid.toText());
+        
+        public void update(){
+            grid.update();
         }
-        public static void load(Grid grid)
-        {
-            string txt = File.ReadAllText("saves/save.dpl");
-            grid.clear();
-            grid.mergeZero(new Grid(txt));
+        public void draw(){
+            grid.draw(GRIDSIZE, xoff, yoff);
         }
+            
 
-        public static void loadCs(string filename) {
-            CCode c = new CCode(filename);
-            List<bool> inp = new List<bool>();
-            inp.Add(true);
-            List<bool> alp = c.run(inp);
-        }        
-
-        public static void filecheck()
+        public void filecheck()
         {
             if (Raylib.IsFileDropped())
             {
                 string[] files = Raylib.GetDroppedFiles();
-                string txt = File.ReadAllText(files[0]);
-                if (Raylib.IsFileExtension(files[0], ".dpl")) {
-                    cloneGrid = new Grid(txt);
+                if (Raylib.IsFileExtension(files[0], ".json")) {
+                    cloneGrid = new Grid(files[0]);
+                    filename = files[0];
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl")) {
                     string name = Path.GetFileName(files[0]);
-                    ComponentList.add(name, new CCode(name));
+                    grid.list.add(name);
                 }
                 Raylib.ClearDroppedFiles();
             }
@@ -200,8 +189,7 @@ namespace game
             Raylib.InitWindow(800, 800, "Pixel Logic");
             Raylib.SetWindowMinSize(300, 300);
             Raylib.SetTargetFPS(60);
-
-            Grid grid = new Grid(200, 200);
+            Game gm = new Game();
 
             while (!Raylib.WindowShouldClose())
             {
@@ -209,15 +197,15 @@ namespace game
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.BLACK);
                 // check mouse and keyboard input
-                Input(grid);
-                grid.Input();
-                filecheck();
+                gm.Input();
+                
+                gm.filecheck();
                 // update objects
-                grid.update();
+                gm.update();
                 // draw
-                grid.draw(GRIDSIZE, xoff, yoff);
-                drawMouse();
-                drawUI();
+                gm.draw();
+                gm.drawMouse();
+                gm.drawUI();
                 Raylib.EndDrawing();
             }
             Raylib.CloseWindow();

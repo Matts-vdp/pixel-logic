@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Scripting;
 
 
 namespace game {
-    class Input {
+    public class Input {
 
         public List<bool> i;
         public List<bool> o;
@@ -99,10 +99,10 @@ namespace game {
             mem = param.MEM;
             return state.ReturnValue;
         }
-        public override Component toComponent(int type){
+        public override Component toComponent(ComponentList list, int type){
             if (ext == ".cpl")
-                return new CondComp(type);
-            return new ProgComp(type);
+                return new CondComp(type, list);
+            return new ProgComp(type, list);
         }
     }
 

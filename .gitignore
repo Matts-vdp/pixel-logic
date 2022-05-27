@@ -11,8 +11,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-*.dpl
-*.cpl
-*.ppl
+saves/
+customComponents/
 #vscode
 .vscode/

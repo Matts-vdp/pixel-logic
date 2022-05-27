@@ -5,27 +5,66 @@ namespace game
 {
     public struct Pos
     {
-        public int x;
-        public int y;
+        public int x { get; set; }
+        public int y { get; set; }
         public Pos(int X, int Y)
         {
             x = X;
             y = Y;
         }
     }
+    public struct BlockPos
+    {
+        public Pos pos { get; set; }
+        public int block { get; set; }
+        public BlockPos(int x, int y, int b)
+        {
+            pos = new Pos(x, y);
+            block = b;
+        }
+    }
 
-    class Grid: CustomComponent
+    class SaveData
+    {
+        public int width { get; set; }
+        public int height { get; set; }
+        public List<BlockPos> blocks { get; set; }
+        public Dictionary<int, string> components { get; set; }
+        public SaveData(int w, int h, List<BlockPos> grid, Dictionary<int, string> components)
+        {
+            this.blocks = grid;
+            this.components = components;
+            width = w;
+            height = h;
+        }
+        public SaveData() : this(200, 200, new List<BlockPos>(), new Dictionary<int, string>()) { }
+        public static SaveData fromJson(string text)
+        {
+            SaveData? save = JsonSerializer.Deserialize<SaveData>(text);
+            if (save != null) return save;
+            return new SaveData();
+        }
+        public string toJson()
+        {
+            return JsonSerializer.Serialize<SaveData>(this);
+        }
+    }
+    class Grid : CustomComponent
     {
         int[,] grid;
         int[,] labels;
         Dictionary<int, Component> components;
-        
+
         List<Button> buttons;
         List<Connection> connections;
         int width, height;
 
-        public Grid(int w, int h)
+        public ComponentList list;
+        public Grid(int w, int h) : this(w, h, new ComponentList()) { }
+
+        public Grid(int w, int h, ComponentList list)
         {
+            this.list = list;
             grid = new int[h, w];
             labels = new int[h, w];
             components = new Dictionary<int, Component>();
@@ -34,48 +73,47 @@ namespace game
             width = w;
             height = h;
         }
-        public Grid(string text){
-            grid = new int[0,0];
-            int y = -1; int x = 0;
-            int h = 0; int w = 0;
-            string num = "";
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (text[i].Equals(' '))
-                {
-                    if (h == 0) 
-                    {
-                        h = Int32.Parse(num);
-                    }
-                    else if (w == 0) {
-                        w = Int32.Parse(num);
-                        height = h;
-                        width = w;
-                        grid = new int[h,w];
-                    }
-                    else if (num != "")
-                    {
-                        grid[y, x] = (int)Int32.Parse(num);
-                        x++;
-                    }
-                    num = "";
-                    continue;
-                }
-                if (text[i].Equals('\n'))
-                {
-                    y++;
-                    x = 0;
-                    continue;
-                }
-                num += text[i];
-            }
-            labels = new int[h, w];
+
+        public Grid(string text)
+        {
+            name = Path.GetFileName(text);
+            string js = File.ReadAllText("saves/"+name);
+            SaveData save = SaveData.fromJson(js);
+            grid = fromArray(save.width, save.height, save.blocks);
+            list = ComponentList.fromDict(save.components);
+            width = save.width;
+            height = save.height;
+
+            labels = new int[height, width];
             components = new Dictionary<int, Component>();
             connections = new List<Connection>();
             buttons = new List<Button>();
             buildObjects();
         }
 
+        public List<BlockPos> toArray()
+        {
+            List<BlockPos> pos = new List<BlockPos>();
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                    if (grid[y, x] != 0)
+                        pos.Add(new BlockPos(x, y, grid[y, x]));
+            return pos;
+        }
+        public SaveData toSave()
+        {
+            return new SaveData(width, height, toArray(), list.toSave());
+        }
+
+        public int[,] fromArray(int width, int height, List<BlockPos> pos)
+        {
+            int[,] world = new int[height, width];
+            foreach (BlockPos p in pos)
+            {
+                world[p.pos.y, p.pos.x] = p.block;
+            }
+            return world;
+        }
         public int toGrid(float pos, int gridsize, int off)
         {
             pos = (pos + off) / gridsize;
@@ -163,7 +201,7 @@ namespace game
                 for (int x = 0; x < width; x++)
                 {
                     if (labels[y, x] != -2) { continue; }
-                    Connection c = ComponentFactory.NewConnection(grid[y, x], new Pos(x, y));
+                    Connection c = list.NewConnection(grid[y, x], new Pos(x, y));
                     connections.Add(c);
                     if (GetBlock(x - 1, y) == (int)types.WIRE && GetBlock(x + 1, y) == (int)types.WIRE)
                     {
@@ -189,9 +227,9 @@ namespace game
                     }
                     else
                     {
-                        Component c = ComponentFactory.NewComponent(grid[y, x]);
+                        Component c = list.NewComponent(grid[y, x]);
                         c.add(new Pos(x, y));
-                        if (grid[y, x] == (int) types.BUT)
+                        if (grid[y, x] == (int)types.BUT)
                         {
                             buttons.Add((Button)c);
                         }
@@ -210,17 +248,17 @@ namespace game
                     bool wiref = false;
                     bool otherf = false;
                     Pos[] neighbors = { new Pos(x - 1, y), new Pos(x, y - 1), new Pos(x + 1, y), new Pos(x, y + 1) };
-                    Connection con = ComponentFactory.NewConnection(grid[y, x], new Pos(x, y));
+                    Connection con = list.NewConnection(grid[y, x], new Pos(x, y));
                     foreach (Pos pos in neighbors)
                     {
                         int block = GetBlock(pos.x, pos.y);
                         if (block == 0) { continue; }
-                        if (!wiref && block == (int) types.WIRE)
+                        if (!wiref && block == (int)types.WIRE)
                         {
                             con.addWire(components[labels[pos.y, pos.x]]);
                             wiref = true;
                         }
-                        else if (!otherf && labels[pos.y, pos.x] >= 0 && block != (int) types.WIRE)
+                        else if (!otherf && labels[pos.y, pos.x] >= 0 && block != (int)types.WIRE)
                         {
                             con.addOther(components[labels[pos.y, pos.x]]);
                             otherf = true;
@@ -282,12 +320,12 @@ namespace game
         }
         public void update()
         {
-            foreach (Component c in components.Values) 
+            foreach (Component c in components.Values)
             {
                 if (!(c is WireComp))
                     c.update();
             }
-            foreach (Component c in components.Values) 
+            foreach (Component c in components.Values)
             {
                 if (c is WireComp)
                     c.update();
@@ -316,24 +354,15 @@ namespace game
                 c.draw(gridsize, xoff, yoff);
             }
         }
-        public string toText()
+        public string toJson()
         {
-            string str = "";
-            str += height.ToString() + " " + width.ToString() + " \n";
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    str += ((int)grid[y, x]).ToString() + ' ';
-                }
-                str += '\n';
-            }
-            return str;
+            Console.WriteLine(toSave().toJson());
+            return toSave().toJson();
         }
 
         public Grid copy(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1);
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, list);
             for (int y = ystart; y < yend + 1; y++)
             {
                 for (int x = xstart; x < xend + 1; x++)
@@ -347,13 +376,13 @@ namespace game
 
         public Grid cut(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1);
+            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, list);
             for (int y = ystart; y < yend + 1; y++)
             {
                 for (int x = xstart; x < xend + 1; x++)
                 {
                     newGrid.grid[y - ystart, x - xstart] = grid[y, x];
-                    grid[y,x] = (int)types.NONE;
+                    grid[y, x] = (int)types.NONE;
                 }
             }
             buildObjects();
@@ -363,11 +392,27 @@ namespace game
 
         public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff)
         {
+            // add custom components
+            foreach (int key in other.list.components.Keys)
+            {
+                string name = Path.GetFileNameWithoutExtension(other.list.components[key].name);
+                int index = list.items.IndexOf(name);
+                if (index != -1)
+                {
+                    other.grid = other.changeLabel(key, index+1, other.grid);
+                }
+                else
+                {
+                    list.add(other.list.components[key].name);
+                    int i = list.items.Count;
+                    other.grid = other.changeLabel(key, i, other.grid);
+                }
+            }
             for (int y = 0; y < other.height; y++)
             {
                 for (int x = 0; x < other.width; x++)
                 {
-                    if (other.grid[y, x] != (int) types.NONE)
+                    if (other.grid[y, x] != (int)types.NONE)
                     {
                         addNoUpdate(pos, other.grid[y, x], gridsize, xoff + x * gridsize, yoff + y * gridsize);
                     }
@@ -381,36 +426,42 @@ namespace game
             {
                 for (int x = 0; x < other.width; x++)
                 {
-                    if (other.grid[y, x] != (int) types.NONE)
+                    if (other.grid[y, x] != (int)types.NONE)
                     {
-                        add(x, y, other.grid[y,x]);
+                        add(x, y, other.grid[y, x]);
                     }
                 }
             }
             buildObjects();
         }
 
-        public override Component toComponent(int type = 0) {
+        public override Component toComponent(ComponentList list, int type = 0)
+        {
             buildObjects();
             List<Connection> inp = new List<Connection>();
             List<Connection> outp = new List<Connection>();
             Connection? clock = null;
 
-            foreach (Connection i in connections) {
-                if (!i.isFull()){
-                    if (i.GetType() ==  typeof(InConnection)) {
+            foreach (Connection i in connections)
+            {
+                if (!i.isFull())
+                {
+                    if (i.GetType() == typeof(InConnection))
+                    {
                         outp.Add(i);
-                    } 
-                    else if (i.GetType() ==  typeof(OutConnection)) {
+                    }
+                    else if (i.GetType() == typeof(OutConnection))
+                    {
                         inp.Add(i);
                     }
-                    else if (i.GetType() ==  typeof(ClockIn)) {
+                    else if (i.GetType() == typeof(ClockIn))
+                    {
                         clock = i;
                     }
                 }
             }
             // TODO: hier benk gesropt
-            return new SubComponent(this, inp, outp, clock);
+            return new SubComponent(this, inp, outp, clock, list);
         }
 
         public void clear()
@@ -418,6 +469,18 @@ namespace game
             grid = new int[height, width];
         }
 
+
+        public void save(string filename)
+        {
+            File.WriteAllTextAsync("saves/" + filename, toJson());
+        }
+
+        public void load()
+        {
+            string txt = File.ReadAllText("saves/save.json");
+            clear();
+            mergeZero(new Grid(txt));
+        }
     }
 
 
