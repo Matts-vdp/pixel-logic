@@ -443,7 +443,12 @@ namespace game
 
         private Grid grid;
 
-        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk, ComponentList list) : base(list)
+        public SubComponent(
+            Grid g, 
+            List<Connection> inp, 
+            List<Connection> outp, 
+            Connection? clk
+            ) : base(g.list)
         {   
             grid = g;
             subInp = inp;

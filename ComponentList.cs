@@ -47,11 +47,12 @@ namespace game
             }
             components.Add(items.Count, c);
         }
-        public Dictionary<int,string> toSave(){
+        public Dictionary<int,string> toSave(Dictionary<int,bool> blocks){
             Dictionary<int,string> names = new Dictionary<int, string>();
             foreach(int key in components.Keys) 
             {
-                names[key] = components[key].name;
+                if (blocks.ContainsKey(key))
+                    names[key] = components[key].name;
             }
             return names;
         }

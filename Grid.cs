@@ -54,7 +54,6 @@ namespace game
         int[,] grid;
         int[,] labels;
         Dictionary<int, Component> components;
-
         List<Button> buttons;
         List<Connection> connections;
         int width, height;
@@ -102,7 +101,12 @@ namespace game
         }
         public SaveData toSave()
         {
-            return new SaveData(width, height, toArray(), list.toSave());
+            List<BlockPos> blockPositions = toArray();
+            Dictionary<int, bool> blocks = new Dictionary<int, bool>();
+            foreach(BlockPos bp in blockPositions) {
+                blocks[bp.block] = true;
+            }
+            return new SaveData(width, height, toArray(), list.toSave(blocks));
         }
 
         public int[,] fromArray(int width, int height, List<BlockPos> pos)
@@ -356,7 +360,6 @@ namespace game
         }
         public string toJson()
         {
-            Console.WriteLine(toSave().toJson());
             return toSave().toJson();
         }
 
@@ -370,23 +373,22 @@ namespace game
                     newGrid.grid[y - ystart, x - xstart] = grid[y, x];
                 }
             }
+            newGrid.name = name;
             newGrid.buildObjects();
             return newGrid;
         }
 
         public Grid cut(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = new Grid(xend - xstart + 1, yend - ystart + 1, list);
+            Grid newGrid = copy(xstart, ystart, xend, yend);
             for (int y = ystart; y < yend + 1; y++)
             {
                 for (int x = xstart; x < xend + 1; x++)
                 {
-                    newGrid.grid[y - ystart, x - xstart] = grid[y, x];
                     grid[y, x] = (int)types.NONE;
                 }
             }
             buildObjects();
-            newGrid.buildObjects();
             return newGrid;
         }
 
@@ -437,12 +439,12 @@ namespace game
 
         public override Component toComponent(ComponentList list, int type = 0)
         {
-            buildObjects();
+            Grid newGrid = copy(0, 0, width-1, height-1);
             List<Connection> inp = new List<Connection>();
             List<Connection> outp = new List<Connection>();
             Connection? clock = null;
 
-            foreach (Connection i in connections)
+            foreach (Connection i in newGrid.connections)
             {
                 if (!i.isFull())
                 {
@@ -460,8 +462,9 @@ namespace game
                     }
                 }
             }
+            
             // TODO: hier benk gesropt
-            return new SubComponent(this, inp, outp, clock, list);
+            return new SubComponent(newGrid, inp, outp, clock);
         }
 
         public void clear()
