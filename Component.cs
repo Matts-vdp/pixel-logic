@@ -8,12 +8,14 @@ namespace game
         public List<Connection> outputs;
         public Connection? clockIn;
         public bool active = false;
+        protected ComponentList list;
 
-        public Component()
+        public Component(ComponentList list)
         {
             blocks = new List<Pos>();
             inputs = new List<Connection>();
             outputs = new List<Connection>();
+            this.list = list;
         }
         public void add(Pos p)
         {
@@ -38,7 +40,7 @@ namespace game
 
     class WireComp : Component
     {
-        public WireComp() : base() { }
+        public WireComp(ComponentList list) : base(list) { }
         public override void update()
         {
             bool value = false;
@@ -69,7 +71,7 @@ namespace game
 
     class AndComp : Component
     {
-        public AndComp() : base() { }
+        public AndComp(ComponentList list) : base(list) { }
         public override void update()
         {
             bool value = false;
@@ -100,7 +102,7 @@ namespace game
 
     class NotComp : Component
     {
-        public NotComp() : base() { }
+        public NotComp(ComponentList list) : base(list) { }
         public override void update()
         {
             bool value = false;
@@ -131,7 +133,7 @@ namespace game
 
     class OrComp : Component
     {
-        public OrComp() : base() { }
+        public OrComp(ComponentList list) : base(list) { }
         public override void update()
         {
             bool value = false;
@@ -162,7 +164,7 @@ namespace game
 
     class XorComp : Component
     {
-        public XorComp() : base() { }
+        public XorComp(ComponentList list) : base(list) { }
         public override void update()
         {
             bool i1 = false;
@@ -187,7 +189,7 @@ namespace game
 
     class BatComp : Component
     {
-        public BatComp() : base()
+        public BatComp(ComponentList list) : base(list)
         {
             active = true;
         }
@@ -211,7 +213,7 @@ namespace game
     class Clock : Component
     {
         double time;
-        public Clock() : base()
+        public Clock(ComponentList list) : base(list)
         {
             active = false;
             time = Raylib.GetTime();
@@ -242,7 +244,7 @@ namespace game
     class FlipFlop : Component
     {
         bool lastState = false;
-        public FlipFlop() : base()
+        public FlipFlop(ComponentList list) : base(list)
         {
         }
         public override void update()
@@ -273,7 +275,7 @@ namespace game
 
     class Button : Component
     {
-        public Button() : base()
+        public Button(ComponentList list) : base(list)
         {
         }
         public override void update()
@@ -301,7 +303,7 @@ namespace game
     class Seg7 : Component
     {
         private int value;
-        public Seg7() : base()
+        public Seg7(ComponentList list) : base(list)
         {
         }
         public override void update()
@@ -332,7 +334,7 @@ namespace game
     {
         public int id;
         bool lastState = false;
-        public ProgComp(int i) : base()
+        public ProgComp(int i, ComponentList list) : base(list)
         {
             id = i;
         }
@@ -359,10 +361,10 @@ namespace game
         public override void update()
         {  
             if (clockIn == null) return;
-            if (!ComponentList.components.ContainsKey(id))
+            if (!list.components.ContainsKey(id))
                 return;
             if (clockIn.isActive() && !lastState) {
-                List<bool> output = ((CCode)ComponentList.components[id]).run(getInputs());
+                List<bool> output = ((CCode)list.components[id]).run(getInputs());
                 setOutput(output);
             }
             lastState = clockIn.isActive();
@@ -370,8 +372,8 @@ namespace game
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
-            var a = ComponentList.components;
-            string s = ComponentList.components[id].name[0].ToString();
+            var a = list.components;
+            string s = list.components[id].name[0].ToString();
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
@@ -384,7 +386,7 @@ namespace game
     class CondComp : Component
     {
         public int id;
-        public CondComp(int i) : base()
+        public CondComp(int i, ComponentList list) : base(list)
         {
             id = i;
         }
@@ -413,16 +415,16 @@ namespace game
                 }
             }
             if (!change) return;
-            if (!ComponentList.components.ContainsKey(id))
+            if (!list.components.ContainsKey(id))
                 return;
-            List<bool> output = ((CCode)ComponentList.components[id]).run(getInputs());
+            List<bool> output = ((CCode)list.components[id]).run(getInputs());
             setOutput(output);
         }
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
-            var a = ComponentList.components;
-            string s = ComponentList.components[id].name[0].ToString();
+            var a = list.components;
+            string s = list.components[id].name[0].ToString();
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
@@ -441,7 +443,7 @@ namespace game
 
         private Grid grid;
 
-        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk) : base()
+        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk, ComponentList list) : base(list)
         {   
             grid = g;
             subInp = inp;
