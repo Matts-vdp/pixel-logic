@@ -25,16 +25,12 @@ namespace game
         public List<string> items = new List<string>{ "Wire", "And", "Or", "Exor", "Not", "Out", "In", "ClkIn", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
         public Dictionary<int, CustomComponent> components = new Dictionary<int, CustomComponent>();
         
-        public static ComponentList fromDict(Dictionary<int,string> list){
-            ComponentList cList = new ComponentList();
-            foreach(int key in list.Keys) {
-                cList.add(list[key]);
-            }
-            return cList;
-        }
-        public void add(string filename)
+        public int add(string filename)
         {
-            items.Add(Path.GetFileNameWithoutExtension(filename));
+            string name = Path.GetFileNameWithoutExtension(filename);
+            int index = items.IndexOf(name);
+            if (index != -1) return index+1;
+            items.Add(name);
             string ext = Path.GetExtension(filename);
             CustomComponent c;
             switch (ext) {
@@ -46,7 +42,9 @@ namespace game
                     break;
             }
             components.Add(items.Count, c);
+            return items.Count;
         }
+
         public Dictionary<int,string> toSave(Dictionary<int,bool> blocks){
             Dictionary<int,string> names = new Dictionary<int, string>();
             foreach(int key in components.Keys) 

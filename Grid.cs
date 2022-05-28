@@ -78,10 +78,11 @@ namespace game
             name = Path.GetFileName(text);
             string js = File.ReadAllText("saves/"+name);
             SaveData save = SaveData.fromJson(js);
-            grid = fromArray(save.width, save.height, save.blocks);
-            list = ComponentList.fromDict(save.components);
             width = save.width;
             height = save.height;
+            grid = fromArray(save.width, save.height, save.blocks);
+            list = RebaseComponents(save.components);
+
 
             labels = new int[height, width];
             components = new Dictionary<int, Component>();
@@ -391,25 +392,26 @@ namespace game
             buildObjects();
             return newGrid;
         }
+        public ComponentList RebaseComponents(Dictionary<int,string> comp){
+            ComponentList cList = new ComponentList();
+            foreach (int key in comp.Keys){
+                int newIndex = cList.add(comp[key]);
+                grid = changeLabel(key, newIndex, grid);
+            }
+            return cList;
+        }
+        public void mergeComponents(Grid other) {
+            foreach (int key in other.list.components.Keys)
+            {
+                int index = list.add(other.list.components[key].name);
+                other.grid = other.changeLabel(key, index, other.grid);
+            }
+        }
 
         public void merge(Grid other, Vector2 pos, int gridsize, int xoff, int yoff)
         {
             // add custom components
-            foreach (int key in other.list.components.Keys)
-            {
-                string name = Path.GetFileNameWithoutExtension(other.list.components[key].name);
-                int index = list.items.IndexOf(name);
-                if (index != -1)
-                {
-                    other.grid = other.changeLabel(key, index+1, other.grid);
-                }
-                else
-                {
-                    list.add(other.list.components[key].name);
-                    int i = list.items.Count;
-                    other.grid = other.changeLabel(key, i, other.grid);
-                }
-            }
+            mergeComponents(other);
             for (int y = 0; y < other.height; y++)
             {
                 for (int x = 0; x < other.width; x++)
