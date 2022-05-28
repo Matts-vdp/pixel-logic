@@ -43,15 +43,27 @@ namespace game
         // processes all keyboard input
         public void InputKeyboard()
         {
+            //zoom
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_ADD))
             {
+                xoff = (int)(xoff / (double)GRIDSIZE) * (GRIDSIZE + 1);
+                yoff = (int)(yoff / (double)GRIDSIZE) * (GRIDSIZE + 1);
                 GRIDSIZE += 1;
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_SUBTRACT))
             {
-                GRIDSIZE -= 1;
-                if (GRIDSIZE <= 0) GRIDSIZE = 1;
+                if (GRIDSIZE <= 0)
+                {
+                    GRIDSIZE = 1;
+                }
+                else
+                {
+                    xoff = (int)(xoff / (double)GRIDSIZE) * (GRIDSIZE - 1);
+                    yoff = (int)(yoff / (double)GRIDSIZE) * (GRIDSIZE - 1);
+                    GRIDSIZE -= 1;
+                }
             }
+            // camera movement
             if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN))
             {
                 yoff += 4;
@@ -70,6 +82,7 @@ namespace game
                 xoff -= 4;
                 if (xoff < 0) { xoff = 0; }
             }
+            // save and load
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
                 grid.save("save.json");
@@ -78,6 +91,7 @@ namespace game
             {
                 grid.load(GRIDSIZE);
             }
+            // copy paste
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
@@ -130,6 +144,7 @@ namespace game
                     return;
                 }
             }
+            // create subcomponent
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_O))
             {
                 grid.list.add(filename);
