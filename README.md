@@ -1,7 +1,7 @@
 # Pixel logic
 A digital logic simulator made in C#.
 
-You can place components by drawing pixels. These pixels are then converted to components containing connected pixels using a connected components algorithm. after this the components are used to simulate the circuit.
+You can place components by drawing pixels. These pixels are then converted to components containing connected pixels using a connected components algorithm. After this the components are used to simulate the circuit.
 
 
 ## Preview
@@ -88,7 +88,7 @@ There are 2 types defined by there file extension.
 - **.cpl**: Runs every time a input changes.
 - **.ppl**: Runs every time the clock input changes from false to true.
 
-Your script has acces to a *List\<bool>* object containing the state of the inputs in variable i. You can set the ouputs by returning a *List\<bool>* object. There are some helper functions and extra variables you have acces to. For more information please look at the **Input** class in *CodeCompilation.cs*.
+Your script has access to a *List\<bool>* object containing the state of the inputs in variable i. You can set the outputs by returning a *List\<bool>* object. There are some helper functions and extra variables you have access to. For more information please look at the **Input** class in *CodeCompilation.cs*.
 
 
 ## Example
@@ -121,13 +121,15 @@ Now that we created the 1 bit counter expanding it is very easy.
 2. Release **C**.
 3. Hold **V** and position the new counter where you want. 
 4. Release **V** to paste the counter.
-5. Connect the **Next** connection to the **Enable** of the next 1 bit counter. These names can be seen in the shematic shown at the start of the example.
+5. Connect the **Next** connection to the **Enable** of the next 1 bit counter. These names can be seen in the schematic shown at the start of the example.
 6. Repeat 1-5 one more time.
 7. Connect the **ClkIn** of all the counters to the **Out** of the **Clock**.
 8. Press the **1** button. You should see the 3 bit counter working correctly.
 
 You have now completed step 2.
 
-If you are not sure about your circuit or you just want to see another example here is my version. I have added a display to make reading the count easier.
+If you are not sure about your circuit or you just want to see another example here is my version. 
+
+I have added a display to make reading the count easier.
 
 <img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="500">
