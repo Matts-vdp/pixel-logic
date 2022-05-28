@@ -5,19 +5,21 @@ using System.Numerics;
 
 namespace game
 {
+    // contains the main game loop and all data of the game
     class Game
     {
-        static int GRIDSIZE = 32;
-        static int selected = 1;
-        static int xoff = 0;
-        static int yoff = 0;
-        static int xsel = -1;
-        static int ysel = -1;
-        Grid? cloneGrid;
-        Grid grid = new Grid(200, 200);
-        string filename = "";
+        static int GRIDSIZE = 32;   // size of grid cells
+        static int selected = 1;    // selected item of the list on the left
+        static int xoff = 0;        // camera offset x
+        static int yoff = 0;        // camera offset y
+        static int xsel = -1;       // selection start x
+        static int ysel = -1;       // selection start y
+        Grid? cloneGrid;            // stores grid after copy
+        Grid grid = new Grid(200, 200); // main grid
+        string filename = "";       // remembers last dragged filename
 
-        public void Input()
+        // processes all mouse input
+        public void InputMouse()
         {
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
             {
@@ -36,7 +38,11 @@ namespace game
                 selected = max;
             }
             if (selected < 1) { selected = 1; }
+        }
 
+        // processes all keyboard input
+        public void InputKeyboard()
+        {
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_ADD))
             {
                 GRIDSIZE += 1;
@@ -70,7 +76,7 @@ namespace game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
-                grid.load();
+                grid.load(GRIDSIZE);
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
@@ -83,8 +89,8 @@ namespace game
                 Vector2 mpos = Raylib.GetMousePosition();
                 int x = (int)(mpos.X + xoff) / GRIDSIZE;
                 int y = (int)(mpos.Y + yoff) / GRIDSIZE;
-                int xstart = Math.Min(xsel,x); 
-                int ystart = Math.Min(ysel,y); 
+                int xstart = Math.Min(xsel, x);
+                int ystart = Math.Min(ysel, y);
                 Raylib.DrawRectangle(
                     xstart * GRIDSIZE - xoff,
                     ystart * GRIDSIZE - yoff,
@@ -120,7 +126,7 @@ namespace game
                 if (cloneGrid != null)
                 {
                     Vector2 pos = Raylib.GetMousePosition();
-                    grid.merge(cloneGrid, pos, GRIDSIZE, xoff, yoff);
+                    grid.paste(cloneGrid, pos, GRIDSIZE, xoff, yoff);
                     return;
                 }
             }
@@ -128,9 +134,17 @@ namespace game
             {
                 grid.list.add(filename);
             }
-            grid.Input();
         }
 
+        // handle input
+        public void Input()
+        {
+            InputMouse();
+            InputKeyboard();
+            grid.Input(); // handle extra input of grid
+        }
+
+        // draws game UI
         public void drawUI()
         {
             for (int i = 0; i < grid.list.items.Count; i++)
@@ -141,6 +155,7 @@ namespace game
             Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
         }
 
+        // display the gridcell selected by the mouse
         public void drawMouse()
         {
             Vector2 mpos = Raylib.GetMousePosition();
@@ -149,6 +164,7 @@ namespace game
             Raylib.DrawRectangle(x * GRIDSIZE - xoff, y * GRIDSIZE - yoff, GRIDSIZE, GRIDSIZE, new Color(255, 255, 255, 25));
         }
 
+        // display the selection rectangle when copying
         public void drawCloneGrid()
         {
             if (cloneGrid == null) return;
@@ -158,31 +174,38 @@ namespace game
             cloneGrid?.draw(GRIDSIZE, (-x * GRIDSIZE) + xoff, (-y * GRIDSIZE) + yoff);
         }
 
-        
-        public void update(){
+        // handle game update
+        public void update()
+        {
             grid.update();
         }
-        public void draw(){
+        // draw gameobjects
+        public void draw()
+        {
             grid.draw(GRIDSIZE, xoff, yoff);
         }
-            
 
+        // handle files being dragged in
         public void filecheck()
         {
             if (Raylib.IsFileDropped())
             {
                 string[] files = Raylib.GetDroppedFiles();
-                if (Raylib.IsFileExtension(files[0], ".json")) {
+                if (Raylib.IsFileExtension(files[0], ".json"))
+                {
                     cloneGrid = new Grid(files[0]);
                     filename = files[0];
                 }
-                else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl")) {
+                else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl"))
+                {
                     string name = Path.GetFileName(files[0]);
                     grid.list.add(name);
                 }
                 Raylib.ClearDroppedFiles();
             }
         }
+
+        // main game loop
         public static void Main()
         {
             Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
@@ -196,12 +219,14 @@ namespace game
                 // init screen
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.BLACK);
-                // check mouse and keyboard input
+
+                // check input
                 gm.Input();
-                
                 gm.filecheck();
+
                 // update objects
                 gm.update();
+
                 // draw
                 gm.draw();
                 gm.drawMouse();

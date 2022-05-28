@@ -1,14 +1,16 @@
 using Raylib_cs;
 namespace game
 {
+    // base component holds all shared logic
     abstract class Component
     {
-        public List<Pos> blocks;
-        public List<Connection> inputs;
-        public List<Connection> outputs;
-        public Connection? clockIn;
-        public bool active = false;
-        protected ComponentList list;
+        public List<Pos> blocks;            // locations of blocks in grid
+        public List<Connection> inputs;     // all input connections
+        public List<Connection> outputs;    // output connections
+        public Connection? clockIn;         // clock connection if present
+        public bool active = false;         // state of component
+        protected ComponentList list;       // stores the component index 
+                                            // used to retreive custom component data
 
         public Component(ComponentList list)
         {
@@ -17,20 +19,24 @@ namespace game
             outputs = new List<Connection>();
             this.list = list;
         }
+        // add new block to the component
         public void add(Pos p)
         {
             blocks.Add(p);
         }
+        // add a input to the component
         public void addInput(Connection c)
         {
             inputs.Add(c);
         }
+        // add a input to the component
         public void addOutput(Connection c)
         {
             outputs.Add(c);
         }
         // add clock to inputs subClasses can override this to use clock
-        public virtual void addClock(Connection c) {
+        public virtual void addClock(Connection c)
+        {
             inputs.Add(c);
         }
 
@@ -38,9 +44,11 @@ namespace game
         public abstract void draw(int gridsize, int xoff, int yoff);
     }
 
+    // component that is used to pass signals between other components
     class WireComp : Component
     {
         public WireComp(ComponentList list) : base(list) { }
+        // pass input to output, true if inputs true and false
         public override void update()
         {
             bool value = false;
@@ -69,9 +77,11 @@ namespace game
         }
     }
 
+    // represents and gate
     class AndComp : Component
     {
         public AndComp(ComponentList list) : base(list) { }
+        // output = input0 && input1 && ...
         public override void update()
         {
             bool value = false;
@@ -100,9 +110,11 @@ namespace game
         }
     }
 
+    // represents not gate
     class NotComp : Component
     {
         public NotComp(ComponentList list) : base(list) { }
+        // output = ! input
         public override void update()
         {
             bool value = false;
@@ -131,9 +143,11 @@ namespace game
         }
     }
 
+    // represents or gate
     class OrComp : Component
     {
         public OrComp(ComponentList list) : base(list) { }
+        // output = input0 || input1 ...
         public override void update()
         {
             bool value = false;
@@ -162,6 +176,7 @@ namespace game
         }
     }
 
+    // represents xor gate
     class XorComp : Component
     {
         public XorComp(ComponentList list) : base(list) { }
@@ -187,12 +202,14 @@ namespace game
         }
     }
 
+    // represents battery (always 1)
     class BatComp : Component
     {
         public BatComp(ComponentList list) : base(list)
         {
             active = true;
         }
+        // set all outputs to 1
         public override void update()
         {
             foreach (Connection o in outputs)
@@ -210,14 +227,17 @@ namespace game
         }
     }
 
+    // represents clock
     class Clock : Component
     {
         double time;
+        const float DELAY = 0.5f;
         public Clock(ComponentList list) : base(list)
         {
             active = false;
             time = Raylib.GetTime();
         }
+        // switches every "DELAY' seconds between true and false
         public override void update()
         {
             double newTime = Raylib.GetTime();
@@ -241,20 +261,23 @@ namespace game
         }
     }
 
+    // represents flip flop
     class FlipFlop : Component
     {
         bool lastState = false;
         public FlipFlop(ComponentList list) : base(list)
         {
         }
+        // only update state on change from false to true of "ClockIn"
         public override void update()
         {
             if (inputs.Count == 0) return;
             if (clockIn == null) return;
 
-            if (clockIn.isActive() && !lastState) {
+            if (clockIn.isActive() && !lastState)
+            {
                 active = inputs[0].isActive();
-            
+
                 foreach (Connection o in outputs)
                     o.setActive(active);
             }
@@ -268,11 +291,13 @@ namespace game
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
             }
         }
-        public override void addClock(Connection c){
+        public override void addClock(Connection c)
+        {
             clockIn = c;
         }
     }
 
+    // can be changed by keyboard during simulation
     class Button : Component
     {
         public Button(ComponentList list) : base(list)
@@ -282,6 +307,7 @@ namespace game
         {
         }
 
+        // used by grid to toggle button on key press
         public void toggle()
         {
             active = !active;
@@ -300,16 +326,18 @@ namespace game
         }
     }
 
+    // display input as number
     class Seg7 : Component
     {
         private int value;
         public Seg7(ComponentList list) : base(list)
         {
         }
+        // read input and save as int
         public override void update()
         {
             int num = 0;
-            for (int i=0; i<inputs.Count; i++) 
+            for (int i = 0; i < inputs.Count; i++)
             {
                 if (inputs[i].isActive())
                 {
@@ -324,158 +352,7 @@ namespace game
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(value.ToString(),pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
-        }
-    }
-
-    // component with custom code that only gets updated on positive clk 
-    class ProgComp : Component
-    {
-        public int id;
-        bool lastState = false;
-        public ProgComp(int i, ComponentList list) : base(list)
-        {
-            id = i;
-        }
-
-        public override void addClock(Connection c)
-        {
-            clockIn = c;
-        }
-        public List<bool> getInputs(){
-            List<bool> inp = new List<bool>();
-            foreach (Connection c in inputs) {
-                inp.Add(c.isActive());
-            }
-            return inp;
-        }
-        public void setOutput(List<bool> list) {
-            for (int i=0; i<outputs.Count; i++) {
-                bool status = false;
-                if (i < list.Count)
-                    status = list[i];
-                outputs[i].setActive(status);
-            }
-        }
-        public override void update()
-        {  
-            if (clockIn == null) return;
-            if (!list.components.ContainsKey(id))
-                return;
-            if (clockIn.isActive() && !lastState) {
-                List<bool> output = ((CCode)list.components[id]).run(getInputs());
-                setOutput(output);
-            }
-            lastState = clockIn.isActive();
-        }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = new Color(100, 100, 100, 255);
-            var a = list.components;
-            string s = list.components[id].name[0].ToString();
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(s ,pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
-        }
-    }
-    
-    // component with custom code that works 'instant'
-    class CondComp : Component
-    {
-        public int id;
-        public CondComp(int i, ComponentList list) : base(list)
-        {
-            id = i;
-        }
-        public List<bool> getInputs(){
-            List<bool> inp = new List<bool>();
-            foreach (Connection c in inputs) {
-                inp.Add(c.isActive());
-            }
-            return inp;
-        }
-        public void setOutput(List<bool> list) {
-            for (int i=0; i<outputs.Count; i++) {
-                bool status = false;
-                if (i < list.Count)
-                    status = list[i];
-                outputs[i].setActive(status);
-            }
-        }
-        public override void update()
-        {  
-            bool change = false;
-            foreach (Connection c in inputs) {
-                if (c.isChanged()) {
-                    change = true;
-                    break;
-                }
-            }
-            if (!change) return;
-            if (!list.components.ContainsKey(id))
-                return;
-            List<bool> output = ((CCode)list.components[id]).run(getInputs());
-            setOutput(output);
-        }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = new Color(100, 100, 100, 255);
-            var a = list.components;
-            string s = list.components[id].name[0].ToString();
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(s ,pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
-        }
-    }
-
-    // component that contains a circuit of components
-    class SubComponent : Component
-    {
-        private List<Connection> subInp;
-
-        private List<Connection> subOutp;
-        private Connection? clock;
-
-        private Grid grid;
-
-        public SubComponent(
-            Grid g, 
-            List<Connection> inp, 
-            List<Connection> outp, 
-            Connection? clk
-            ) : base(g.list)
-        {   
-            grid = g;
-            subInp = inp;
-            subOutp = outp;
-            clock = clk;
-        }
-        public override void addClock(Connection c)
-        {
-            clockIn = c;
-        }
-        public override void update()
-        {
-            for (int i=0; i<inputs.Count && i<subInp.Count; i++) 
-                subInp[i].setActive(inputs[i].isActive());
-            if (clockIn != null)
-                clock?.setActive(clockIn.isActive());
-            grid.update();
-            for (int i=0; i<outputs.Count && i<subOutp.Count; i++) 
-                outputs[i].setActive(subOutp[i].isActive());
-        }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = new Color(78, 255, 50, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(grid.name[0].ToString(), pos.x * gridsize - xoff , pos.y * gridsize - yoff, gridsize, Color.WHITE);
+                Raylib.DrawText(value.ToString(), pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
             }
         }
     }

@@ -2,104 +2,147 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
 
-namespace game {
-    public class Input {
+namespace game
+{
+    // used by the custom script to interact with the logic
+    // the attributes and functions of this class can be used in the script
+    public class Input
+    {
 
-        public List<bool> i;
-        public List<bool> o;
-        public long PC;
-        public Dictionary<string,object> MEM;
-        public Input(List<bool> l, long num, Dictionary<string, object> mem) {
+        public List<bool> i;    //input connections
+        public List<bool> o;    // output connections
+        public long PC;         // program counter, has to be incremented manually
+        public Dictionary<string, object> MEM; // can be used to store state between calls
+        public Input(List<bool> l, long num, Dictionary<string, object> mem)
+        {
             i = l;
             o = new List<bool>();
             PC = num;
             MEM = mem;
         }
-        public bool get(int i){
-            if (i < this.i.Count){
+        // returns the state of the input at 'i' 
+        // returns false when out of range
+        public bool get(int i)
+        {
+            if (i < this.i.Count)
+            {
                 return this.i[i];
             }
             return false;
         }
 
-        public void set(int i, bool val){
-            while (i >= o.Count){
+        // sets the state of the output at 'o'
+        // adds more outputs if necessary
+        public void set(int i, bool val)
+        {
+            while (i >= o.Count)
+            {
                 o.Add(false);
             }
             o[i] = val;
         }
-        public uint toInt(List<bool> l){
+
+        // converts a List of bools to a uint
+        public uint toInt(List<bool> l)
+        {
             uint num = 0;
-            for(int j=l.Count-1; j>=0; j--){
-                num = num<<1;
-                num += l[j]? (uint)1: 0;
+            for (int j = l.Count - 1; j >= 0; j--)
+            {
+                num = num << 1;
+                num += l[j] ? (uint)1 : 0;
             }
             return num;
         }
 
-        public List<bool> fromInt(uint num) {
-            int j=0;
+        // converts a int to a list of bools
+        public List<bool> fromInt(uint num)
+        {
+            int j = 0;
             List<bool> l = new List<bool>();
-            while (num != 0) {
-                bool b = (num&(uint)1)==(uint)1;
+            while (num != 0)
+            {
+                bool b = (num & (uint)1) == (uint)1;
                 l.Add(b);
-                num = num>>1;
+                num = num >> 1;
                 j++;
             }
             return l;
         }
-        public bool[] toArray(List<bool> list) {
+
+        // converts a list to a array
+        // usefull because List is not available in the script
+        public bool[] toArray(List<bool> list)
+        {
             return list.ToArray<bool>();
         }
 
-        public List<bool> fromArray(bool[] arr){
+        // converts array back to list to use as output
+        public List<bool> fromArray(bool[] arr)
+        {
             return arr.ToList<bool>();
         }
-        public void save(string name, object value){
+
+        // saves a object to memory
+        public void save(string name, object value)
+        {
             if (MEM.ContainsKey(name))
                 MEM[name] = value;
             else
                 MEM.Add(name, value);
         }
-        public object load(string name) {
+
+        // loads a object from memory
+        public object load(string name)
+        {
             return MEM[name];
         }
     }
 
-    class CCode : CustomComponent{
+    // used to store the script and to instantiate components
+    class CCode : CustomComponentCreator
+    {
         public Script<List<bool>>? script;
-        public string ext;
-        private long PC = 0;
+        public string ext;      // file extention
+        private long PC = 0;    // program counter
 
-        private Dictionary<string,object> mem;
+        private Dictionary<string, object> memory;
         public ScriptState<List<bool>>? state;
-        public CCode(string filename){
-            script = loadCs("customComponents/"+filename);
+        public CCode(string filename)
+        {
+            script = loadCs("customComponents/" + filename);
             name = filename;
             ext = Path.GetExtension(filename);
-            mem = new Dictionary<string, object>();
+            memory = new Dictionary<string, object>();
         }
-        public Script<List<bool>>? loadCs(string filename) {
+        // loads a script from file storage
+        public Script<List<bool>>? loadCs(string filename)
+        {
             string txt = File.ReadAllText(filename);
             var opt = ScriptOptions.Default;
-            opt.AddReferences(typeof(List<>).Assembly, typeof(Input).Assembly);
+            opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
             opt.AddImports("System");
             var script = CSharpScript.Create<List<bool>>(txt, opt, typeof(Input));
-            script.Compile();
-            
+            script.Compile(); // compile on load for faster further use
             return script;
         }
-        public List<bool> run(List<bool> inputs) {
-            if (script == null) {
+
+        // runs the script with the given inputs and returns the output of the script
+        public List<bool> run(List<bool> inputs)
+        {
+            if (script == null)
+            {
                 return new List<bool>();
             }
-            Input param = new Input(inputs, PC, mem);
+            Input param = new Input(inputs, PC, memory);
             state = script.RunAsync(param).Result;
             PC = param.PC;
-            mem = param.MEM;
+            memory = param.MEM;
             return state.ReturnValue;
         }
-        public override Component toComponent(ComponentList list, int type){
+
+        // creates a component with this script
+        public override Component toComponent(ComponentList list, int type)
+        {
             if (ext == ".cpl")
                 return new CondComp(type, list);
             return new ProgComp(type, list);

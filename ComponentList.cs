@@ -1,6 +1,7 @@
 using Raylib_cs;
 namespace game
 {
+    // contains the mapping of basic types to int
     enum types
     {
         NONE,
@@ -20,20 +21,22 @@ namespace game
         SEG,
     }
 
+    // used to create components and store Custom Components
     class ComponentList
     {
-        public List<string> items = new List<string>{ "Wire", "And", "Or", "Exor", "Not", "Out", "In", "ClkIn", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
-        public Dictionary<int, CustomComponent> components = new Dictionary<int, CustomComponent>();
-        
+        public List<string> items = new List<string> { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "ClkIn", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
+        public Dictionary<int, CustomComponentCreator> components = new Dictionary<int, CustomComponentCreator>();
+
         public int add(string filename)
         {
             string name = Path.GetFileNameWithoutExtension(filename);
             int index = items.IndexOf(name);
-            if (index != -1) return index+1;
+            if (index != -1) return index + 1;
             items.Add(name);
             string ext = Path.GetExtension(filename);
-            CustomComponent c;
-            switch (ext) {
+            CustomComponentCreator c;
+            switch (ext)
+            {
                 case ".json":
                     c = new Grid(filename);
                     break;
@@ -45,9 +48,10 @@ namespace game
             return items.Count;
         }
 
-        public Dictionary<int,string> toSave(Dictionary<int,bool> blocks){
-            Dictionary<int,string> names = new Dictionary<int, string>();
-            foreach(int key in components.Keys) 
+        public Dictionary<int, string> toSave(Dictionary<int, bool> blocks)
+        {
+            Dictionary<int, string> names = new Dictionary<int, string>();
+            foreach (int key in components.Keys)
             {
                 if (blocks.ContainsKey(key))
                     names[key] = components[key].name;
@@ -56,7 +60,7 @@ namespace game
         }
         public Component NewComponent(int type)
         {
-            switch ((types) type)
+            switch ((types)type)
             {
                 case (types.WIRE):
                     return new WireComp(this);
@@ -84,7 +88,7 @@ namespace game
         }
         public Connection NewConnection(int type, Pos pos)
         {
-            switch ((types) type)
+            switch ((types)type)
             {
                 case (types.OUT):
                     return new OutConnection(pos);
@@ -98,7 +102,8 @@ namespace game
         }
     }
 
-    abstract class CustomComponent
+    // represents a class that can be used as a Custom Component
+    abstract class CustomComponentCreator
     {
         public abstract Component toComponent(ComponentList list, int type);
         public string name = "";
