@@ -94,7 +94,7 @@ Your script has acces to a *List\<bool>* object containing the state of the inpu
 ## Example
 For this example we are going to build a basic 3 bit counter. Here is a schematic of a 1 bit module. If you're not sure there is a image of a possible solution at the end.
 
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count-shem.png" width="200">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count-shem.png" width="300">
 
 Let's begin.
 ### Step 1: Build a 1 bit counter
@@ -111,7 +111,7 @@ You have now completed step 1.
 
 If you are not sure about your circuit or you just want to see another example here is my version.
 
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count1.png" width="200">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count1.png" width="300">
 
 
 ### Step 2: Expand to 3 bit
@@ -130,4 +130,4 @@ You have now completed step 2.
 
 If you are not sure about your circuit or you just want to see another example here is my version.
 
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.png" width="200">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.png" width="300">
