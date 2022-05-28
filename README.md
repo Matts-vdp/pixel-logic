@@ -128,6 +128,6 @@ Now that we created the 1 bit counter expanding it is very easy.
 
 You have now completed step 2.
 
-If you are not sure about your circuit or you just want to see another example here is my version.
+If you are not sure about your circuit or you just want to see another example here is my version. I have added a display to make reading the count easier.
 
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.png" width="300">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="300">
