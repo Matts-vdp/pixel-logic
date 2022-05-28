@@ -1,7 +1,7 @@
 # Pixel logic
 A digital logic simulator made in C#.
 
-You can place components by drawing pixels. These pixels are then converted to components containing connected pixels using a connected components algorithm. After this the components are used to simulate the circuit.
+You can place components by drawing pixels. These pixels are then converted to components containing connected pixels using a connected components algorithm. After this the components are used to simulate the circuit. Every component has an input to output delay. This adds an extra layer of realism and complexity to the designs you can create. 
 
 
 ## Preview
