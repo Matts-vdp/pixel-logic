@@ -145,7 +145,7 @@ namespace game
                 }
             }
             // create subcomponent
-            if (Raylib.IsKeyReleased(KeyboardKey.KEY_O))
+            if (Raylib.IsKeyReleased(KeyboardKey.KEY_I))
             {
                 grid.list.add(filename);
             }
