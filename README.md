@@ -4,8 +4,8 @@ A digital logic simulator made in C#.
 You can place components by drawing pixels. These pixels are then converted to components containing connected pixels using a connected components algorithm. after this the components are used to simulate the circuit.
 
 
-
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/preview.png" width="300">
+## Preview
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.png" width="300">
 
 ## Controls
 | Keys          | Action            |
