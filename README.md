@@ -5,7 +5,7 @@ You can place components by drawing pixels. These pixels are then converted to c
 
 
 ## Preview
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.png" width="300">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="300">
 
 ## Controls
 | Keys          | Action            |
