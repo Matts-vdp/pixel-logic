@@ -5,7 +5,7 @@ You can place components by drawing pixels. These pixels are then converted to c
 
 
 ## Preview
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="300">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="600">
 
 ## Controls
 | Keys          | Action            |
@@ -148,9 +148,9 @@ Our circuit works well but there are a lot of parts on the screen. To minimize t
 9. Rename *clipboard.json* to anything you want.
 10. Drag the file into the program window.
 11. Make sure the window has focus and press **I**. You should see your filename appear in the component list.
-12. place 3 of the new subcomponents. 
+12. Place 3 of the new subcomponents. 
 13. Connect them to each other.
-14. place a button and clock and connect them to the counters.
+14. Place a button and clock and connect them to the counters.
 
 
 You now know how to use subcomponents.
