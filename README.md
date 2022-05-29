@@ -166,7 +166,7 @@ Completed circuit
 
 <img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3s.gif" width="500">
 
-### Step 3: Use Programmable components
+### Extra: Use Programmable components
 Not a fan of logic gates? You can also build the counter with a programmable component containing your own c# script.
 Let's take a look at how this works.
 
