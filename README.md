@@ -175,7 +175,7 @@ Let's take a look at how this works.
 3. Write the custom code. Here you can see my implementation.
 ```csharp
 // first check if the enable input is true
-// if it is then keep increment the current count
+// if it is then increment the current count
 // PC is a variable that is passed to the script 
 // that can be used to store a int value between calls
 if (get(0)) // get returns the state of the input
