@@ -160,7 +160,7 @@ If you are not sure about your circuit or you just want to see another example h
 
 Subcomponent
 
-<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count1s.gif" width="300">
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count1s.png" width="300">
 
 Completed circuit
 
