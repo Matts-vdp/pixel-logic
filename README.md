@@ -16,8 +16,8 @@ You can place components by drawing pixels. These pixels are then converted to c
 | arrows        | Move Camera       |
 | +,-           | Zoom              |
 | 0-9           | toggle buttons    |
-| S             | save entire grid to saves/saves.json   |
-| L             | load entire grid from saves/saves.json |
+| S             | save entire grid to saves/circuit/saves.json   |
+| L             | load entire grid from saves/circuit/saves.json |
 | hold C + drag | copy selected     |
 | hold X + drag | cut selected      |
 | hold V        | show clipboard    |
@@ -50,7 +50,7 @@ A typical setup is wire -> in -> gate -> out -> wire.
 ### **Save and load**
 The easiest way to store your creation is to press the **S** key and load it next time with **L**. However You can also save and load parts of your creation. This can e done with the copy and paste functionality.
 
-The last thing you copied is stored in *saves/clipboard.json*. You can rename the file to make sure it isn't overwritten next time you copy something. 
+The last thing you copied is stored in *saves/circuit/clipboard.json*. You can rename the file to make sure it isn't overwritten next time you copy something. 
 
 To load a part drag the file into the program window.
 The part has to be located in the *saves* folder. 
@@ -170,7 +170,7 @@ Completed circuit
 Not a fan of logic gates? You can also build the counter with a programmable component containing your own C# script.
 Let's take a look at how this works.
 
-1. Create a new file in the *customCode* folder called *count.ppl*.
+1. Create a new file in the *saves/customCode* folder called *count.ppl*.
 2. Open the file in your favorite text editor.
 3. Write the custom code. Here you can see my implementation.
 ```csharp

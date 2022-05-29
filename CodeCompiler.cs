@@ -112,7 +112,7 @@ namespace game
         
         public CCode(string filename)
         {
-            script = loadCs("customCode/" + filename);
+            script = loadCs("saves/customCode/" + filename);
             name = filename;
             ext = Path.GetExtension(filename);
         }

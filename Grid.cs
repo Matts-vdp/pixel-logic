@@ -88,7 +88,7 @@ namespace game
         {
             // load json
             name = Path.GetFileName(text);
-            string js = File.ReadAllText("saves/" + name);
+            string js = File.ReadAllText("saves/circuit/" + name);
             SaveData save = SaveData.fromJson(js);
             width = save.width;
             height = save.height;
@@ -101,17 +101,16 @@ namespace game
             buttons = new List<Button>();
             buildObjects();
         }
-        // saves grid to saves/filename
+        // saves grid to saves/circuit/filename
         public void save(string filename)
         {
-            File.WriteAllTextAsync("saves/" + filename, toSave().toJson());
+            File.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
         }
-        // loads grid from saves/save.json
+        // loads grid from saves/circuit/save.json
         public void load(int gridsize)
         {
-            string txt = File.ReadAllText("saves/save.json");
             clear();
-            paste(new Grid(txt), gridsize);
+            paste(new Grid("saves/circuit/save.json"), gridsize);
         }
         // converts grid into a list of BlockPos because json cant serialize int[,] 
         public List<BlockPos> toArray()

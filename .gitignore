@@ -11,7 +11,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-saves/
-customCode/
+saves/customCode/
+saves/circuit/
 #vscode
 .vscode/
