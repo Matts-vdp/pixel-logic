@@ -42,7 +42,7 @@ Just like wires gates of the same type connect when they touch. This way you can
 #### **Connections** 
 Can be used to connect components to each other. There are 4 types.
 - **In**: Passes the signal from a connected wire *into* a connected gate.
-- **ClkIn**: passes a signal from a connected wire to a connected gate. This acts the same as a **In** except for gates like a flip flop where it acts as the input for the clock signal.
+- **ClkIn**: passes a signal from a connected wire to a connected gate. This acts the same as an **In** except for gates like a flip flop where it acts as the input for the clock signal.
 - **Out**: Passes the signal from a connected gate to a connected wire .
 - **Cross**: Can be used to cross wires without connecting them.
 A typical setup is wire -> in -> gate -> out -> wire.
@@ -72,10 +72,10 @@ You can place and use it as normal.
 To create a circuit that can be used as a sub component you have to build a circuit and place the needed in and outputs. 
 
 Inputs are created by placing an **Out** connection that is only connected to a wire.
-You will see a **I** on the **Out**.
+You will see an **I** on the **Out**.
 
-Outputs are created by placing a **In** connection that is only connected to a gate.
-You will see a **O** on the **In**.
+Outputs are created by placing an **In** connection that is only connected to a gate.
+You will see an **O** on the **In**.
 
 Clock inputs are created by placing a **ClkIn** connection that is only connected to a gate.
 You will see a **C** on the **ClkIn**.
@@ -98,7 +98,7 @@ For this example we are going to build a basic 3 bit counter. Here is a schemati
 
 Let's begin.
 ### Step 1: Build a 1 bit counter
-1. Place a **flip flop** and add a **In**, **Out** and **ClkIn** connection next to it.
+1. Place a **flip flop** and add an **In**, **Out** and **ClkIn** connection next to it.
 2. Place a **Exor** and add 2 **In** and 1 **Out** connection next to it. 
 3. Connect the **Out** of the **Exor** to the **In** of the **Flip flop** and the **Out** of the **Flip flop** to the **In** of the **Exor** using **wire**.
 4. Place a **And** and add 2 **In** and 1 **Out** connection next to it.
@@ -133,3 +133,64 @@ If you are not sure about your circuit or you just want to see another example h
 I have added a display to make reading the count easier.
 
 <img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3.gif" width="500">
+
+### Extra: Use subcomponents
+Our circuit works well but there are a lot of parts on the screen. To minimize this amount we could use a subcomponent to store our 1 bit counter from step 1.
+
+1. Delete the 2 extra 1 bit counters. You can use the cut function to remove large parts at once.
+2. Remove the **button** and **Clock** components.
+3. Add an **out** connection to the Enable **wire**.
+4. Add an **In** connection to the Next and count **wire**.
+5. Remove all **wires** from the **ClkIn**.
+6. Make sure all newly placed connections have an **O**, **I** or **C** drawn on them. You can see my version of this at the end of this step.
+7. Copy the 1 bit counter with its connections.
+8. Go to the *saves* folder.
+9. Rename *clipboard.json* to anything you want.
+10. Drag the file into the program window.
+11. Make sure the window has focus and press **I**. You should see your filename appear in the component list.
+12. place 3 of the new subcomponents. 
+13. Connect them to each other.
+14. place a button and clock and connect them to the counters.
+
+
+You now know how to use subcomponents.
+
+If you are not sure about your circuit or you just want to see another example here is my version. 
+
+
+Subcomponent
+
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count1s.gif" width="300">
+
+Completed circuit
+
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/count3s.gif" width="500">
+
+### Step 3: Use Programmable components
+Not a fan of logic gates? You can also build the counter with a programmable component containing your own c# script.
+Let's take a look at how this works.
+
+1. Create a new file in the *customCode* folder called *count.ppl*.
+2. Open the file in your favorite text editor.
+3. Write the custom code. Here you can see my implementation.
+```
+// first check if the enable input is true
+// if it is then keep increment the current count
+// PC is a variable that is passed to the script 
+// that can be used to store a int value between calls
+if (get(0)) // get returns the state of the input
+{
+    PC++;
+}
+// convert PC to a list of booleans and set it as output
+return fromInt(PC); 
+```
+4. Drag the file into the window. You should see a new component called **counter** appear.
+5. Place the **counter** and add the needed **In**, **Out** and **ClkIn** connections.
+6. Connect it to a **button** and **clock**.
+
+You have now created a 3 bit counter using a programmable component.
+
+If you are not sure about your circuit or you just want to see another example here is my version. 
+
+<img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/countp.gif" width="500">
