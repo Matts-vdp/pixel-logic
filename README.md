@@ -189,7 +189,7 @@ return fromInt(PC);
 5. Place the **counter** and add the needed **In**, **Out** and **ClkIn** connections.
 6. Connect it to a **button** and **clock**.
 
-You have now created a 3 bit counter using a programmable component.
+You have now created a counter using a programmable component.
 
 If you are not sure about your circuit or you just want to see another example here is my version. 
 
