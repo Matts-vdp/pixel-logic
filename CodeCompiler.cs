@@ -13,6 +13,8 @@ namespace game
         public List<bool> o;    // output connections
         public long PC;         // program counter, has to be incremented manually
         public Dictionary<string, object> MEM; // can be used to store state between calls
+        
+        public Input(): this(new List<bool>(), 0, new Dictionary<string, object>()){}
         public Input(List<bool> l, long num, Dictionary<string, object> mem)
         {
             i = l;
@@ -54,6 +56,9 @@ namespace game
             return num;
         }
 
+        public List<bool> fromInt(long num) {
+            return fromInt((uint) num);
+        }
         // converts a int to a list of bools
         public List<bool> fromInt(uint num)
         {
@@ -102,17 +107,14 @@ namespace game
     class CCode : CustomComponentCreator
     {
         public Script<List<bool>>? script;
-        public string ext;      // file extention
-        private long PC = 0;    // program counter
-
-        private Dictionary<string, object> memory;
-        public ScriptState<List<bool>>? state;
+        public string ext;      // file extension
+        
+        
         public CCode(string filename)
         {
-            script = loadCs("customComponents/" + filename);
+            script = loadCs("customCode/" + filename);
             name = filename;
             ext = Path.GetExtension(filename);
-            memory = new Dictionary<string, object>();
         }
         // loads a script from file storage
         public Script<List<bool>>? loadCs(string filename)
@@ -127,16 +129,13 @@ namespace game
         }
 
         // runs the script with the given inputs and returns the output of the script
-        public List<bool> run(List<bool> inputs)
+        public List<bool> run(Input input)
         {
             if (script == null)
             {
                 return new List<bool>();
             }
-            Input param = new Input(inputs, PC, memory);
-            state = script.RunAsync(param).Result;
-            PC = param.PC;
-            memory = param.MEM;
+            ScriptState<List<bool>> state = script.RunAsync(input).Result;
             return state.ReturnValue;
         }
 

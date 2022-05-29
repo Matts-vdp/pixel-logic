@@ -1,10 +1,16 @@
 using Raylib_cs;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
+
 namespace game
 {
     // contains shared logic for all custom components based on code
     abstract class CodeComponent : Component
     {
         protected int id;
+
+        protected Input input = new Input();
+
         public CodeComponent(int i, ComponentList list) : base(list)
         {
             id = i;
@@ -30,6 +36,13 @@ namespace game
                 outputs[i].setActive(status);
             }
         }
+
+        public void run() {
+            input.i = getInputs();
+            List<bool> output = ((CCode)list.components[id]).run(input);
+            setOutput(output);
+        }
+
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
@@ -49,6 +62,11 @@ namespace game
         {
         }
 
+        public override void addClock(Connection c)
+        {
+            clockIn = c;
+        }
+
         public override void update()
         {
             if (clockIn == null) return;
@@ -56,8 +74,7 @@ namespace game
                 return;
             if (clockIn.isActive() && !lastState)
             {
-                List<bool> output = ((CCode)list.components[id]).run(getInputs());
-                setOutput(output);
+                run();
             }
             lastState = clockIn.isActive();
         }
@@ -85,8 +102,7 @@ namespace game
             if (!change) return;
             if (!list.components.ContainsKey(id))
                 return;
-            List<bool> output = ((CCode)list.components[id]).run(getInputs());
-            setOutput(output);
+            run();
         }
     }
 

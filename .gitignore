@@ -12,6 +12,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 saves/
-customComponents/
+customCode/
 #vscode
 .vscode/
