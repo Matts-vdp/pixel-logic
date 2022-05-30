@@ -45,7 +45,7 @@ namespace game
     }
 
     // component that is used to pass signals between other components
-    class WireComp : Component
+    public class WireComp : Component
     {
         public WireComp(ComponentList list) : base(list) { }
         // pass input to output, true if inputs true and false
@@ -78,7 +78,7 @@ namespace game
     }
 
     // represents and gate
-    class AndComp : Component
+    public class AndComp : Component
     {
         public AndComp(ComponentList list) : base(list) { }
         // output = input0 && input1 && ...
@@ -111,7 +111,7 @@ namespace game
     }
 
     // represents not gate
-    class NotComp : Component
+    public class NotComp : Component
     {
         public NotComp(ComponentList list) : base(list) { }
         // output = ! input
@@ -144,7 +144,7 @@ namespace game
     }
 
     // represents or gate
-    class OrComp : Component
+    public class OrComp : Component
     {
         public OrComp(ComponentList list) : base(list) { }
         // output = input0 || input1 ...
@@ -177,7 +177,7 @@ namespace game
     }
 
     // represents xor gate
-    class XorComp : Component
+    public class XorComp : Component
     {
         public XorComp(ComponentList list) : base(list) { }
         public override void update()
@@ -203,7 +203,7 @@ namespace game
     }
 
     // represents battery (always 1)
-    class BatComp : Component
+    public class BatComp : Component
     {
         public BatComp(ComponentList list) : base(list)
         {
@@ -228,7 +228,7 @@ namespace game
     }
 
     // represents clock
-    class Clock : Component
+    public class Clock : Component
     {
         double time;
         const float DELAY = 0.5f;
@@ -262,7 +262,7 @@ namespace game
     }
 
     // represents flip flop
-    class FlipFlop : Component
+    public class FlipFlop : Component
     {
         bool lastState = false;
         public FlipFlop(ComponentList list) : base(list)
@@ -298,7 +298,7 @@ namespace game
     }
 
     // can be changed by keyboard during simulation
-    class Button : Component
+    public class Button : Component
     {
         public Button(ComponentList list) : base(list)
         {
@@ -327,7 +327,7 @@ namespace game
     }
 
     // display input as number
-    class Seg7 : Component
+    public class Seg7 : Component
     {
         private int value;
         public Seg7(ComponentList list) : base(list)

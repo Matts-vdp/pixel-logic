@@ -8,7 +8,6 @@ namespace game
     // the attributes and functions of this class can be used in the script
     public class Input
     {
-
         public List<bool> i;    //input connections
         public List<bool> o;    // output connections
         public long PC;         // program counter, has to be incremented manually
