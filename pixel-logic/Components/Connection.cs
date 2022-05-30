@@ -1,5 +1,5 @@
 using Raylib_cs;
-namespace game
+namespace Game.Components
 {
     // base class containing shared logic for all connections
     public abstract class Connection

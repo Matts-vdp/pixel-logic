@@ -1,7 +1,7 @@
 using Raylib_cs;
 using System.Numerics;
 using System.Text.Json;
-namespace game
+namespace Game.Components
 {
     // struct to contain a 2d coordinate
     public struct Pos

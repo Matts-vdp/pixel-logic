@@ -1,5 +1,5 @@
 using Raylib_cs;
-namespace game
+namespace Game.Components
 {
     // base component holds all shared logic
     public abstract class Component

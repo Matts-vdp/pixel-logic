@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
 
-namespace game
+namespace Game.Components
 {
     // used by the custom script to interact with the logic
     // the attributes and functions of this class can be used in the script

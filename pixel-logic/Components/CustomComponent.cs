@@ -2,7 +2,7 @@ using Raylib_cs;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
-namespace game
+namespace Game.Components
 {
     // contains shared logic for all custom components based on code
     public abstract class CodeComponent : Component

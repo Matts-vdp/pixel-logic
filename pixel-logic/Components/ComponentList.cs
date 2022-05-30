@@ -1,5 +1,5 @@
 using Raylib_cs;
-namespace game
+namespace Game.Components
 {
     // contains the mapping of basic types to int
     enum types
