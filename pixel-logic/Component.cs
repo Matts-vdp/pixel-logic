@@ -4,15 +4,15 @@ namespace game
     // base component holds all shared logic
     public abstract class Component
     {
-        public List<Pos> blocks;            // locations of blocks in grid
-        public List<Connection> inputs;     // all input connections
-        public List<Connection> outputs;    // output connections
-        public Connection? clockIn;         // clock connection if present
-        public bool active = false;         // state of component
+        protected List<Pos> blocks;            // locations of blocks in grid
+        protected List<Connection> inputs;     // all input connections
+        protected List<Connection> outputs;    // output connections
+        protected Connection? clockIn;         // clock connection if present
+        protected bool active = false;         // state of component
         protected ComponentList list;       // stores the component index 
                                             // used to retreive custom component data
 
-        public Component(ComponentList list)
+        protected Component(ComponentList list)
         {
             blocks = new List<Pos>();
             inputs = new List<Connection>();

@@ -4,36 +4,36 @@ namespace game
     // base class containing shared logic for all connections
     public abstract class Connection
     {
-        public Component? output;
-        public Component? input;
-        public Pos pos;             // location in grid
+        protected Component? output;
+        protected Component? input;
+        protected Pos pos;             // location in grid
         protected bool active;         // state
 
         private bool changed;       // state changed since last read
 
-        public Connection(Pos p)
+        protected Connection(Pos p)
         {
             pos = p;
             active = false;
             changed = true;
         }
         // connect input component
-        public void addInput(Component inp)
+        protected void addInput(Component inp)
         {
             inp.addOutput(this);
             input = inp;
         }
         // connect output component
-        public void addOutput(Component outp)
+        protected void addOutput(Component outp)
         {
             outp.addInput(this);
             output = outp;
         }
-        public void updateIn()
+        private void updateIn()
         {
             input?.update();
         }
-        public void updateOut()
+        private void updateOut()
         {
             output?.update();
         }
