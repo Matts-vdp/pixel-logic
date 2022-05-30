@@ -6,9 +6,9 @@ using System.Numerics;
 namespace game
 {
     // contains the main game loop and all data of the game
-    class Game
+    public class Game
     {
-        static int GRIDSIZE = 32;   // size of grid cells
+        public static int GRIDSIZE = 32;   // size of grid cells
         static int selected = 1;    // selected item of the list on the left
         static int xoff = 0;        // camera offset x
         static int yoff = 0;        // camera offset y
@@ -16,7 +16,7 @@ namespace game
         static int ysel = -1;       // selection start y
         Grid? cloneGrid;            // stores grid after copy
         Grid grid = new Grid(200, 200); // main grid
-        string filename = "";       // remembers last dragged filename
+        public string filename = "";       // remembers last dragged filename
 
         // processes all mouse input
         public void InputMouse()

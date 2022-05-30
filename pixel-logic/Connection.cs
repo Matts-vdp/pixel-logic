@@ -2,38 +2,38 @@ using Raylib_cs;
 namespace game
 {
     // base class containing shared logic for all connections
-    abstract class Connection
+    public abstract class Connection
     {
-        public Component? output;
-        public Component? input;
-        public Pos pos;             // location in grid
+        protected Component? output;
+        protected Component? input;
+        protected Pos pos;             // location in grid
         protected bool active;         // state
 
         private bool changed;       // state changed since last read
 
-        public Connection(Pos p)
+        protected Connection(Pos p)
         {
             pos = p;
             active = false;
             changed = true;
         }
         // connect input component
-        public void addInput(Component inp)
+        protected void addInput(Component inp)
         {
             inp.addOutput(this);
             input = inp;
         }
         // connect output component
-        public void addOutput(Component outp)
+        protected void addOutput(Component outp)
         {
             outp.addInput(this);
             output = outp;
         }
-        public void updateIn()
+        private void updateIn()
         {
             input?.update();
         }
-        public void updateOut()
+        private void updateOut()
         {
             output?.update();
         }
@@ -64,7 +64,7 @@ namespace game
     }
 
     // used to pass a signal from a component to a wire
-    class OutConnection : Connection
+    public class OutConnection : Connection
     {
         public OutConnection(Pos p) : base(p)
         {
@@ -87,7 +87,7 @@ namespace game
     }
 
     // used to pass a signal from a wire to a component
-    class InConnection : Connection
+    public class InConnection : Connection
     {
         public InConnection(Pos p) : base(p)
         {
@@ -112,7 +112,7 @@ namespace game
     }
 
     // used to pass a signal from a wire to a component using ClockIn for extra functionality
-    class ClockIn : Connection
+    public class ClockIn : Connection
     {
         public ClockIn(Pos p) : base(p)
         {
@@ -138,7 +138,7 @@ namespace game
     }
 
     // used to let wires cross each other
-    class CrossConnection : Connection
+    public class CrossConnection : Connection
     {
         public CrossConnection(Pos p) : base(p)
         {

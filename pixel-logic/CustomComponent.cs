@@ -5,18 +5,18 @@ using Microsoft.CodeAnalysis.Scripting;
 namespace game
 {
     // contains shared logic for all custom components based on code
-    abstract class CodeComponent : Component
+    public abstract class CodeComponent : Component
     {
         protected int id;
 
         protected Input input = new Input();
 
-        public CodeComponent(int i, ComponentList list) : base(list)
+        protected CodeComponent(int i, ComponentList list) : base(list)
         {
             id = i;
         }
         // returns inputs as list of states
-        public List<bool> getInputs()
+        private List<bool> getInputs()
         {
             List<bool> inp = new List<bool>();
             foreach (Connection c in inputs)
@@ -26,7 +26,7 @@ namespace game
             return inp;
         }
         // sets the outputs with list of states
-        public void setOutput(List<bool> list)
+        private void setOutput(List<bool> list)
         {
             for (int i = 0; i < outputs.Count; i++)
             {
@@ -37,7 +37,7 @@ namespace game
             }
         }
 
-        public void run() {
+        protected void run() {
             input.i = getInputs();
             List<bool> output = ((CCode)list.components[id]).run(input);
             setOutput(output);
@@ -55,9 +55,9 @@ namespace game
         }
     }
     // component with custom code that only gets updated on positive clk 
-    class ProgComp : CodeComponent
+    public class ProgComp : CodeComponent
     {
-        bool lastState = false;
+        private bool lastState = false;
         public ProgComp(int i, ComponentList list) : base(i, list)
         {
         }
@@ -82,7 +82,7 @@ namespace game
     }
 
     // component with custom code that works 'instant'
-    class CondComp : CodeComponent
+    public class CondComp : CodeComponent
     {
         public CondComp(int i, ComponentList list) : base(i, list)
         {
@@ -107,7 +107,7 @@ namespace game
     }
 
     // component that contains a grid of components
-    class SubComponent : Component
+    public class SubComponent : Component
     {
         private List<Connection> subInputs; // contains inputs of sub grid
         private List<Connection> subOutputs;// contains outputs of sub grid

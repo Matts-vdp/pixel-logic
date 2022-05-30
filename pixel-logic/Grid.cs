@@ -29,7 +29,7 @@ namespace game
     }
 
     // used to store a grid and its componentlist to json
-    class SaveData
+    public class SaveData
     {
         public int width { get; set; }
         public int height { get; set; }
@@ -56,20 +56,20 @@ namespace game
     }
 
     // represents a grid of components converts the grid matrix to components using connected components
-    class Grid : CustomComponentCreator
+    public class Grid : CustomComponentCreator
     {
-        int width, height;                      // size of grid
-        int[,] grid;                            // contains wich block is placed where
-        int[,] labels;                          // used for connected component analysis
-        Dictionary<int, Component> components;  // stores all components
-        List<Button> buttons;                   // stores buttons for input handling
-        List<Connection> connections;           // stores all connections between components
+        private int width, height;                      // size of grid
+        private int[,] grid;                            // contains wich block is placed where
+        private int[,] labels;                          // used for connected component analysis
+        private Dictionary<int, Component> components;  // stores all components
+        private List<Button> buttons;                   // stores buttons for input handling
+        private List<Connection> connections;           // stores all connections between components
         public ComponentList list;              // stores the mapping of block types to components
 
         // used to create new grid
         public Grid(int w, int h) : this(w, h, new ComponentList()) { }
         // used to create new grid with same componentList 
-        public Grid(int w, int h, ComponentList list)
+        private Grid(int w, int h, ComponentList list)
         {
             this.list = list;
             grid = new int[h, w];
@@ -113,7 +113,7 @@ namespace game
             paste(new Grid("saves/circuit/save.json"), gridsize);
         }
         // converts grid into a list of BlockPos because json cant serialize int[,] 
-        public List<BlockPos> toArray()
+        private List<BlockPos> toArray()
         {
             List<BlockPos> pos = new List<BlockPos>();
             for (int y = 0; y < height; y++)
@@ -123,7 +123,7 @@ namespace game
             return pos;
         }
         // creates a saveData object from this grid object
-        public SaveData toSave()
+        private SaveData toSave()
         {
             List<BlockPos> blockPositions = toArray();
             Dictionary<int, bool> blocks = new Dictionary<int, bool>();
@@ -134,7 +134,7 @@ namespace game
             return new SaveData(width, height, toArray(), list.toSave(blocks));
         }
         // converts list of BlockPos into grid because json cant serialize int[,]
-        public int[,] fromArray(int width, int height, List<BlockPos> pos)
+        private int[,] fromArray(int width, int height, List<BlockPos> pos)
         {
             int[,] world = new int[height, width];
             foreach (BlockPos p in pos)
@@ -150,7 +150,7 @@ namespace game
             return (int)pos;
         }
         // loads the custom components from save into ComponentList
-        public ComponentList RebaseComponents(Dictionary<int, string> comp)
+        private ComponentList RebaseComponents(Dictionary<int, string> comp)
         {
             ComponentList cList = new ComponentList();
             foreach (int key in comp.Keys)
@@ -173,7 +173,7 @@ namespace game
                 buildObjects();
         }
         // add without rebuilding the grid components
-        public void addNoUpdate(Vector2 pos, int t, int gridsize, int xoff, int yoff)
+        private void addNoUpdate(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
@@ -199,7 +199,7 @@ namespace game
             buildObjects();
         }
         // retreives block from grid returns 0 when outside
-        public int GetBlock(int x, int y)
+        private int GetBlock(int x, int y)
         {
             if (x < 0 || x >= width || y < 0 || y >= height)
             {
@@ -208,7 +208,7 @@ namespace game
             return grid[y, x];
         }
         // changes all occurences of "from" to "to" in the grid
-        public int[,] changeLabel(int from, int to, int[,] labels)
+        private int[,] changeLabel(int from, int to, int[,] labels)
         {
             for (int y = 0; y < height; y++)
             {
@@ -223,7 +223,7 @@ namespace game
             return labels;
         }
         // clear grid
-        public void clear()
+        private void clear()
         {
             grid = new int[height, width];
         }
@@ -231,7 +231,7 @@ namespace game
 
         // CONVERT TO COMPONENTS
         // create components from grid matrix
-        public void buildObjects()
+        private void buildObjects()
         {
             labels = new int[height, width];
             components = new Dictionary<int, Component>();
@@ -244,7 +244,7 @@ namespace game
         }
         // use connected components algorithm to group blocks of the same type
         // that are connected to each other into the same component
-        public void connectedComponents()
+        private void connectedComponents()
         {
             int label = 1;
             bool changed = true;
@@ -295,7 +295,7 @@ namespace game
             }
         }
         // connect wires with a cross connection between them
-        public void crossConnect()
+        private void crossConnect()
         {
             for (int y = 0; y < height; y++)
             {
@@ -316,7 +316,7 @@ namespace game
             }
         }
         // create the components from the grid
-        public void makeComponents()
+        private void makeComponents()
         {
             for (int y = 0; y < height; y++)
             {
@@ -341,7 +341,7 @@ namespace game
             }
         }
         // create the connections between components
-        public void makeConnections()
+        private void makeConnections()
         {
             for (int y = 0; y < height; y++)
             {
@@ -447,7 +447,7 @@ namespace game
         }
         // merge customcomponents of componentlist adds missing components
         // and changes references to already imported components 
-        public void mergeComponents(Grid other)
+        private void mergeComponents(Grid other)
         {
             foreach (int key in other.list.components.Keys)
             {
@@ -473,7 +473,7 @@ namespace game
             buildObjects();
         }
         // paste other grid in this grid at 0, 0
-        public void paste(Grid other, int gridsize)
+        private void paste(Grid other, int gridsize)
         {
             paste(other, Vector2.Zero, gridsize, 0, 0);
         }

@@ -8,7 +8,6 @@ namespace game
     // the attributes and functions of this class can be used in the script
     public class Input
     {
-
         public List<bool> i;    //input connections
         public List<bool> o;    // output connections
         public long PC;         // program counter, has to be incremented manually
@@ -104,10 +103,10 @@ namespace game
     }
 
     // used to store the script and to instantiate components
-    class CCode : CustomComponentCreator
+    public class CCode : CustomComponentCreator
     {
-        public Script<List<bool>>? script;
-        public string ext;      // file extension
+        private Script<List<bool>>? script;
+        private string ext;      // file extension
         
         
         public CCode(string filename)
