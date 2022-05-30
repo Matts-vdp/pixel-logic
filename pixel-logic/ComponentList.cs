@@ -22,7 +22,7 @@ namespace game
     }
 
     // used to create components and store Custom Components
-    class ComponentList
+    public class ComponentList
     {
         public List<string> items = new List<string> { "Wire", "And", "Or", "Exor", "Not", "Out", "In", "ClkIn", "Cross", "Battery", "Clock", "Flip Flop", "Button", "Display" };
         public Dictionary<int, CustomComponentCreator> components = new Dictionary<int, CustomComponentCreator>();
@@ -103,7 +103,7 @@ namespace game
     }
 
     // represents a class that can be used as a Custom Component
-    abstract class CustomComponentCreator
+    public abstract class CustomComponentCreator
     {
         public abstract Component toComponent(ComponentList list, int type);
         public string name = "";

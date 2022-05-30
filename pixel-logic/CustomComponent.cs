@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Scripting;
 namespace game
 {
     // contains shared logic for all custom components based on code
-    abstract class CodeComponent : Component
+    public abstract class CodeComponent : Component
     {
         protected int id;
 
@@ -55,7 +55,7 @@ namespace game
         }
     }
     // component with custom code that only gets updated on positive clk 
-    class ProgComp : CodeComponent
+    public class ProgComp : CodeComponent
     {
         bool lastState = false;
         public ProgComp(int i, ComponentList list) : base(i, list)
@@ -82,7 +82,7 @@ namespace game
     }
 
     // component with custom code that works 'instant'
-    class CondComp : CodeComponent
+    public class CondComp : CodeComponent
     {
         public CondComp(int i, ComponentList list) : base(i, list)
         {
@@ -107,7 +107,7 @@ namespace game
     }
 
     // component that contains a grid of components
-    class SubComponent : Component
+    public class SubComponent : Component
     {
         private List<Connection> subInputs; // contains inputs of sub grid
         private List<Connection> subOutputs;// contains outputs of sub grid

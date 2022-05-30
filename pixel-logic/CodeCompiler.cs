@@ -104,7 +104,7 @@ namespace game
     }
 
     // used to store the script and to instantiate components
-    class CCode : CustomComponentCreator
+    public class CCode : CustomComponentCreator
     {
         public Script<List<bool>>? script;
         public string ext;      // file extension

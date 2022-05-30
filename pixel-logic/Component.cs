@@ -2,7 +2,7 @@ using Raylib_cs;
 namespace game
 {
     // base component holds all shared logic
-    abstract class Component
+    public abstract class Component
     {
         public List<Pos> blocks;            // locations of blocks in grid
         public List<Connection> inputs;     // all input connections

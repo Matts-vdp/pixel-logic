@@ -29,7 +29,7 @@ namespace game
     }
 
     // used to store a grid and its componentlist to json
-    class SaveData
+    public class SaveData
     {
         public int width { get; set; }
         public int height { get; set; }
@@ -56,7 +56,7 @@ namespace game
     }
 
     // represents a grid of components converts the grid matrix to components using connected components
-    class Grid : CustomComponentCreator
+    public class Grid : CustomComponentCreator
     {
         int width, height;                      // size of grid
         int[,] grid;                            // contains wich block is placed where
