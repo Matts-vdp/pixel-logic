@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pixel-logic", "pixel-logic\pixel-logic.csproj", "{AB68E0B0-C2D0-4677-BC8B-57B14236D566}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pixel-logic.Tests", "pixel-logic.Tests\pixel-logic.Tests.csproj", "{BFC152A0-A9C4-4103-B0B7-2FDE07FA2D18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB68E0B0-C2D0-4677-BC8B-57B14236D566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB68E0B0-C2D0-4677-BC8B-57B14236D566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB68E0B0-C2D0-4677-BC8B-57B14236D566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB68E0B0-C2D0-4677-BC8B-57B14236D566}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFC152A0-A9C4-4103-B0B7-2FDE07FA2D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFC152A0-A9C4-4103-B0B7-2FDE07FA2D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFC152A0-A9C4-4103-B0B7-2FDE07FA2D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFC152A0-A9C4-4103-B0B7-2FDE07FA2D18}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
