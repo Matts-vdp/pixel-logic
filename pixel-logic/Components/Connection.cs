@@ -29,14 +29,6 @@ namespace Game.Components
             outp.addInput(this);
             output = outp;
         }
-        private void updateIn()
-        {
-            input?.update();
-        }
-        private void updateOut()
-        {
-            output?.update();
-        }
         public bool isActive()
         {
             changed = false;

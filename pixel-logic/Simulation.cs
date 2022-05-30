@@ -95,8 +95,8 @@ namespace Game
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                xsel = grid.toGrid(pos.X, GRIDSIZE, xoff);
-                ysel = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                xsel = Grid.toGrid(pos.X, GRIDSIZE, xoff);
+                ysel = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_C) || Raylib.IsKeyDown(KeyboardKey.KEY_X))
             {
@@ -117,8 +117,8 @@ namespace Game
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_C))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
-                int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                int xend = Grid.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
                 cloneGrid.save("clipboard.json");
@@ -126,8 +126,8 @@ namespace Game
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                int xend = grid.toGrid(pos.X, GRIDSIZE, xoff);
-                int yend = grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                int xend = Grid.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.cut(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
             }

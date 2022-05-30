@@ -144,7 +144,7 @@ namespace Game.Components
             return world;
         }
         // converts world coordinates to grid coordinates
-        public int toGrid(float pos, int gridsize, int off)
+        public static int toGrid(float pos, int gridsize, int off)
         {
             pos = (pos + off) / gridsize;
             return (int)pos;
@@ -180,7 +180,7 @@ namespace Game.Components
             add(x, y, t);
         }
         // add block to grid with grid coordinates
-        public bool add(int x, int y, int t)
+        private bool add(int x, int y, int t)
         {
             if (x < 0 || x >= width) { return false; }
             if (y < 0 || y >= height) { return false; }
@@ -508,7 +508,6 @@ namespace Game.Components
             }
             return new SubComponent(newGrid, inp, outp, clock);
         }
-
         //------------------------------------------------------------------
 
     }
