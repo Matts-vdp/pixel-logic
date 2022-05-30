@@ -481,7 +481,7 @@ namespace Game.Components
         //------------------------------------------------------------------
         // CUSTOM COMPONENT
         // creates a subcomponent from this grid
-        public override Component toComponent(ComponentList list, int type = 0)
+        public override Component toComponent()
         {
             Grid newGrid = copy(0, 0, width - 1, height - 1);
             List<Connection> inp = new List<Connection>();

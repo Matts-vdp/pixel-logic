@@ -139,11 +139,11 @@ namespace Game.Components
         }
 
         // creates a component with this script
-        public override Component toComponent(ComponentList list, int type)
+        public override Component toComponent()
         {
             if (ext == ".cpl")
-                return new CondComp(type, list);
-            return new ProgComp(type, list);
+                return new CondComp(this);
+            return new ProgComp(this);
         }
     }
 

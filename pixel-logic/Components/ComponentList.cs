@@ -63,27 +63,27 @@ namespace Game.Components
             switch ((types)type)
             {
                 case (types.WIRE):
-                    return new WireComp(this);
+                    return new WireComp();
                 case (types.BATTERY):
-                    return new BatComp(this);
+                    return new BatComp();
                 case (types.AND):
-                    return new AndComp(this);
+                    return new AndComp();
                 case (types.CLK):
-                    return new Clock(this);
+                    return new Clock();
                 case (types.NOT):
-                    return new NotComp(this);
+                    return new NotComp();
                 case (types.OR):
-                    return new OrComp(this);
+                    return new OrComp();
                 case (types.FF):
-                    return new FlipFlop(this);
+                    return new FlipFlop();
                 case (types.BUT):
-                    return new Button(this);
+                    return new Button();
                 case (types.XOR):
-                    return new XorComp(this);
+                    return new XorComp();
                 case (types.SEG):
-                    return new Seg7(this);
+                    return new Seg7();
                 default:
-                    return components[type].toComponent(this, type);
+                    return components[type].toComponent();
             }
         }
         public Connection NewConnection(int type, Pos pos)
@@ -105,7 +105,7 @@ namespace Game.Components
     // represents a class that can be used as a Custom Component
     public abstract class CustomComponentCreator
     {
-        public abstract Component toComponent(ComponentList list, int type);
+        public abstract Component toComponent();
         public string name = "";
 
     }

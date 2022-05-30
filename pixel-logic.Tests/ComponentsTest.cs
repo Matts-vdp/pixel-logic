@@ -10,9 +10,9 @@ public class ComponentsTest
     {
         Connection conn = new OutConnection(new Pos());
         Assert.False(conn.isFull());
-        conn.addOther(new OrComp(new ComponentList()));
+        conn.addOther(new OrComp());
         Assert.False(conn.isFull());
-        conn.addWire(new OrComp(new ComponentList()));
+        conn.addWire(new OrComp());
         Assert.True(conn.isFull());
     }
     
@@ -35,7 +35,7 @@ public class ComponentsTest
     [Fact]
     public void Wire()
     {
-        Component wire = new WireComp(new ComponentList());
+        Component wire = new WireComp();
         Connection input = new OutConnection(new Pos(0,0));
         Connection output = new InConnection(new Pos(0,0));
         input.addWire(wire);
@@ -50,7 +50,7 @@ public class ComponentsTest
     [Fact]
     public void And()
     {
-        Component comp = new AndComp(new ComponentList());
+        Component comp = new AndComp();
         Connection input = new InConnection(new Pos(0,0));
         Connection input2 = new InConnection(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));
@@ -69,7 +69,7 @@ public class ComponentsTest
     [Fact]
     public void Not()
     {
-        Component comp = new NotComp(new ComponentList());
+        Component comp = new NotComp();
         Connection input = new InConnection(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));
         input.addOther(comp);
@@ -84,7 +84,7 @@ public class ComponentsTest
     [Fact]
     public void Or()
     {
-        Component comp = new OrComp(new ComponentList());
+        Component comp = new OrComp();
         Connection input = new InConnection(new Pos(0,0));
         Connection input2 = new InConnection(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));
@@ -104,7 +104,7 @@ public class ComponentsTest
     [Fact]
     public void Exor()
     {
-        Component comp = new XorComp(new ComponentList());
+        Component comp = new XorComp();
         Connection input = new InConnection(new Pos(0,0));
         Connection input2 = new InConnection(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));
@@ -124,7 +124,7 @@ public class ComponentsTest
     [Fact]
     public void Battery()
     {
-        Component comp = new BatComp(new ComponentList());
+        Component comp = new BatComp();
         Connection output = new OutConnection(new Pos(0,0));
         output.addOther(comp);
         comp.update();
@@ -133,7 +133,7 @@ public class ComponentsTest
     [Fact]
     public void FlipFlop()
     {
-        Component comp = new FlipFlop(new ComponentList());
+        Component comp = new FlipFlop();
         Connection input = new InConnection(new Pos(0,0));
         Connection clock = new ClockIn(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));

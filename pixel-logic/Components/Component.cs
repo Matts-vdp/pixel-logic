@@ -9,15 +9,12 @@ namespace Game.Components
         protected List<Connection> outputs;    // output connections
         protected Connection? clockIn;         // clock connection if present
         protected bool active = false;         // state of component
-        protected ComponentList list;       // stores the component index 
-                                            // used to retreive custom component data
 
-        protected Component(ComponentList list)
+        protected Component()
         {
             blocks = new List<Pos>();
             inputs = new List<Connection>();
             outputs = new List<Connection>();
-            this.list = list;
         }
         // add new block to the component
         public void add(Pos p)
@@ -47,7 +44,7 @@ namespace Game.Components
     // component that is used to pass signals between other components
     public class WireComp : Component
     {
-        public WireComp(ComponentList list) : base(list) { }
+        public WireComp() : base() { }
         // pass input to output, true if inputs true and false
         public override void update()
         {
@@ -80,7 +77,7 @@ namespace Game.Components
     // represents and gate
     public class AndComp : Component
     {
-        public AndComp(ComponentList list) : base(list) { }
+        public AndComp() : base() { }
         // output = input0 && input1 && ...
         public override void update()
         {
@@ -113,7 +110,7 @@ namespace Game.Components
     // represents not gate
     public class NotComp : Component
     {
-        public NotComp(ComponentList list) : base(list) { }
+        public NotComp() : base() { }
         // output = ! input
         public override void update()
         {
@@ -146,7 +143,7 @@ namespace Game.Components
     // represents or gate
     public class OrComp : Component
     {
-        public OrComp(ComponentList list) : base(list) { }
+        public OrComp() : base() { }
         // output = input0 || input1 ...
         public override void update()
         {
@@ -179,7 +176,7 @@ namespace Game.Components
     // represents xor gate
     public class XorComp : Component
     {
-        public XorComp(ComponentList list) : base(list) { }
+        public XorComp() : base() { }
         public override void update()
         {
             bool i1 = false;
@@ -205,7 +202,7 @@ namespace Game.Components
     // represents battery (always 1)
     public class BatComp : Component
     {
-        public BatComp(ComponentList list) : base(list)
+        public BatComp() : base()
         {
             active = true;
         }
@@ -232,7 +229,7 @@ namespace Game.Components
     {
         double time;
         const float DELAY = 0.5f;
-        public Clock(ComponentList list) : base(list)
+        public Clock() : base()
         {
             active = false;
             time = Raylib.GetTime();
@@ -265,7 +262,7 @@ namespace Game.Components
     public class FlipFlop : Component
     {
         bool lastState = false;
-        public FlipFlop(ComponentList list) : base(list)
+        public FlipFlop() : base()
         {
         }
         // only update state on change from false to true of "ClockIn"
@@ -300,7 +297,7 @@ namespace Game.Components
     // can be changed by keyboard during simulation
     public class Button : Component
     {
-        public Button(ComponentList list) : base(list)
+        public Button() : base()
         {
         }
         public override void update()
@@ -330,7 +327,7 @@ namespace Game.Components
     public class Seg7 : Component
     {
         private int value;
-        public Seg7(ComponentList list) : base(list)
+        public Seg7() : base()
         {
         }
         // read input and save as int

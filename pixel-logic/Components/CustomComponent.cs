@@ -7,13 +7,12 @@ namespace Game.Components
     // contains shared logic for all custom components based on code
     public abstract class CodeComponent : Component
     {
-        protected int id;
-
         protected Input input = new Input();
+        protected CCode ccode;
 
-        protected CodeComponent(int i, ComponentList list) : base(list)
+        protected CodeComponent( CCode ccode) : base()
         {
-            id = i;
+            this.ccode = ccode;
         }
         // returns inputs as list of states
         private List<bool> getInputs()
@@ -26,27 +25,27 @@ namespace Game.Components
             return inp;
         }
         // sets the outputs with list of states
-        private void setOutput(List<bool> list)
+        private void setOutput(List<bool> states)
         {
             for (int i = 0; i < outputs.Count; i++)
             {
                 bool status = false;
-                if (i < list.Count)
-                    status = list[i];
+                if (i < states.Count)
+                    status = states[i];
                 outputs[i].setActive(status);
             }
         }
 
         protected void run() {
             input.i = getInputs();
-            List<bool> output = ((CCode)list.components[id]).run(input);
+            List<bool> output = ccode.run(input);
             setOutput(output);
         }
 
         public override void draw(int gridsize, int xoff, int yoff)
         {
             Color color = new Color(100, 100, 100, 255);
-            string s = list.components[id].name[0].ToString();
+            string s = ccode.name[0].ToString();
             foreach (Pos pos in blocks)
             {
                 Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
@@ -58,7 +57,7 @@ namespace Game.Components
     public class ProgComp : CodeComponent
     {
         private bool lastState = false;
-        public ProgComp(int i, ComponentList list) : base(i, list)
+        public ProgComp(CCode ccode) : base(ccode)
         {
         }
 
@@ -70,8 +69,6 @@ namespace Game.Components
         public override void update()
         {
             if (clockIn == null) return;
-            if (!list.components.ContainsKey(id))
-                return;
             if (clockIn.isActive() && !lastState)
             {
                 run();
@@ -84,7 +81,7 @@ namespace Game.Components
     // component with custom code that works 'instant'
     public class CondComp : CodeComponent
     {
-        public CondComp(int i, ComponentList list) : base(i, list)
+        public CondComp(CCode ccode) : base(ccode)
         {
         }
         // only calls custom script to update outputs when inputs have changed 
@@ -100,8 +97,6 @@ namespace Game.Components
                 }
             }
             if (!change) return;
-            if (!list.components.ContainsKey(id))
-                return;
             run();
         }
     }
@@ -114,7 +109,7 @@ namespace Game.Components
         private Connection? clock;          // contains ClockIn of sub grid
         private Grid grid;                  // reference to grid with components
 
-        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk) : base(g.list)
+        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk) : base()
         {
             grid = g;
             subInputs = inp;
