@@ -189,10 +189,10 @@ namespace Game.Components
             File.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
         }
         // loads grid from saves/circuit/save.json
-        public void load(int gridsize)
+        public void load()
         {
             clear();
-            paste(new Grid("saves/circuit/save.json"), gridsize);
+            paste(new Grid("saves/circuit/save.json"));
         }
         // converts grid into a list of BlockPos because json cant serialize int[,] 
         private List<BlockPos> toArray()
@@ -463,6 +463,8 @@ namespace Game.Components
             {
                 for (int x = xstart; x < xend + 1; x++)
                 {
+                    if (y>=height || x>=width)
+                        continue;
                     newGrid.grid[y - ystart, x - xstart] = grid[y, x];
                 }
             }
@@ -477,6 +479,8 @@ namespace Game.Components
             {
                 for (int x = xstart; x < xend + 1; x++)
                 {
+                    if (y>=height || x>=width)
+                        continue;
                     grid[y, x] = (int)types.NONE;
                 }
             }
@@ -509,9 +513,9 @@ namespace Game.Components
             }
         }
         // paste other grid in this grid at 0, 0
-        private void paste(Grid other, int gridsize)
+        private void paste(Grid other)
         {
-            paste(other, Vector2.Zero, gridsize, 0, 0);
+            paste(other, Vector2.Zero, 1, 0, 0);
         }
 
         //------------------------------------------------------------------

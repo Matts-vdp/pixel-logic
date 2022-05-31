@@ -66,7 +66,7 @@ namespace Game
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_SUBTRACT))
             {
-                if (GRIDSIZE <= 0)
+                if (GRIDSIZE <= 1)
                 {
                     GRIDSIZE = 1;
                 }
@@ -103,7 +103,7 @@ namespace Game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
-                grid.load(GRIDSIZE);
+                grid.load();
             }
             // copy paste
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
@@ -188,7 +188,7 @@ namespace Game
             for (int i = 0; i < grid.list.Count; i++)
             {
                 bool sel = (i + 1) == selected;
-                Raylib.DrawText(grid.list.getName(i), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
+                Raylib.DrawText(grid.list.getName(i+1), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
             Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
         }

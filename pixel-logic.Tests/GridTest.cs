@@ -57,15 +57,18 @@ public class GridTest
         g.add(new Vector2(0,1), (int)types.WIRE, 1,0,0);
         g.add(new Vector2(0,2), (int)types.IN, 1,0,0);
         g.add(new Vector2(0,3), (int)types.FF, 1,0,0);
-        g.add(new Vector2(1,3), (int)types.CLKIN, 1,0,0);
+        g.add(new Vector2(1,3), (int)types.FF, 1,0,0);
         g.add(new Vector2(0,4), (int)types.FF, 1,0,0);
-        g.add(new Vector2(0,5), (int)types.OUT, 1,0,0);
-        g.add(new Vector2(0,6), (int)types.WIRE, 1,0,0);
-        g.add(new Vector2(0,7), (int)types.CROSS, 1,0,0);
-        g.add(new Vector2(0,8), (int)types.WIRE, 1,0,0);
-        g.add(new Vector2(0,9), (int)types.IN, 1,0,0);
-        Circuit circuit = g.buildObjects();
-        Component comp = circuit.toComponent(g.state);
+        g.add(new Vector2(1,4), (int)types.FF, 1,0,0);
+        g.add(new Vector2(2,3), (int)types.CLKIN, 1,0,0);
+        g.add(new Vector2(1,5), (int)types.OUT, 1,0,0);
+        g.add(new Vector2(1,6), (int)types.WIRE, 1,0,0);
+        g.add(new Vector2(1,7), (int)types.CROSS, 1,0,0);
+        g.add(new Vector2(0,7), (int)types.WIRE, 1,0,0);
+        g.add(new Vector2(2,7), (int)types.WIRE, 1,0,0);
+        g.add(new Vector2(1,8), (int)types.WIRE, 1,0,0);
+        g.add(new Vector2(1,9), (int)types.IN, 1,0,0);
+        Component comp = g.createComponent(g.state);
         State state = new State(5,5);
         comp.add(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,1), state);
@@ -84,4 +87,5 @@ public class GridTest
         comp.update();
         Assert.True(output.isActive());
     }
+    
 }

@@ -122,7 +122,6 @@ namespace Game.Components
 
         public string getName(int i)
         {
-            i++;
             if (connections.ContainsKey(i)) 
                 return connections[i].name;
             else if (basic.ContainsKey(i)) 
