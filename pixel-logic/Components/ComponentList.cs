@@ -150,7 +150,7 @@ namespace Game.Components
             switch (ext)
             {
                 case ".json":
-                    c = new Grid(filename);
+                    c = new Field(filename);
                     break;
                 default:
                     c = new CCode(filename);
@@ -160,16 +160,7 @@ namespace Game.Components
             return index;
         }
 
-        public Dictionary<int, string> toSave(Dictionary<int, bool> blocks)
-        {
-            Dictionary<int, string> names = new Dictionary<int, string>();
-            foreach (int key in custom.Keys)
-            {
-                if (blocks.ContainsKey(key))
-                    names[key] = custom[key].name;
-            }
-            return names;
-        }
+        
 
         public Component NewComponent(int type, State state)
         {

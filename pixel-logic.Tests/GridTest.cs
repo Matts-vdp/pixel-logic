@@ -9,7 +9,7 @@ public class GridTest
     [Fact]
     public void Constructor1()
     {
-        Grid g = new Grid(5, 5);
+        Field g = new Field(5, 5);
     }
 
     [Theory]
@@ -18,7 +18,7 @@ public class GridTest
     [InlineData(0,10,100,10)]
     public void toGrid(float pos, int size, int offset, int result)
     {
-        int gridPos = Grid.toGrid(pos, size, offset);
+        int gridPos = Field.toGrid(pos, size, offset);
         Assert.True(gridPos == result);
     }
 
@@ -29,7 +29,7 @@ public class GridTest
     [InlineData(0,100, (int)types.OUT, false)]
     public void add(int x, int y, int t, bool result) 
     {
-        Grid g = new Grid(5, 5);
+        Field g = new Field(5, 5);
         bool change = g.add(new Vector2(0,0), (int)types.OUT, 1,0,0);
         Assert.True(change);
         change = g.add(new Vector2(x,y), t, 1,0,0);
@@ -41,7 +41,7 @@ public class GridTest
     [InlineData(0,100, false)]
     public void del(int x, int y, bool result) 
     {
-        Grid g = new Grid(5, 5);
+        Field g = new Field(5, 5);
         bool change = g.add(new Vector2(0,0), (int)types.OUT, 1,0,0);
         Assert.True(change);
         change = g.del(new Vector2(x,y), 1,0,0);
@@ -52,7 +52,7 @@ public class GridTest
     [Fact]
     public void buildComponents()
     {
-        Grid g = new Grid(10, 10);
+        Field g = new Field(10, 10);
         g.add(new Vector2(0,0), (int)types.OUT, 1,0,0);
         g.add(new Vector2(0,1), (int)types.WIRE, 1,0,0);
         g.add(new Vector2(0,2), (int)types.IN, 1,0,0);

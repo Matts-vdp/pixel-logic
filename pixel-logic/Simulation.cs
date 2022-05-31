@@ -14,9 +14,9 @@ namespace Game
         private static int yoff = 0;        // camera offset y
         private static int xsel = -1;       // selection start x
         private static int ysel = -1;       // selection start y
-        private Grid? cloneGrid;            // stores grid after copy
+        private Field? cloneGrid;            // stores grid after copy
         private Circuit? cloneCircuit;
-        private Grid grid = new Grid(200, 200); // main grid
+        private Field grid = new Field(200, 200); // main grid
         private Circuit circuit;                // build components
         private string filename = "";       // remembers last dragged filename
         private double time = 0;
@@ -109,8 +109,8 @@ namespace Game
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                xsel = Grid.toGrid(pos.X, GRIDSIZE, xoff);
-                ysel = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                xsel = Field.toGrid(pos.X, GRIDSIZE, xoff);
+                ysel = Field.toGrid(pos.Y, GRIDSIZE, yoff);
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_C) || Raylib.IsKeyDown(KeyboardKey.KEY_X))
             {
@@ -131,8 +131,8 @@ namespace Game
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_C))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                int xend = Grid.toGrid(pos.X, GRIDSIZE, xoff);
-                int yend = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                int xend = Field.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = Field.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
                 cloneGrid.save("clipboard.json");
@@ -140,8 +140,8 @@ namespace Game
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                int xend = Grid.toGrid(pos.X, GRIDSIZE, xoff);
-                int yend = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
+                int xend = Field.toGrid(pos.X, GRIDSIZE, xoff);
+                int yend = Field.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.cut(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
                 cloneGrid.save("clipboard.json");
@@ -238,7 +238,7 @@ namespace Game
                 string[] files = Raylib.GetDroppedFiles();
                 if (Raylib.IsFileExtension(files[0], ".json"))
                 {
-                    cloneGrid = new Grid(files[0]);
+                    cloneGrid = new Field(files[0]);
                     filename = files[0];
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl"))

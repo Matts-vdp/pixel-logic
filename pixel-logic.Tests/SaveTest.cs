@@ -8,6 +8,6 @@ public class SaveTest
     [Fact]
     public void saveLoad()
     {
-        Grid g = new Grid(10,10);
+        Field g = new Field(10,10);
     }
 }
