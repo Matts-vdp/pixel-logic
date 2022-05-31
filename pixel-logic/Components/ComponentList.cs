@@ -50,7 +50,7 @@ namespace Game.Components
                     CrossConnection.newConnection
             )},
         };
-        public Dictionary<int, ComponentCreator> components = new Dictionary<int, ComponentCreator>{
+        public Dictionary<int, ComponentCreator> basic = new Dictionary<int, ComponentCreator>{
             {(int)types.WIRE, new BasicComponentCreator(
                     "Wire",
                     new Color(153, 102, 51, 255), 
@@ -113,9 +113,11 @@ namespace Game.Components
             )},
         };
 
+        public Dictionary<int, ComponentCreator> custom = new Dictionary<int, ComponentCreator>();
+
         public int Count
         {
-            get {return components.Count + connections.Count;}
+            get {return basic.Count + custom.Count + connections.Count;}
         }
 
         public string getName(int i)
@@ -123,24 +125,27 @@ namespace Game.Components
             i++;
             if (connections.ContainsKey(i)) 
                 return connections[i].name;
-            return components[i].name;
+            else if (basic.ContainsKey(i)) 
+                return basic[i].name;
+            return custom[i].name;
         }
 
         private int findIndex(string name)
         {
-            foreach (int i in components.Keys)
+            foreach (int i in custom.Keys)
             {
-                if (components[i].name == name)
+                if (custom[i].name == name)
                     return i;
             }
-            return Count;
+            return -1;
         }
 
         public int add(string filename)
         {
             string name = Path.GetFileNameWithoutExtension(filename);
-            int index = findIndex(name);
-            if (index != -1) return index + 1;
+            int index = findIndex(filename);
+            if (index != -1) return index;
+            index = Count+1;
             string ext = Path.GetExtension(filename);
             ComponentCreator c;
             switch (ext)
@@ -152,24 +157,26 @@ namespace Game.Components
                     c = new CCode(filename);
                     break;
             }
-            components.Add(index, c);
+            custom.Add(index, c);
             return index;
         }
 
         public Dictionary<int, string> toSave(Dictionary<int, bool> blocks)
         {
             Dictionary<int, string> names = new Dictionary<int, string>();
-            foreach (int key in components.Keys)
+            foreach (int key in custom.Keys)
             {
                 if (blocks.ContainsKey(key))
-                    names[key] = components[key].name;
+                    names[key] = custom[key].name;
             }
             return names;
         }
 
         public Component NewComponent(int type, State state)
         {
-            return components[type].createComponent(state);
+            if (basic.ContainsKey(type))
+                return basic[type].createComponent(state);
+            return custom[type].createComponent(state);
         }
         public Connection NewConnection(int type, Pos pos, State state)
         {
@@ -179,8 +186,10 @@ namespace Game.Components
         {
             if (connections.ContainsKey(type)) 
                 connections[type].draw(x, y, gridsize, state);
-            else if (components.ContainsKey(type)) 
-                components[type].draw(x, y, gridsize, state);
+            else if (basic.ContainsKey(type)) 
+                basic[type].draw(x, y, gridsize, state);
+            else
+                custom[type].draw(x, y, gridsize, state);
         }
     }
 
@@ -190,7 +199,7 @@ namespace Game.Components
         public Color offColor;
         public Color onColor;
 
-        public void draw(int x, int y, int gridsize, bool state) 
+        public virtual void draw(int x, int y, int gridsize, bool state) 
         {
             Color color = state? onColor: offColor;
             Raylib.DrawRectangle(x, y, gridsize, gridsize, color);

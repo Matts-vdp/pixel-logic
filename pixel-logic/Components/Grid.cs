@@ -486,9 +486,9 @@ namespace Game.Components
         // and changes references to already imported components 
         private void mergeComponents(Grid other)
         {
-            foreach (int key in other.list.components.Keys)
+            foreach (int key in other.list.custom.Keys)
             {
-                int index = list.add(other.list.components[key].name);
+                int index = list.add(other.list.custom[key].name);
                 other.grid = other.changeLabel(key, index, other.grid);
             }
         }
@@ -538,6 +538,12 @@ namespace Game.Components
                     }
                 }
             }
+        }
+        public override void draw(int x, int y, int gridsize, bool state)
+        {
+            Color color = state? onColor: offColor;
+            Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
+            Raylib.DrawText(name[0].ToString(), x+gridsize/3, y, gridsize, Color.BLACK);
         }
     }
 

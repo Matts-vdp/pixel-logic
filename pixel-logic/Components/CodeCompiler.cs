@@ -147,6 +147,13 @@ namespace Game.Components
                 return new CondComp(this, state);
             return new ProgComp(this, state);
         }
+
+        public override void draw(int x, int y, int gridsize, bool state)
+        {
+            Color color = state? onColor: offColor;
+            Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
+            Raylib.DrawText(name[0].ToString(), x+gridsize/3, y, gridsize, Color.BLACK);
+        }
     }
 
 }
