@@ -13,7 +13,7 @@ namespace Game.Components
         public State state;
         // used to create new grid
         public Field(int w, int h) : this(w, h, new ComponentList()) { }
-       
+
         public Field(Grid grid, ComponentList list)
         {
             this.list = list;
@@ -24,7 +24,7 @@ namespace Game.Components
         }
 
         // used to create new grid with same componentList 
-        private Field(int w, int h, ComponentList list) : this(new Grid(w,h), list)
+        private Field(int w, int h, ComponentList list) : this(new Grid(w, h), list)
         {
         }
         //------------------------------------------------------------------
@@ -54,13 +54,13 @@ namespace Game.Components
             clear();
             paste(new Field("saves/circuit/save.json"));
         }
-        
+
         // creates a saveData object from this grid object
         private SaveData toSave()
         {
             return new SaveData(grid.width, grid.height, grid.grid, list.custom);
         }
-        
+
         // converts world coordinates to grid coordinates
         public static int toGrid(float pos, int gridsize, int off)
         {
@@ -70,14 +70,14 @@ namespace Game.Components
         //------------------------------------------------------------------
 
         // CHANGE GRID
-        
+
         public bool add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
-            bool change = grid.add(x, y, t);
+            bool change = grid.set(x, y, t);
             if (change)
-                state.setState(new Pos(x,y), false);
+                state.setState(new Pos(x, y), false);
             return change;
         }
 
@@ -86,9 +86,9 @@ namespace Game.Components
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
-            bool change = grid.del(x, y);
+            bool change = grid.set(x, y, (int)types.NONE);
             if (change)
-                state.setState(new Pos(x,y), false);
+                state.setState(new Pos(x, y), false);
             return change;
         }
 
@@ -107,7 +107,7 @@ namespace Game.Components
             Dictionary<int, Component> components = new Dictionary<int, Component>();
             List<ButtonComp> buttons = new List<ButtonComp>();
             List<Connection> connections = new List<Connection>();
-            
+
             int[,] labels = grid.connectedComponents();
             crossConnect(labels, connections);
             makeComponents(labels, components, buttons);
@@ -115,24 +115,24 @@ namespace Game.Components
 
             return new Circuit(name, components, buttons, connections);
         }
-        
+
         // connect wires with a cross connection between them
         private void crossConnect(int[,] labels, List<Connection> connections)
         {
-            for (int y = 0; y < grid.height; y++)
+            for (int x = 0; x < grid.width; x++)
             {
-                for (int x = 0; x < grid.width; x++)
+                for (int y = 0; y < grid.height; y++)
                 {
-                    if (labels[y, x] != -2) { continue; }
-                    Connection c = list.NewConnection(grid[y, x], new Pos(x, y), state);
+                    if (labels[x, y] != -2) { continue; }
+                    Connection c = list.NewConnection(grid[x, y], new Pos(x, y), state);
                     connections.Add(c);
                     if (grid[x - 1, y] == (int)types.WIRE && grid[x + 1, y] == (int)types.WIRE)
                     {
-                        Grid.changeLabel(labels[y, x + 1], labels[y, x - 1], labels, grid.width, grid.height);
+                        Grid.changeLabel(labels[y, x + 1], labels[x - 1, y], labels, grid.width, grid.height);
                     }
                     if (grid[x, y - 1] == (int)types.WIRE && grid[x, y + 1] == (int)types.WIRE)
                     {
-                        Grid.changeLabel(labels[y + 1, x], labels[y - 1, x], labels, grid.width, grid.height);
+                        Grid.changeLabel(labels[x, y + 1], labels[x, y - 1], labels, grid.width, grid.height);
                     }
                 }
             }
@@ -140,52 +140,52 @@ namespace Game.Components
         // create the components from the grid
         private void makeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons)
         {
-            for (int y = 0; y < grid.height; y++)
+            for (int x = 0; x < grid.width; x++)
             {
-                for (int x = 0; x < grid.width; x++)
+                for (int y = 0; y < grid.height; y++)
                 {
-                    if (labels[y, x] <= 0 || grid[y, x] == 0) { continue; }
-                    if (components.ContainsKey(labels[y, x]))
+                    if (labels[x, y] <= 0 || grid[x, y] == 0) { continue; }
+                    if (components.ContainsKey(labels[x, y]))
                     {
-                        components[labels[y, x]].add(new Pos(x, y));
+                        components[labels[x, y]].add(new Pos(x, y));
                     }
                     else
                     {
-                        Component c = list.NewComponent(grid[y, x], state);
+                        Component c = list.NewComponent(grid[x, y], state);
                         c.add(new Pos(x, y));
-                        if (grid[y, x] == (int)types.BUT)
+                        if (grid[x, y] == (int)types.BUT)
                         {
                             buttons.Add((ButtonComp)c);
                         }
-                        components.Add(labels[y, x], c);
+                        components.Add(labels[x, y], c);
                     }
                 }
             }
         }
         // create the connections between components
-        private void makeConnections(int[,] labels, Dictionary<int, Component> components,  List<Connection> connections)
+        private void makeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections)
         {
-            for (int y = 0; y < grid.height; y++)
+            for (int x = 0; x < grid.width; x++)
             {
-                for (int x = 0; x < grid.width; x++)
+                for (int y = 0; y < grid.height; y++)
                 {
-                    if (labels[y, x] != -1) { continue; }
+                    if (labels[x, y] != -1) { continue; }
                     bool wiref = false;
                     bool otherf = false;
-                    Pos[] neighbors = { new Pos(x - 1, y), new Pos(x, y - 1), new Pos(x + 1, y), new Pos(x, y + 1) };
-                    Connection con = list.NewConnection(grid[y, x], new Pos(x, y), state);
+                    Pos[] neighbors = {new Pos(x, y - 1), new Pos(x - 1, y), new Pos(x, y + 1), new Pos(x + 1, y) };
+                    Connection con = list.NewConnection(grid[x, y], new Pos(x, y), state);
                     foreach (Pos pos in neighbors)
                     {
                         int block = grid[pos.x, pos.y];
                         if (block == 0) { continue; }
                         if (!wiref && block == (int)types.WIRE)
                         {
-                            con.addWire(components[labels[pos.y, pos.x]]);
+                            con.addWire(components[labels[pos.x, pos.y]]);
                             wiref = true;
                         }
-                        else if (!otherf && labels[pos.y, pos.x] >= 0 && block != (int)types.WIRE)
+                        else if (!otherf && labels[pos.x, pos.y] >= 0 && block != (int)types.WIRE)
                         {
-                            con.addOther(components[labels[pos.y, pos.x]]);
+                            con.addOther(components[labels[pos.x, pos.y]]);
                             otherf = true;
                         }
                     }
@@ -252,20 +252,20 @@ namespace Game.Components
             {
                 for (int x = 0; x < grid.width; x++)
                 {
-                    if (grid[y, x] != 0)
+                    if (grid[x, y] != 0)
                     {
                         int xpos = x * gridsize - xoff;
-                        int ypos = y * gridsize - yoff;;
-                        list.draw(grid[y,x], xpos, ypos, gridsize, state.getState(new Pos(x,y)));
+                        int ypos = y * gridsize - yoff; ;
+                        list.draw(grid[x, y], xpos, ypos, gridsize, state.getState(new Pos(x, y)));
                     }
                 }
             }
         }
         public override void draw(int x, int y, int gridsize, bool state)
         {
-            Color color = state? onColor: offColor;
+            Color color = state ? onColor : offColor;
             Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
-            Raylib.DrawText(name[0].ToString(), x+gridsize/3, y, gridsize, Color.BLACK);
+            Raylib.DrawText(name[0].ToString(), x + gridsize / 3, y, gridsize, Color.BLACK);
         }
     }
 }

@@ -17,15 +17,15 @@ namespace Game.Components
         private bool[,] state;
         public State(int w, int h)
         {
-            state = new bool[h,w];
+            state = new bool[w, h];
         }
         public void setState(Pos p, bool newState) 
         {
-            state[p.y, p.x] = newState;
+            state[p.x, p.y] = newState;
         }
         public bool getState(Pos p) 
         {
-            return state[p.y, p.x];
+            return state[p.x, p.y];
         }
     }
 

@@ -20,7 +20,7 @@ namespace Game
         private Circuit circuit;                // build components
         private string filename = "";       // remembers last dragged filename
         private double time = 0;
-        private const double DELAY = 0.5;
+        private const double DELAY = 0.2;
         private bool rebuild = false;
         public Simulation()
         {
