@@ -2,7 +2,7 @@ using Raylib_cs;
 namespace Game.Components
 {
     // contains the mapping of basic types to int
-    enum types
+    public enum types
     {
         NONE,
         OUT,

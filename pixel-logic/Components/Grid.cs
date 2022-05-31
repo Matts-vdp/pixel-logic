@@ -148,7 +148,7 @@ namespace Game.Components
     {
         private int width, height;                      // size of grid
         private int[,] grid;                            // contains wich block is placed where
-        //private int[,] labels;                          // used for connected component analysis
+
         public ComponentList list;              // stores the mapping of block types to components
 
         public State state;
