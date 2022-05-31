@@ -109,18 +109,17 @@ namespace Game.Components
         private string ext;      // file extension
         
         
-        public CCode(string filename)
+        public CCode(string filename, string txt)
         {
-            script = loadCs("saves/customCode/" + filename);
+            script = loadCs(txt);
             name = filename;
             ext = Path.GetExtension(filename);
             onColor = Color.GRAY;
             offColor = Color.GRAY;
         }
         // loads a script from file storage
-        public Script<List<bool>>? loadCs(string filename)
+        public Script<List<bool>>? loadCs(string txt)
         {
-            string txt = File.ReadAllText(filename);
             var opt = ScriptOptions.Default;
             opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
             opt.AddImports("System");

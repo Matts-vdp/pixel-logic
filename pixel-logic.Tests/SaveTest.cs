@@ -1,13 +1,43 @@
 using Xunit;
 using Game.Components;
+using System.Numerics;
+using System.Collections.Generic;
 
 namespace pixel_logic.Tests;
+
 
 public class SaveTest
 {
     [Fact]
-    public void saveLoad()
+    public void Save()
     {
-        Field g = new Field(10,10);
+        int[,] grid = new int[1,1]{
+            {1},
+        };
+        Dictionary<int,ComponentCreator> custom = new Dictionary<int, ComponentCreator>();
+        Field f = new Field(1,1);
+        f.name = "test";
+        custom.Add(1, f);
+        SaveData save = new SaveData(1,1, grid, custom);
+        
+        Assert.Equal(new BlockPos(0,0,1), save.blocks[0]);
+        Assert.Equal("test", save.components[1]);
+
+        string json = save.toJson();
+        string truth = "{\"width\":1,\"height\":1,\"blocks\":[{\"pos\":{\"x\":0,\"y\":0},\"block\":1}],\"components\":{\"1\":\"test\"}}";
+        Assert.Equal(truth, json);
+    }
+
+    [Fact]
+    public void Load()
+    {
+        string js = "{\"width\":1,\"height\":1,\"blocks\":[{\"pos\":{\"x\":0,\"y\":0},\"block\":1}],\"components\":{\"1\":\"test\"}}";
+        SaveData save = SaveData.fromJson(js);
+        Assert.Equal(new BlockPos(0,0,1), save.blocks[0]);
+        Assert.Equal("test", save.components[1]);
+
+        int[,] grid = save.fromArray();
+        int[,] truth = new int[1,1]{{1}};
+        Assert.Equal(truth, grid);
     }
 }

@@ -22,14 +22,7 @@ namespace Game.Components
         public int height { get; set; }
         public List<BlockPos> blocks { get; set; }
         public Dictionary<int, string> components { get; set; }
-        public SaveData(int w, int h, List<BlockPos> grid, Dictionary<int, string> components)
-        {
-            this.blocks = grid;
-            this.components = components;
-            width = w;
-            height = h;
-        }
-        public SaveData() : this(200, 200, new List<BlockPos>(), new Dictionary<int, string>()) { }
+
         public SaveData(int width, int height, int[,] grid, Dictionary<int, ComponentCreator> custom)
         {
             this.width = width;
@@ -42,9 +35,11 @@ namespace Game.Components
             }
             components = toSave(block, custom);
         }
+        public SaveData() : this(1, 1, new int[1,1], new Dictionary<int, ComponentCreator>()) { }
+        
 
         //SAVE
-        public Dictionary<int, string> toSave(Dictionary<int, bool> blocks, Dictionary<int, ComponentCreator> custom)
+        private Dictionary<int, string> toSave(Dictionary<int, bool> blocks, Dictionary<int, ComponentCreator> custom)
         {
             Dictionary<int, string> names = new Dictionary<int, string>();
             foreach (int key in custom.Keys)
@@ -61,8 +56,8 @@ namespace Game.Components
             List<BlockPos> pos = new List<BlockPos>();
             for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
-                    if (grid[y, x] != 0)
-                        pos.Add(new BlockPos(x, y, grid[y, x]));
+                    if (grid[x, y] != 0)
+                        pos.Add(new BlockPos(x, y, grid[x, y]));
             return pos;
         }
         

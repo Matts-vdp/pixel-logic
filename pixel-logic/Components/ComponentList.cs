@@ -146,14 +146,15 @@ namespace Game.Components
             if (index != -1) return index;
             index = Count+1;
             string ext = Path.GetExtension(filename);
+            string txt = File.ReadAllText(filename);
             ComponentCreator c;
             switch (ext)
             {
                 case ".json":
-                    c = new Field(filename);
+                    c = new Field(filename, txt);
                     break;
                 default:
-                    c = new CCode(filename);
+                    c = new CCode(filename, txt);
                     break;
             }
             custom.Add(index, c);

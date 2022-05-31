@@ -238,7 +238,8 @@ namespace Game
                 string[] files = Raylib.GetDroppedFiles();
                 if (Raylib.IsFileExtension(files[0], ".json"))
                 {
-                    cloneGrid = new Field(files[0]);
+                    string txt = File.ReadAllText(files[0]);
+                    cloneGrid = new Field(files[0], txt);
                     filename = files[0];
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl"))

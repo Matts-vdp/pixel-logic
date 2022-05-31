@@ -31,12 +31,11 @@ namespace Game.Components
 
         // JSON
         // used to load a grid from a json file
-        public Field(string text)
+        public Field(string name, string txt)
         {
             // load json
-            name = Path.GetFileName(text);
-            string js = File.ReadAllText("saves/circuit/" + name);
-            SaveData save = SaveData.fromJson(js);
+            this.name = Path.GetFileName(name);
+            SaveData save = SaveData.fromJson(txt);
             grid = new Grid(save.width, save.height, save.fromArray());
             list = save.readComponents(grid.grid);
             state = new State(save.width, save.height);
@@ -52,7 +51,9 @@ namespace Game.Components
         public void load()
         {
             clear();
-            paste(new Field("saves/circuit/save.json"));
+            string filename = "saves/circuit/save.json";
+            string txt = File.ReadAllText(filename);
+            paste(new Field(filename, txt));
         }
 
         // creates a saveData object from this grid object
