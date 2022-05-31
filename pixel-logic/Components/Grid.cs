@@ -55,17 +55,103 @@ namespace Game.Components
         }
     }
 
+    public class Circuit 
+    {
+        public string name;
+        private Dictionary<int, Component> components;  // stores all components
+        private List<ButtonComp> buttons;                   // stores buttons for input handling
+        private List<Connection> connections;           // stores all connections between components
+
+        public Circuit(string name, Dictionary<int, Component> components, List<ButtonComp> buttons, List<Connection> connections) 
+        {
+            this.name = name;
+            this.components = components;
+            this.buttons = buttons;
+            this.connections = connections;
+        }
+
+        public Component toComponent(State state)
+        {
+            List<Connection> inp = new List<Connection>();
+            List<Connection> outp = new List<Connection>();
+            Connection? clock = null;
+
+            foreach (Connection i in connections)
+            {
+                if (!i.isFull())
+                {
+                    if (i.GetType() == typeof(InConnection))
+                    {
+                        outp.Add(i);
+                    }
+                    else if (i.GetType() == typeof(OutConnection))
+                    {
+                        inp.Add(i);
+                    }
+                    else if (i.GetType() == typeof(ClockIn))
+                    {
+                        clock = i;
+                    }
+                }
+            }
+            return new SubComponent(this, inp, outp, clock, state);
+        }
+
+        // update components
+        public void update()
+        {
+            foreach (Component c in components.Values)
+            {
+                if (!(c is WireComp))
+                    c.update();
+            }
+            foreach (Component c in components.Values)
+            {
+                if (c is WireComp)
+                    c.update();
+            }
+        }
+        // handle keyboard input
+        public void Input()
+        {
+            int key = 49;
+            for (int i = 0; i < buttons.Count && i < 9; i++)
+            {
+                if (Raylib.IsKeyPressed((KeyboardKey)(key + i)))
+                {
+                    buttons[i].toggle();
+                }
+            }
+
+        }
+    }
+    
+    public class State
+    {
+        private bool[,] state;
+        public State(int w, int h)
+        {
+            state = new bool[h,w];
+        }
+        public void setState(Pos p, bool newState) 
+        {
+            state[p.y, p.x] = newState;
+        }
+        public bool getState(Pos p) 
+        {
+            return state[p.y, p.x];
+        }
+    }
+
     // represents a grid of components converts the grid matrix to components using connected components
-    public class Grid : CustomComponentCreator
+    public class Grid : ComponentCreator
     {
         private int width, height;                      // size of grid
         private int[,] grid;                            // contains wich block is placed where
-        private int[,] labels;                          // used for connected component analysis
-        private Dictionary<int, Component> components;  // stores all components
-        private List<Button> buttons;                   // stores buttons for input handling
-        private List<Connection> connections;           // stores all connections between components
+        //private int[,] labels;                          // used for connected component analysis
         public ComponentList list;              // stores the mapping of block types to components
 
+        public State state;
         // used to create new grid
         public Grid(int w, int h) : this(w, h, new ComponentList()) { }
         // used to create new grid with same componentList 
@@ -73,12 +159,11 @@ namespace Game.Components
         {
             this.list = list;
             grid = new int[h, w];
-            labels = new int[h, w];
-            components = new Dictionary<int, Component>();
-            connections = new List<Connection>();
-            buttons = new List<Button>();
             width = w;
             height = h;
+            state = new State(width, height);
+            offColor = Color.GREEN;
+            onColor = Color.GREEN;
         }
         //------------------------------------------------------------------
 
@@ -94,12 +179,9 @@ namespace Game.Components
             height = save.height;
             grid = fromArray(save.width, save.height, save.blocks);
             list = RebaseComponents(save.components);
-            // init other objects
-            labels = new int[height, width];
-            components = new Dictionary<int, Component>();
-            connections = new List<Connection>();
-            buttons = new List<Button>();
-            buildObjects();
+            state = new State(width, height);
+            offColor = Color.GREEN;
+            onColor = Color.GREEN;
         }
         // saves grid to saves/circuit/filename
         public void save(string filename)
@@ -164,21 +246,13 @@ namespace Game.Components
 
         // CHANGE GRID
         // add block to grid with world coordinates
-        public void add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
+        public bool add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
-            bool changed = add(x, y, t);
-            if (changed)
-                buildObjects();
+            return add(x, y, t);
         }
-        // add without rebuilding the grid components
-        private void addNoUpdate(Vector2 pos, int t, int gridsize, int xoff, int yoff)
-        {
-            int x = toGrid(pos.X, gridsize, xoff);
-            int y = toGrid(pos.Y, gridsize, yoff);
-            add(x, y, t);
-        }
+
         // add block to grid with grid coordinates
         private bool add(int x, int y, int t)
         {
@@ -189,14 +263,15 @@ namespace Game.Components
             return true;
         }
         // remove block from grid
-        public void del(Vector2 pos, int gridsize, int xoff, int yoff)
+        public bool del(Vector2 pos, int gridsize, int xoff, int yoff)
         {
             int x = toGrid(pos.X, gridsize, xoff);
             int y = toGrid(pos.Y, gridsize, yoff);
-            if (x < 0 || x >= width) { return; }
-            if (y < 0 || y >= height) { return; }
+            if (x < 0 || x >= width) { return false; }
+            if (y < 0 || y >= height) { return false; }
+            if (grid[y, x] == 0) { return false; }
             grid[y, x] = 0;
-            buildObjects();
+            return true;
         }
         // retreives block from grid returns 0 when outside
         private int GetBlock(int x, int y)
@@ -231,20 +306,23 @@ namespace Game.Components
 
         // CONVERT TO COMPONENTS
         // create components from grid matrix
-        private void buildObjects()
+        public Circuit buildObjects()
         {
-            labels = new int[height, width];
-            components = new Dictionary<int, Component>();
-            connections = new List<Connection>();
-            buttons = new List<Button>();
-            connectedComponents();
-            crossConnect();
-            makeComponents();
-            makeConnections();
+            int[,] labels = new int[height, width];
+            Dictionary<int, Component> components = new Dictionary<int, Component>();
+            List<ButtonComp> buttons = new List<ButtonComp>();
+            List<Connection> connections = new List<Connection>();
+            
+            connectedComponents(labels);
+            crossConnect(labels, connections);
+            makeComponents(labels, components, buttons);
+            makeConnections(labels, components, connections);
+
+            return new Circuit(name, components, buttons, connections);
         }
         // use connected components algorithm to group blocks of the same type
         // that are connected to each other into the same component
-        private void connectedComponents()
+        private void connectedComponents(int[,] labels)
         {
             int label = 1;
             bool changed = true;
@@ -295,14 +373,14 @@ namespace Game.Components
             }
         }
         // connect wires with a cross connection between them
-        private void crossConnect()
+        private void crossConnect(int[,] labels, List<Connection> connections)
         {
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
                     if (labels[y, x] != -2) { continue; }
-                    Connection c = list.NewConnection(grid[y, x], new Pos(x, y));
+                    Connection c = list.NewConnection(grid[y, x], new Pos(x, y), state);
                     connections.Add(c);
                     if (GetBlock(x - 1, y) == (int)types.WIRE && GetBlock(x + 1, y) == (int)types.WIRE)
                     {
@@ -316,7 +394,7 @@ namespace Game.Components
             }
         }
         // create the components from the grid
-        private void makeComponents()
+        private void makeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons)
         {
             for (int y = 0; y < height; y++)
             {
@@ -329,11 +407,11 @@ namespace Game.Components
                     }
                     else
                     {
-                        Component c = list.NewComponent(grid[y, x]);
+                        Component c = list.NewComponent(grid[y, x], state);
                         c.add(new Pos(x, y));
                         if (grid[y, x] == (int)types.BUT)
                         {
-                            buttons.Add((Button)c);
+                            buttons.Add((ButtonComp)c);
                         }
                         components.Add(labels[y, x], c);
                     }
@@ -341,7 +419,7 @@ namespace Game.Components
             }
         }
         // create the connections between components
-        private void makeConnections()
+        private void makeConnections(int[,] labels, Dictionary<int, Component> components,  List<Connection> connections)
         {
             for (int y = 0; y < height; y++)
             {
@@ -351,7 +429,7 @@ namespace Game.Components
                     bool wiref = false;
                     bool otherf = false;
                     Pos[] neighbors = { new Pos(x - 1, y), new Pos(x, y - 1), new Pos(x + 1, y), new Pos(x, y + 1) };
-                    Connection con = list.NewConnection(grid[y, x], new Pos(x, y));
+                    Connection con = list.NewConnection(grid[y, x], new Pos(x, y), state);
                     foreach (Pos pos in neighbors)
                     {
                         int block = GetBlock(pos.x, pos.y);
@@ -373,48 +451,6 @@ namespace Game.Components
         }
         //------------------------------------------------------------------
 
-        // GAME LOOP FUNCTIONS
-        // update components
-        public void update()
-        {
-            foreach (Component c in components.Values)
-            {
-                if (!(c is WireComp))
-                    c.update();
-            }
-            foreach (Component c in components.Values)
-            {
-                if (c is WireComp)
-                    c.update();
-            }
-        }
-        // handle keyboard input
-        public void Input()
-        {
-            int key = 49;
-            for (int i = 0; i < buttons.Count && i < 9; i++)
-            {
-                if (Raylib.IsKeyPressed((KeyboardKey)(key + i)))
-                {
-                    buttons[i].toggle();
-                }
-            }
-
-        }
-        // draw all components
-        public void draw(int gridsize, int xoff, int yoff)
-        {
-            foreach (KeyValuePair<int, Component> entry in components)
-            {
-                entry.Value.draw(gridsize, xoff, yoff);
-            }
-            foreach (Connection c in connections)
-            {
-                c.draw(gridsize, xoff, yoff);
-            }
-        }
-        //------------------------------------------------------------------
-
         // COPY PASTE
         // copy part of grid to new grid object
         public Grid copy(int xstart, int ystart, int xend, int yend)
@@ -428,7 +464,6 @@ namespace Game.Components
                 }
             }
             newGrid.name = name;
-            newGrid.buildObjects();
             return newGrid;
         }
         // copy and remove in original
@@ -442,7 +477,6 @@ namespace Game.Components
                     grid[y, x] = (int)types.NONE;
                 }
             }
-            buildObjects();
             return newGrid;
         }
         // merge customcomponents of componentlist adds missing components
@@ -464,13 +498,12 @@ namespace Game.Components
             {
                 for (int x = 0; x < other.width; x++)
                 {
-                    if (other.grid[y, x] != (int)types.NONE)
+                    if (other.grid[y, x] != 0)
                     {
-                        addNoUpdate(pos, other.grid[y, x], gridsize, xoff + x * gridsize, yoff + y * gridsize);
+                        add(pos, other.grid[y, x], gridsize, xoff + x * gridsize, yoff + y * gridsize);
                     }
                 }
             }
-            buildObjects();
         }
         // paste other grid in this grid at 0, 0
         private void paste(Grid other, int gridsize)
@@ -481,35 +514,28 @@ namespace Game.Components
         //------------------------------------------------------------------
         // CUSTOM COMPONENT
         // creates a subcomponent from this grid
-        public override Component toComponent()
+        public override Component createComponent(State state)
         {
-            Grid newGrid = copy(0, 0, width - 1, height - 1);
-            List<Connection> inp = new List<Connection>();
-            List<Connection> outp = new List<Connection>();
-            Connection? clock = null;
-
-            foreach (Connection i in newGrid.connections)
-            {
-                if (!i.isFull())
-                {
-                    if (i.GetType() == typeof(InConnection))
-                    {
-                        outp.Add(i);
-                    }
-                    else if (i.GetType() == typeof(OutConnection))
-                    {
-                        inp.Add(i);
-                    }
-                    else if (i.GetType() == typeof(ClockIn))
-                    {
-                        clock = i;
-                    }
-                }
-            }
-            return new SubComponent(newGrid, inp, outp, clock);
+            return buildObjects().toComponent(state);
         }
         //------------------------------------------------------------------
 
+        // draw all components
+        public void draw(int gridsize, int xoff, int yoff)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (grid[y, x] != 0)
+                    {
+                        int xpos = x * gridsize - xoff;
+                        int ypos = y * gridsize - yoff;;
+                        list.draw(grid[y,x], xpos, ypos, gridsize, state.getState(new Pos(x,y)));
+                    }
+                }
+            }
+        }
     }
 
 

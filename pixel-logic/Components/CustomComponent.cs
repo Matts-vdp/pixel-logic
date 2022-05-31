@@ -10,7 +10,7 @@ namespace Game.Components
         protected Input input = new Input();
         protected CCode ccode;
 
-        protected CodeComponent( CCode ccode) : base()
+        protected CodeComponent( CCode ccode, State state) : base(state)
         {
             this.ccode = ccode;
         }
@@ -42,22 +42,22 @@ namespace Game.Components
             setOutput(output);
         }
 
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = new Color(100, 100, 100, 255);
-            string s = ccode.name[0].ToString();
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(s, pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
-        }
+        // public override void draw(int gridsize, int xoff, int yoff)
+        // {
+        //     Color color = new Color(100, 100, 100, 255);
+        //     string s = ccode.name[0].ToString();
+        //     foreach (Pos pos in blocks)
+        //     {
+        //         Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+        //         Raylib.DrawText(s, pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
+        //     }
+        // }
     }
     // component with custom code that only gets updated on positive clk 
     public class ProgComp : CodeComponent
     {
         private bool lastState = false;
-        public ProgComp(CCode ccode) : base(ccode)
+        public ProgComp(CCode ccode, State state) : base(ccode, state)
         {
         }
 
@@ -81,7 +81,7 @@ namespace Game.Components
     // component with custom code that works 'instant'
     public class CondComp : CodeComponent
     {
-        public CondComp(CCode ccode) : base(ccode)
+        public CondComp(CCode ccode, State state) : base(ccode, state)
         {
         }
         // only calls custom script to update outputs when inputs have changed 
@@ -107,11 +107,11 @@ namespace Game.Components
         private List<Connection> subInputs; // contains inputs of sub grid
         private List<Connection> subOutputs;// contains outputs of sub grid
         private Connection? clock;          // contains ClockIn of sub grid
-        private Grid grid;                  // reference to grid with components
+        private Circuit circuit;                  // reference to grid with components
 
-        public SubComponent(Grid g, List<Connection> inp, List<Connection> outp, Connection? clk) : base()
+        public SubComponent(Circuit c, List<Connection> inp, List<Connection> outp, Connection? clk, State state) : base(state)
         {
-            grid = g;
+            circuit = c;
             subInputs = inp;
             subOutputs = outp;
             clock = clk;
@@ -127,18 +127,18 @@ namespace Game.Components
                 subInputs[i].setActive(inputs[i].isActive());
             if (clockIn != null)
                 clock?.setActive(clockIn.isActive());
-            grid.update();
+            circuit.update();
             for (int i = 0; i < outputs.Count && i < subOutputs.Count; i++)
                 outputs[i].setActive(subOutputs[i].isActive());
         }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = new Color(78, 255, 50, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(grid.name[0].ToString(), pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
-        }
+        // public override void draw(int gridsize, int xoff, int yoff)
+        // {
+        //     Color color = new Color(78, 255, 50, 255);
+        //     foreach (Pos pos in blocks)
+        //     {
+        //         Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
+        //         Raylib.DrawText(circuit.name[0].ToString(), pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
+        //     }
+        // }
     }
 }

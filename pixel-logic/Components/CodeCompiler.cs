@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-
+using Raylib_cs;
 
 namespace Game.Components
 {
@@ -103,7 +103,7 @@ namespace Game.Components
     }
 
     // used to store the script and to instantiate components
-    public class CCode : CustomComponentCreator
+    public class CCode : ComponentCreator
     {
         private Script<List<bool>>? script;
         private string ext;      // file extension
@@ -114,6 +114,8 @@ namespace Game.Components
             script = loadCs("saves/customCode/" + filename);
             name = filename;
             ext = Path.GetExtension(filename);
+            onColor = Color.GRAY;
+            offColor = Color.GRAY;
         }
         // loads a script from file storage
         public Script<List<bool>>? loadCs(string filename)
@@ -139,11 +141,11 @@ namespace Game.Components
         }
 
         // creates a component with this script
-        public override Component toComponent()
+        public override Component createComponent(State state)
         {
             if (ext == ".cpl")
-                return new CondComp(this);
-            return new ProgComp(this);
+                return new CondComp(this, state);
+            return new ProgComp(this, state);
         }
     }
 

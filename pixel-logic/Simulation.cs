@@ -15,8 +15,15 @@ namespace Game
         private static int xsel = -1;       // selection start x
         private static int ysel = -1;       // selection start y
         private Grid? cloneGrid;            // stores grid after copy
+        private Circuit? cloneCircuit;
         private Grid grid = new Grid(200, 200); // main grid
+        private Circuit circuit;                // build components
         private string filename = "";       // remembers last dragged filename
+
+        public Simulation()
+        {
+            circuit = grid.buildObjects();
+        }
 
         // processes all mouse input
         private void InputMouse()
@@ -24,15 +31,17 @@ namespace Game
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                grid.add(pos, selected, GRIDSIZE, xoff, yoff);
+                if (grid.add(pos, selected, GRIDSIZE, xoff, yoff))
+                    circuit = grid.buildObjects();
             }
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                grid.del(pos, GRIDSIZE, xoff, yoff);
+                if (grid.del(pos, GRIDSIZE, xoff, yoff))
+                    circuit = grid.buildObjects();
             }
             selected -= (int)Raylib.GetMouseWheelMove();
-            int max = grid.list.items.Count;
+            int max = grid.list.Count;
             if (selected > max)
             {
                 selected = max;
@@ -130,9 +139,12 @@ namespace Game
                 int yend = Grid.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.cut(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
+                cloneGrid.save("clipboard.json");
+                grid.buildObjects();
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
             {
+                cloneCircuit = cloneGrid?.buildObjects();
                 drawCloneGrid();
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_V))
@@ -141,6 +153,7 @@ namespace Game
                 {
                     Vector2 pos = Raylib.GetMousePosition();
                     grid.paste(cloneGrid, pos, GRIDSIZE, xoff, yoff);
+                    grid.buildObjects();
                     return;
                 }
             }
@@ -156,16 +169,16 @@ namespace Game
         {
             InputMouse();
             InputKeyboard();
-            grid.Input(); // handle extra input of grid
+            circuit.Input(); // handle extra input of grid
         }
 
         // draws game UI
         private void drawUI()
         {
-            for (int i = 0; i < grid.list.items.Count; i++)
+            for (int i = 0; i < grid.list.Count; i++)
             {
                 bool sel = (i + 1) == selected;
-                Raylib.DrawText(grid.list.items[i], 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
+                Raylib.DrawText(grid.list.getName(i), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
             Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
         }
@@ -192,7 +205,7 @@ namespace Game
         // handle game update
         public void update()
         {
-            grid.update();
+            circuit.update();
         }
         // draw gameobjects
         public void draw()

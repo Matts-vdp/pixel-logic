@@ -8,13 +8,24 @@ namespace Game.Components
         protected List<Connection> inputs;     // all input connections
         protected List<Connection> outputs;    // output connections
         protected Connection? clockIn;         // clock connection if present
-        protected bool active = false;         // state of component
+        protected bool active {
+            get {
+                return state.getState(blocks[0]);
+            }
+            set {
+                foreach (Pos p in blocks) {
+                    state.setState(p, value);
+                }
+            }}
 
-        protected Component()
+        protected State state;
+
+        protected Component(State state)
         {
             blocks = new List<Pos>();
             inputs = new List<Connection>();
             outputs = new List<Connection>();
+            this.state = state;
         }
         // add new block to the component
         public void add(Pos p)
@@ -38,13 +49,12 @@ namespace Game.Components
         }
 
         public abstract void update();
-        public abstract void draw(int gridsize, int xoff, int yoff);
     }
 
     // component that is used to pass signals between other components
     public class WireComp : Component
     {
-        public WireComp() : base() { }
+        public WireComp(State state) : base(state) { }
         // pass input to output, true if inputs true and false
         public override void update()
         {
@@ -64,20 +74,16 @@ namespace Game.Components
                 o.setActive(value);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? Color.YELLOW : Color.BROWN;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new WireComp(state);
         }
     }
 
     // represents and gate
     public class AndComp : Component
     {
-        public AndComp() : base() { }
+        public AndComp(State state) : base(state) { }
         // output = input0 && input1 && ...
         public override void update()
         {
@@ -97,20 +103,16 @@ namespace Game.Components
                 o.setActive(value);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? Color.GREEN : Color.DARKGREEN;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new AndComp(state);
         }
     }
 
     // represents not gate
     public class NotComp : Component
     {
-        public NotComp() : base() { }
+        public NotComp(State state) : base(state) { }
         // output = ! input
         public override void update()
         {
@@ -130,20 +132,16 @@ namespace Game.Components
                 o.setActive(value);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? Color.ORANGE : Color.ORANGE;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new NotComp(state);
         }
     }
 
     // represents or gate
     public class OrComp : Component
     {
-        public OrComp() : base() { }
+        public OrComp(State state) : base(state) { }
         // output = input0 || input1 ...
         public override void update()
         {
@@ -163,20 +161,16 @@ namespace Game.Components
                 o.setActive(value);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? Color.PURPLE : Color.PURPLE;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new OrComp(state);
         }
     }
 
     // represents xor gate
     public class XorComp : Component
     {
-        public XorComp() : base() { }
+        public XorComp(State state) : base(state) { }
         public override void update()
         {
             bool i1 = false;
@@ -189,47 +183,40 @@ namespace Game.Components
                 o.setActive(active);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? new Color(125, 255, 0, 255) : new Color(125, 125, 0, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new XorComp(state);
         }
     }
 
     // represents battery (always 1)
-    public class BatComp : Component
+    public class BatteryComp : Component
     {
-        public BatComp() : base()
+        public BatteryComp(State state) : base(state)
         {
             active = true;
         }
         // set all outputs to 1
         public override void update()
         {
+            active = true;
             foreach (Connection o in outputs)
             {
                 o.setActive(true);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = Color.GOLD;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new BatteryComp(state);
         }
     }
 
     // represents clock
-    public class Clock : Component
+    public class ClockComp : Component
     {
         double time;
         const float DELAY = 0.5f;
-        public Clock() : base()
+        public ClockComp(State state) : base(state)
         {
             active = false;
             time = Raylib.GetTime();
@@ -248,21 +235,17 @@ namespace Game.Components
                 }
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = Color.MAGENTA;
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new ClockComp(state);
         }
     }
 
     // represents flip flop
-    public class FlipFlop : Component
+    public class FlipFlopComp : Component
     {
         bool lastState = false;
-        public FlipFlop() : base()
+        public FlipFlopComp(State state) : base(state)
         {
         }
         // only update state on change from false to true of "ClockIn"
@@ -280,24 +263,20 @@ namespace Game.Components
             }
             lastState = clockIn.isActive();
         }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = active ? new Color(0, 255, 255, 255) : new Color(0, 100, 100, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
-        }
         public override void addClock(Connection c)
         {
             clockIn = c;
         }
+        public static Component newComponent(State state)
+        {
+            return new FlipFlopComp(state);
+        }
     }
 
     // can be changed by keyboard during simulation
-    public class Button : Component
+    public class ButtonComp : Component
     {
-        public Button() : base()
+        public ButtonComp(State state) : base(state)
         {
         }
         public override void update()
@@ -313,21 +292,17 @@ namespace Game.Components
                 o.setActive(active);
             }
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? new Color(0, 255, 255, 255) : new Color(0, 100, 100, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            }
+            return new ButtonComp(state);
         }
     }
 
     // display input as number
-    public class Seg7 : Component
+    public class Seg7Comp : Component
     {
         private int value;
-        public Seg7() : base()
+        public Seg7Comp(State state) : base(state)
         {
         }
         // read input and save as int
@@ -343,14 +318,10 @@ namespace Game.Components
             }
             value = num;
         }
-        public override void draw(int gridsize, int xoff, int yoff)
+        public static Component newComponent(State state)
         {
-            Color color = active ? new Color(78, 255, 50, 255) : new Color(0, 100, 0, 255);
-            foreach (Pos pos in blocks)
-            {
-                Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-                Raylib.DrawText(value.ToString(), pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
-            }
+            return new Seg7Comp(state);
         }
     }
+
 }

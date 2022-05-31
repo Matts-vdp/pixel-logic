@@ -7,12 +7,20 @@ namespace Game.Components
         protected Component? output;
         protected Component? input;
         protected Pos pos;             // location in grid
-        protected bool active;         // state
+        protected bool active {
+            get {
+                return state.getState(pos);
+            }
+            set {
+                state.setState(pos, value);
+            }}
 
         private bool changed;       // state changed since last read
 
-        protected Connection(Pos p)
+        protected State state;
+        protected Connection(Pos p, State state)
         {
+            this.state = state;
             pos = p;
             active = false;
             changed = true;
@@ -58,7 +66,7 @@ namespace Game.Components
     // used to pass a signal from a component to a wire
     public class OutConnection : Connection
     {
-        public OutConnection(Pos p) : base(p)
+        public OutConnection(Pos p, State state) : base(p, state)
         {
         }
         public override void draw(int gridsize, int xoff, int yoff)
@@ -76,12 +84,16 @@ namespace Game.Components
         {
             addInput(c);
         }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new OutConnection(p, state);
+        }
     }
 
     // used to pass a signal from a wire to a component
     public class InConnection : Connection
     {
-        public InConnection(Pos p) : base(p)
+        public InConnection(Pos p, State state) : base(p, state)
         {
         }
 
@@ -101,12 +113,16 @@ namespace Game.Components
         {
             addOutput(c);
         }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new InConnection(p, state);
+        }
     }
 
     // used to pass a signal from a wire to a component using ClockIn for extra functionality
     public class ClockIn : Connection
     {
-        public ClockIn(Pos p) : base(p)
+        public ClockIn(Pos p, State state) : base(p, state)
         {
         }
 
@@ -127,12 +143,16 @@ namespace Game.Components
             output = c;
             c.addClock(this);
         }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new ClockIn(p, state);
+        }
     }
 
     // used to let wires cross each other
     public class CrossConnection : Connection
     {
-        public CrossConnection(Pos p) : base(p)
+        public CrossConnection(Pos p, State state) : base(p, state)
         {
         }
 
@@ -147,6 +167,10 @@ namespace Game.Components
         }
         public override void addOther(Component c)
         {
+        }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new CrossConnection(p, state);
         }
     }
 }

@@ -124,7 +124,7 @@ public class ComponentsTest
     [Fact]
     public void Battery()
     {
-        Component comp = new BatComp();
+        Component comp = new BatteryComp();
         Connection output = new OutConnection(new Pos(0,0));
         output.addOther(comp);
         comp.update();
@@ -133,7 +133,7 @@ public class ComponentsTest
     [Fact]
     public void FlipFlop()
     {
-        Component comp = new FlipFlop();
+        Component comp = new FlipFlopComp();
         Connection input = new InConnection(new Pos(0,0));
         Connection clock = new ClockIn(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,0));
