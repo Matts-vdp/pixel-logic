@@ -251,15 +251,14 @@ namespace Game.Components
         // only update state on change from false to true of "ClockIn"
         public override void update()
         {
+            foreach (Connection o in outputs)
+                    o.setActive(active);
             if (inputs.Count == 0) return;
             if (clockIn == null) return;
 
             if (clockIn.isActive() && !lastState)
             {
                 active = inputs[0].isActive();
-
-                foreach (Connection o in outputs)
-                    o.setActive(active);
             }
             lastState = clockIn.isActive();
         }

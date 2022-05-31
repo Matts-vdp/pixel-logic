@@ -260,6 +260,7 @@ namespace Game.Components
             if (y < 0 || y >= height) { return false; }
             if (grid[y, x] == t) { return false; }
             grid[y, x] = t;
+            state.setState(new Pos(x,y), false);
             return true;
         }
         // remove block from grid
@@ -271,6 +272,7 @@ namespace Game.Components
             if (y < 0 || y >= height) { return false; }
             if (grid[y, x] == 0) { return false; }
             grid[y, x] = 0;
+            state.setState(new Pos(x,y), false);
             return true;
         }
         // retreives block from grid returns 0 when outside
@@ -301,6 +303,7 @@ namespace Game.Components
         private void clear()
         {
             grid = new int[height, width];
+            state = new State(width, height);
         }
         //------------------------------------------------------------------
 
