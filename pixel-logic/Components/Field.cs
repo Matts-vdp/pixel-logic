@@ -48,11 +48,9 @@ namespace Game.Components
             File.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
         }
         // loads grid from saves/circuit/save.json
-        public void load()
+        public void load(string filename, string txt)
         {
             clear();
-            string filename = "saves/circuit/save.json";
-            string txt = File.ReadAllText(filename);
             paste(new Field(filename, txt));
         }
 

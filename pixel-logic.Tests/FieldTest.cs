@@ -6,12 +6,6 @@ namespace pixel_logic.Tests;
 
 public class FieldTest
 {
-    [Fact]
-    public void Constructor1()
-    {
-        Field g = new Field(5, 5);
-    }
-
     [Theory]
     [InlineData(300,30,0,10)]
     [InlineData(0,20,0,0)]
@@ -73,10 +67,12 @@ public class FieldTest
         comp.add(new Pos(0,0));
         Connection output = new OutConnection(new Pos(0,1), state);
         Connection input = new InConnection(new Pos(0,2), state);
+        Component wire = WireComp.newComponent(state);
         Connection clk = new ClockIn(new Pos(0,3), state);
         input.addOther(comp);
         output.addOther(comp);
         clk.addOther(comp);
+        clk.addWire(wire);
         comp.update();
         Assert.False(output.isActive());
         input.setActive(true);
@@ -88,4 +84,24 @@ public class FieldTest
         Assert.True(output.isActive());
     }
     
+
+    [Fact]
+    public void FromJson()
+    {
+        string json = "{\"width\":1,\"height\":1,\"blocks\":[{\"pos\":{\"x\":0,\"y\":0},\"block\":1}]}";
+        Field field = new Field("test", json);
+    }
+    [Fact]
+    public void Load()
+    {
+        string json = "{\"width\":1,\"height\":1,\"blocks\":[{\"pos\":{\"x\":0,\"y\":0},\"block\":1}]}";
+        string name = "test";
+        Grid g = new Grid(1,1);
+        ComponentList list = new ComponentList();
+        g.set(0,0,10);
+        Field f = new Field(g, list);
+        
+        f.load(name, json);
+        Assert.Equal(1, g[0,0]);
+    }
 }

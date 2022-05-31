@@ -103,7 +103,9 @@ namespace Game
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
-                grid.load();
+                string filename = "saves/circuit/save.json";
+                string txt = File.ReadAllText(filename);
+                grid.load(filename, txt);
             }
             // copy paste
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))

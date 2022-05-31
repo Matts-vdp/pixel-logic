@@ -105,7 +105,7 @@ namespace Game.Components
     // used to store the script and to instantiate components
     public class CCode : ComponentCreator
     {
-        private Script<List<bool>>? script;
+        private Script<List<bool>> script;
         private string ext;      // file extension
         
         
@@ -118,7 +118,7 @@ namespace Game.Components
             offColor = Color.GRAY;
         }
         // loads a script from file storage
-        public Script<List<bool>>? loadCs(string txt)
+        public Script<List<bool>> loadCs(string txt)
         {
             var opt = ScriptOptions.Default;
             opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
@@ -131,10 +131,6 @@ namespace Game.Components
         // runs the script with the given inputs and returns the output of the script
         public List<bool> run(Input input)
         {
-            if (script == null)
-            {
-                return new List<bool>();
-            }
             ScriptState<List<bool>> state = script.RunAsync(input).Result;
             return state.ReturnValue;
         }
