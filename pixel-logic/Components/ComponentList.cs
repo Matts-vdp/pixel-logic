@@ -115,6 +115,13 @@ namespace Game.Components
 
         public Dictionary<int, ComponentCreator> custom = new Dictionary<int, ComponentCreator>();
 
+        private IFile _file;
+
+        public ComponentList(IFile file)
+        {
+            _file = file;
+        }
+
         public int Count
         {
             get {return basic.Count + custom.Count + connections.Count;}
@@ -146,12 +153,12 @@ namespace Game.Components
             if (index != -1) return index;
             index = Count+1;
             string ext = Path.GetExtension(filename);
-            string txt = File.ReadAllText(filename);
+            string txt = _file.ReadAllText(filename);
             ComponentCreator c;
             switch (ext)
             {
                 case ".json":
-                    c = new Field(filename, txt);
+                    c = new Field(filename, txt, _file);
                     break;
                 default:
                     c = new CCode(filename, txt);
