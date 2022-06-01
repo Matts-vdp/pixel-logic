@@ -7,12 +7,20 @@ namespace Game.Components
         protected Component? output;
         protected Component? input;
         protected Pos pos;             // location in grid
-        protected bool active;         // state
+        protected bool active {
+            get {
+                return state.getState(pos);
+            }
+            set {
+                state.setState(pos, value);
+            }}
 
         private bool changed;       // state changed since last read
 
-        protected Connection(Pos p)
+        protected State state;
+        protected Connection(Pos p, State state)
         {
+            this.state = state;
             pos = p;
             active = false;
             changed = true;
@@ -50,7 +58,6 @@ namespace Game.Components
             return (input != null) && (output != null);
         }
 
-        public abstract void draw(int gridsize, int xoff, int yoff);
         public abstract void addWire(Component c);
         public abstract void addOther(Component c);
     }
@@ -58,15 +65,8 @@ namespace Game.Components
     // used to pass a signal from a component to a wire
     public class OutConnection : Connection
     {
-        public OutConnection(Pos p) : base(p)
+        public OutConnection(Pos p, State state) : base(p, state)
         {
-        }
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = active ? Color.BLUE : Color.DARKBLUE;
-            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            if (input == null && output != null)
-                Raylib.DrawText(" I", pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
         }
         public override void addWire(Component c)
         {
@@ -75,22 +75,18 @@ namespace Game.Components
         public override void addOther(Component c)
         {
             addInput(c);
+        }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new OutConnection(p, state);
         }
     }
 
     // used to pass a signal from a wire to a component
     public class InConnection : Connection
     {
-        public InConnection(Pos p) : base(p)
+        public InConnection(Pos p, State state) : base(p, state)
         {
-        }
-
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = active ? Color.RED : Color.MAROON;
-            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            if (output == null && input != null)
-                Raylib.DrawText("O", pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
         }
 
         public override void addWire(Component c)
@@ -101,21 +97,17 @@ namespace Game.Components
         {
             addOutput(c);
         }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new InConnection(p, state);
+        }
     }
 
     // used to pass a signal from a wire to a component using ClockIn for extra functionality
     public class ClockIn : Connection
     {
-        public ClockIn(Pos p) : base(p)
+        public ClockIn(Pos p, State state) : base(p, state)
         {
-        }
-
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = active ? new Color(255, 50, 100, 255) : Color.RED;
-            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
-            if (input == null && output != null)
-                Raylib.DrawText("C", pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, Color.WHITE);
         }
 
         public override void addWire(Component c)
@@ -127,19 +119,17 @@ namespace Game.Components
             output = c;
             c.addClock(this);
         }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new ClockIn(p, state);
+        }
     }
 
     // used to let wires cross each other
     public class CrossConnection : Connection
     {
-        public CrossConnection(Pos p) : base(p)
+        public CrossConnection(Pos p, State state) : base(p, state)
         {
-        }
-
-        public override void draw(int gridsize, int xoff, int yoff)
-        {
-            Color color = active ? Color.GRAY : Color.GRAY;
-            Raylib.DrawRectangle(pos.x * gridsize - xoff, pos.y * gridsize - yoff, gridsize, gridsize, color);
         }
 
         public override void addWire(Component c)
@@ -147,6 +137,10 @@ namespace Game.Components
         }
         public override void addOther(Component c)
         {
+        }
+        public static Connection newConnection(Pos p, State state)
+        {
+            return new CrossConnection(p, state);
         }
     }
 }

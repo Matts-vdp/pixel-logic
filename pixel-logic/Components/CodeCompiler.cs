@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-
+using Raylib_cs;
 
 namespace Game.Components
 {
@@ -103,22 +103,23 @@ namespace Game.Components
     }
 
     // used to store the script and to instantiate components
-    public class CCode : CustomComponentCreator
+    public class CCode : ComponentCreator
     {
-        private Script<List<bool>>? script;
+        private Script<List<bool>> script;
         private string ext;      // file extension
         
         
-        public CCode(string filename)
+        public CCode(string filename, string txt)
         {
-            script = loadCs("saves/customCode/" + filename);
+            script = loadCs(txt);
             name = filename;
             ext = Path.GetExtension(filename);
+            onColor = Color.GRAY;
+            offColor = Color.GRAY;
         }
         // loads a script from file storage
-        public Script<List<bool>>? loadCs(string filename)
+        public Script<List<bool>> loadCs(string txt)
         {
-            string txt = File.ReadAllText(filename);
             var opt = ScriptOptions.Default;
             opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
             opt.AddImports("System");
@@ -130,20 +131,23 @@ namespace Game.Components
         // runs the script with the given inputs and returns the output of the script
         public List<bool> run(Input input)
         {
-            if (script == null)
-            {
-                return new List<bool>();
-            }
             ScriptState<List<bool>> state = script.RunAsync(input).Result;
             return state.ReturnValue;
         }
 
         // creates a component with this script
-        public override Component toComponent(ComponentList list, int type)
+        public override Component createComponent(State state)
         {
             if (ext == ".cpl")
-                return new CondComp(type, list);
-            return new ProgComp(type, list);
+                return new CondComp(this, state);
+            return new ProgComp(this, state);
+        }
+
+        public override void draw(int x, int y, int gridsize, bool state)
+        {
+            Color color = state? onColor: offColor;
+            Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
+            Raylib.DrawText(name[0].ToString(), x+gridsize/3, y, gridsize, Color.BLACK);
         }
     }
 

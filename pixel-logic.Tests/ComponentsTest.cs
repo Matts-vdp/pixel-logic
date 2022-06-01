@@ -8,18 +8,20 @@ public class ComponentsTest
     [Fact]
     public void ConnectionisFull()
     {
-        Connection conn = new OutConnection(new Pos());
+        State state = new State(10,10);
+        Connection conn = new OutConnection(new Pos(0,0), state);
         Assert.False(conn.isFull());
-        conn.addOther(new OrComp(new ComponentList()));
+        conn.addOther(new OrComp(state));
         Assert.False(conn.isFull());
-        conn.addWire(new OrComp(new ComponentList()));
+        conn.addWire(new OrComp(state));
         Assert.True(conn.isFull());
     }
     
     [Fact]
     public void ConnectionisChanged()
     {
-        Connection conn = new OutConnection(new Pos());
+        State state = new State(10,10);
+        Connection conn = new OutConnection(new Pos(), state);
         Assert.True(conn.isChanged());
         Assert.False(conn.isActive());
         Assert.False(conn.isChanged());
@@ -35,9 +37,11 @@ public class ComponentsTest
     [Fact]
     public void Wire()
     {
-        Component wire = new WireComp(new ComponentList());
-        Connection input = new OutConnection(new Pos(0,0));
-        Connection output = new InConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component wire = WireComp.newComponent(state);
+        wire.add(new Pos(0,0));
+        Connection input = new OutConnection(new Pos(0,1), state);
+        Connection output = new InConnection(new Pos(0,2), state);
         input.addWire(wire);
         output.addWire(wire);
         Assert.False(input.isActive());
@@ -50,10 +54,12 @@ public class ComponentsTest
     [Fact]
     public void And()
     {
-        Component comp = new AndComp(new ComponentList());
-        Connection input = new InConnection(new Pos(0,0));
-        Connection input2 = new InConnection(new Pos(0,0));
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = AndComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection input = new InConnection(new Pos(0,1), state);
+        Connection input2 = new InConnection(new Pos(0,2), state);
+        Connection output = new OutConnection(new Pos(0,3), state);
         input.addOther(comp);
         input2.addOther(comp);
         output.addOther(comp);
@@ -69,9 +75,11 @@ public class ComponentsTest
     [Fact]
     public void Not()
     {
-        Component comp = new NotComp(new ComponentList());
-        Connection input = new InConnection(new Pos(0,0));
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = NotComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection input = new InConnection(new Pos(0,1), state);
+        Connection output = new OutConnection(new Pos(0,2), state);
         input.addOther(comp);
         output.addOther(comp);
         comp.update();
@@ -84,10 +92,12 @@ public class ComponentsTest
     [Fact]
     public void Or()
     {
-        Component comp = new OrComp(new ComponentList());
-        Connection input = new InConnection(new Pos(0,0));
-        Connection input2 = new InConnection(new Pos(0,0));
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = OrComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection input = new InConnection(new Pos(0,1), state);
+        Connection input2 = new InConnection(new Pos(0,2), state);
+        Connection output = new OutConnection(new Pos(0,3), state);
         input.addOther(comp);
         input2.addOther(comp);
         output.addOther(comp);
@@ -104,10 +114,12 @@ public class ComponentsTest
     [Fact]
     public void Exor()
     {
-        Component comp = new XorComp(new ComponentList());
-        Connection input = new InConnection(new Pos(0,0));
-        Connection input2 = new InConnection(new Pos(0,0));
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = XorComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection input = new InConnection(new Pos(0,1), state);
+        Connection input2 = new InConnection(new Pos(0,2), state);
+        Connection output = new OutConnection(new Pos(0,3), state);
         input.addOther(comp);
         input2.addOther(comp);
         output.addOther(comp);
@@ -124,8 +136,10 @@ public class ComponentsTest
     [Fact]
     public void Battery()
     {
-        Component comp = new BatComp(new ComponentList());
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = BatteryComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection output = new OutConnection(new Pos(0,0), state);
         output.addOther(comp);
         comp.update();
         Assert.True(output.isActive());
@@ -133,10 +147,12 @@ public class ComponentsTest
     [Fact]
     public void FlipFlop()
     {
-        Component comp = new FlipFlop(new ComponentList());
-        Connection input = new InConnection(new Pos(0,0));
-        Connection clock = new ClockIn(new Pos(0,0));
-        Connection output = new OutConnection(new Pos(0,0));
+        State state = new State(10,10);
+        Component comp = FlipFlopComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection input = new InConnection(new Pos(0,1), state);
+        Connection clock = new ClockIn(new Pos(0,2), state);
+        Connection output = new OutConnection(new Pos(0,3), state);
         input.addOther(comp);
         clock.addOther(comp);
         output.addOther(comp);
@@ -147,6 +163,26 @@ public class ComponentsTest
         Assert.False(output.isActive());
         clock.setActive(true);
         comp.update();
+        Assert.False(output.isActive());
+        comp.update();
         Assert.True(output.isActive());
+    }
+
+    [Fact]
+    public void Button()
+    {
+        State state = new State(10,10);
+        ButtonComp comp = (ButtonComp)ButtonComp.newComponent(state);
+        comp.add(new Pos(0,0));
+        Connection output = new OutConnection(new Pos(0,3), state);
+        output.addOther(comp);
+        comp.update();
+        Assert.False(output.isActive());
+        comp.toggle();
+        comp.update();
+        Assert.True(output.isActive());
+        comp.toggle();
+        comp.update();
+        Assert.False(output.isActive());
     }
 }
