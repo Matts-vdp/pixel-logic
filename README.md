@@ -91,7 +91,7 @@ There are 2 types defined by there file extension.
 Your script has access to a *List\<bool>* object containing the state of the inputs in variable i. You can set the outputs by returning a *List\<bool>* object. There are some helper functions and extra variables you have access to. For more information please look at the **Input** class in *CodeCompilation.cs*.
 
 
-## Example
+## Example (OUTDATED)
 For this example we are going to build a basic 3 bit counter. Here is a schematic of a 1 bit module. If you're not sure there is a image of a possible solution at the end.
 
 <img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/countsh.png" width="300">
