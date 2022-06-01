@@ -79,9 +79,9 @@ namespace Game.Components
             return world;
         }
         // loads the custom components from save into ComponentList
-        public ComponentList readComponents(int[,] grid)
+        public ComponentList readComponents(int[,] grid, IFile file)
         {
-            ComponentList cList = new ComponentList();
+            ComponentList cList = new ComponentList(file);
             foreach (int key in components.Keys)
             {
                 int newIndex = cList.add(components[key]);

@@ -29,5 +29,11 @@ namespace Game.Components
         }
     }
 
+    public interface IFile
+    {
+        public string ReadAllText(string filename);
+        public void WriteAllTextAsync(string filename, string txt);
+        
+    }
     
 }

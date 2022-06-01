@@ -12,7 +12,7 @@ namespace Game.Components
 
         public State state;
         // used to create new grid
-        public Field(int w, int h) : this(w, h, new ComponentList()) { }
+        public Field(int w, int h, IFile file) : this(w, h, new ComponentList(file)) { }
 
         public Field(Grid grid, ComponentList list)
         {
@@ -31,27 +31,27 @@ namespace Game.Components
 
         // JSON
         // used to load a grid from a json file
-        public Field(string name, string txt)
+        public Field(string name, string txt, IFile file)
         {
             // load json
             this.name = Path.GetFileName(name);
             SaveData save = SaveData.fromJson(txt);
             grid = new Grid(save.width, save.height, save.fromArray());
-            list = save.readComponents(grid.grid);
+            list = save.readComponents(grid.grid, file);
             state = new State(save.width, save.height);
             offColor = Color.GREEN;
             onColor = Color.GREEN;
         }
         // saves grid to saves/circuit/filename
-        public void save(string filename)
+        public void save(string filename, IFile file)
         {
-            File.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
+            file.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
         }
         // loads grid from saves/circuit/save.json
-        public void load(string filename, string txt)
+        public void load(string filename, string txt, IFile file)
         {
             clear();
-            paste(new Field(filename, txt));
+            paste(new Field(filename, txt, file));
         }
 
         // creates a saveData object from this grid object

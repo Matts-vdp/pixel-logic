@@ -1,8 +1,21 @@
 ﻿using Raylib_cs;
 using System.Numerics;
+using Game.Components;
 
 namespace Game
 {
+    class FileReader : IFile
+    {
+        public string ReadAllText(string filename)
+        {
+            return File.ReadAllText(filename);
+        }
+        public void WriteAllTextAsync(string filename, string txt)
+        {
+            File.WriteAllTextAsync(filename, txt);
+        }
+    }
+
     // contains the main game loop
     class PixelLogic {
         // main game loop
@@ -12,7 +25,7 @@ namespace Game
             Raylib.InitWindow(800, 800, "Pixel Logic");
             Raylib.SetWindowMinSize(300, 300);
             Raylib.SetTargetFPS(60);
-            Simulation gm = new Simulation();
+            Simulation gm = new Simulation(new FileReader());
 
             while (!Raylib.WindowShouldClose())
             {

@@ -16,14 +16,19 @@ namespace Game
         private static int ysel = -1;       // selection start y
         private Field? cloneGrid;            // stores grid after copy
         private Circuit? cloneCircuit;
-        private Field grid = new Field(200, 200); // main grid
-        private Circuit circuit;                // build components
+        private Field grid;                 // main grid
+        private Circuit circuit;            // build components
         private string filename = "";       // remembers last dragged filename
         private double time = 0;
         private const double DELAY = 0.2;
         private bool rebuild = false;
-        public Simulation()
+
+        private IFile file;
+
+        public Simulation(IFile file)
         {
+            this.file = file;
+            grid = new Field(200, 200, file);
             circuit = grid.buildObjects();
         }
 
@@ -99,13 +104,13 @@ namespace Game
             // save and load
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_S))
             {
-                grid.save("save.json");
+                grid.save("save.json", file);
             }
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_L))
             {
                 string filename = "saves/circuit/save.json";
                 string txt = File.ReadAllText(filename);
-                grid.load(filename, txt);
+                grid.load(filename, txt, file);
             }
             // copy paste
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
@@ -137,7 +142,7 @@ namespace Game
                 int yend = Field.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.copy(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
-                cloneGrid.save("clipboard.json");
+                cloneGrid.save("clipboard.json", file);
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_X))
             {
@@ -146,7 +151,7 @@ namespace Game
                 int yend = Field.toGrid(pos.Y, GRIDSIZE, yoff);
                 cloneGrid = grid.cut(Math.Min(xsel, xend), Math.Min(ysel, yend), Math.Max(xsel, xend), Math.Max(ysel, yend));
                 xsel = -1; ysel = -1;
-                cloneGrid.save("clipboard.json");
+                cloneGrid.save("clipboard.json", file);
                 rebuild = true;
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
@@ -241,7 +246,7 @@ namespace Game
                 if (Raylib.IsFileExtension(files[0], ".json"))
                 {
                     string txt = File.ReadAllText(files[0]);
-                    cloneGrid = new Field(files[0], txt);
+                    cloneGrid = new Field(files[0], txt, file);
                     filename = files[0];
                 }
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl"))
