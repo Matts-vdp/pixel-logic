@@ -47,7 +47,7 @@ namespace Game.Components
         {
             foreach (Component c in _components.Values)
             {
-                if (!(c is WireComp))
+                if (c is not WireComp)
                     c.Update();
             }
             foreach (Component c in _components.Values)

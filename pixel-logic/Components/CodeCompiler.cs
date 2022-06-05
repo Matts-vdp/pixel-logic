@@ -22,6 +22,7 @@ namespace Game.Components
             PC = num;
             MEM = mem;
         }
+        #pragma warning disable 
         // returns the state of the input at 'i' 
         // returns false when out of range
         public bool Get(int i)
@@ -98,6 +99,7 @@ namespace Game.Components
         {
             return MEM[name];
         }
+        #pragma warning restore
     }
 
     // used to store the script and to instantiate components
