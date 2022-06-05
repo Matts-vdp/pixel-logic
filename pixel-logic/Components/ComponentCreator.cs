@@ -3,23 +3,24 @@ using Raylib_cs;
 namespace Game.Components
 {
 
-    public abstract class ComponentCreator: CustomCreator
+    public abstract class ComponentCreator : CustomCreator
     {
-        public abstract Component createComponent(State state);
+        public abstract Component CreateComponent(State state);
     }
     // represents a class that can be used as a Custom Component
-    public class BasicComponentCreator: ComponentCreator
+    public class BasicComponentCreator : ComponentCreator
     {
-        public Func<State, Component> newComponent;
-        public BasicComponentCreator(string name, Color offColor, Color onColor, Func<State, Component> func){
-            newComponent = func;
-            this.offColor = offColor;
-            this.onColor = onColor;
-            this.name = name;
-        }
-        public override Component createComponent(State state)
+        public Func<State, Component> NewComponent;
+        public BasicComponentCreator(string name, Color offColor, Color onColor, Func<State, Component> func)
         {
-            return newComponent(state);
+            NewComponent = func;
+            this.OffColor = offColor;
+            this.OnColor = onColor;
+            this.Name = name;
+        }
+        public override Component CreateComponent(State state)
+        {
+            return NewComponent(state);
         }
     }
 }

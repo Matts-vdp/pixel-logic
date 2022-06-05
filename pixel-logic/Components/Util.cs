@@ -3,29 +3,29 @@ namespace Game.Components
     // struct to contain a 2d coordinate
     public struct Pos
     {
-        public int x { get; set; }
-        public int y { get; set; }
-        public Pos(int X, int Y)
+        public int X { get; set; }
+        public int Y { get; set; }
+        public Pos(int x, int y)
         {
-            x = X;
-            y = Y;
+            X = x;
+            Y = y;
         }
     }
 
     public class State
     {
-        private bool[,] state;
+        private readonly bool[,] _state;
         public State(int w, int h)
         {
-            state = new bool[w, h];
+            _state = new bool[w, h];
         }
-        public void setState(Pos p, bool newState) 
+        public void SetState(Pos p, bool newState)
         {
-            state[p.x, p.y] = newState;
+            _state[p.X, p.Y] = newState;
         }
-        public bool getState(Pos p) 
+        public bool GetState(Pos p)
         {
-            return state[p.x, p.y];
+            return _state[p.X, p.Y];
         }
     }
 
@@ -33,7 +33,7 @@ namespace Game.Components
     {
         public string ReadAllText(string filename);
         public void WriteAllTextAsync(string filename, string txt);
-        
+
     }
-    
+
 }

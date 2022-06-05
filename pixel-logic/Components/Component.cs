@@ -4,51 +4,56 @@ namespace Game.Components
     // base component holds all shared logic
     public abstract class Component
     {
-        protected List<Pos> blocks;            // locations of blocks in grid
-        protected List<Connection> inputs;     // all input connections
-        protected List<Connection> outputs;    // output connections
-        protected Connection? clockIn;         // clock connection if present
-        protected bool active {
-            get {
-                return state.getState(blocks[0]);
+        protected List<Pos> _blocks;            // locations of blocks in grid
+        protected List<Connection> _inputs;     // all input connections
+        protected List<Connection> _outputs;    // output connections
+        protected Connection? _clockIn;         // clock connection if present
+        protected bool Active
+        {
+            get
+            {
+                return _state.GetState(_blocks[0]);
             }
-            set {
-                foreach (Pos p in blocks) {
-                    state.setState(p, value);
+            set
+            {
+                foreach (Pos p in _blocks)
+                {
+                    _state.SetState(p, value);
                 }
-            }}
+            }
+        }
 
-        protected State state;
+        protected State _state;
 
         protected Component(State state)
         {
-            blocks = new List<Pos>();
-            inputs = new List<Connection>();
-            outputs = new List<Connection>();
-            this.state = state;
+            _blocks = new List<Pos>();
+            _inputs = new List<Connection>();
+            _outputs = new List<Connection>();
+            this._state = state;
         }
         // add new block to the component
-        public void add(Pos p)
+        public void Add(Pos p)
         {
-            blocks.Add(p);
+            _blocks.Add(p);
         }
         // add a input to the component
-        public void addInput(Connection c)
+        public void AddInput(Connection c)
         {
-            inputs.Add(c);
+            _inputs.Add(c);
         }
         // add a input to the component
-        public void addOutput(Connection c)
+        public void AddOutput(Connection c)
         {
-            outputs.Add(c);
+            _outputs.Add(c);
         }
         // add clock to inputs subClasses can override this to use clock
-        public virtual void addClock(Connection c)
+        public virtual void AddClock(Connection c)
         {
-            inputs.Add(c);
+            _inputs.Add(c);
         }
 
-        public abstract void update();
+        public abstract void Update();
     }
 
     // component that is used to pass signals between other components
@@ -56,25 +61,25 @@ namespace Game.Components
     {
         public WireComp(State state) : base(state) { }
         // pass input to output, true if inputs true and false
-        public override void update()
+        public override void Update()
         {
             bool value = false;
-            foreach (Connection i in inputs)
+            foreach (Connection i in _inputs)
             {
-                if (i.isActive())
+                if (i.IsActive())
                 {
                     value = true;
                     break;
                 }
                 value = false;
             }
-            active = value;
-            foreach (Connection o in outputs)
+            Active = value;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(value);
+                o.SetActive(value);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new WireComp(state);
         }
@@ -85,25 +90,25 @@ namespace Game.Components
     {
         public AndComp(State state) : base(state) { }
         // output = input0 && input1 && ...
-        public override void update()
+        public override void Update()
         {
             bool value = false;
-            foreach (Connection i in inputs)
+            foreach (Connection i in _inputs)
             {
-                if (!i.isActive())
+                if (!i.IsActive())
                 {
                     value = false;
                     break;
                 }
                 value = true;
             }
-            active = value;
-            foreach (Connection o in outputs)
+            Active = value;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(value);
+                o.SetActive(value);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new AndComp(state);
         }
@@ -114,25 +119,25 @@ namespace Game.Components
     {
         public NotComp(State state) : base(state) { }
         // output = ! input
-        public override void update()
+        public override void Update()
         {
             bool value = false;
-            foreach (Connection i in inputs)
+            foreach (Connection i in _inputs)
             {
-                if (!i.isActive())
+                if (!i.IsActive())
                 {
                     value = true;
                     break;
                 }
                 value = false;
             }
-            active = value;
-            foreach (Connection o in outputs)
+            Active = value;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(value);
+                o.SetActive(value);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new NotComp(state);
         }
@@ -143,25 +148,25 @@ namespace Game.Components
     {
         public OrComp(State state) : base(state) { }
         // output = input0 || input1 ...
-        public override void update()
+        public override void Update()
         {
             bool value = false;
-            foreach (Connection i in inputs)
+            foreach (Connection i in _inputs)
             {
-                if (i.isActive())
+                if (i.IsActive())
                 {
                     value = true;
                     break;
                 }
                 value = false;
             }
-            active = value;
-            foreach (Connection o in outputs)
+            Active = value;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(value);
+                o.SetActive(value);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new OrComp(state);
         }
@@ -171,19 +176,19 @@ namespace Game.Components
     public class XorComp : Component
     {
         public XorComp(State state) : base(state) { }
-        public override void update()
+        public override void Update()
         {
             bool i1 = false;
             bool i2 = false;
-            if (inputs.Count > 0) { i1 = inputs[0].isActive(); }
-            if (inputs.Count > 1) { i2 = inputs[1].isActive(); }
-            active = i1 ^ i2;
-            foreach (Connection o in outputs)
+            if (_inputs.Count > 0) { i1 = _inputs[0].IsActive(); }
+            if (_inputs.Count > 1) { i2 = _inputs[1].IsActive(); }
+            Active = i1 ^ i2;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(active);
+                o.SetActive(Active);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new XorComp(state);
         }
@@ -194,18 +199,18 @@ namespace Game.Components
     {
         public BatteryComp(State state) : base(state)
         {
-            active = true;
+            Active = true;
         }
         // set all outputs to 1
-        public override void update()
+        public override void Update()
         {
-            active = true;
-            foreach (Connection o in outputs)
+            Active = true;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(true);
+                o.SetActive(true);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new BatteryComp(state);
         }
@@ -214,28 +219,28 @@ namespace Game.Components
     // represents clock
     public class ClockComp : Component
     {
-        double time;
+        double _time;
         const float DELAY = 0.5f;
         public ClockComp(State state) : base(state)
         {
-            active = false;
-            time = Raylib.GetTime();
+            Active = false;
+            _time = Raylib.GetTime();
         }
         // switches every "DELAY' seconds between true and false
-        public override void update()
+        public override void Update()
         {
             double newTime = Raylib.GetTime();
-            if ((newTime - time) > 0.5)
+            if ((newTime - _time) > DELAY)
             {
-                time = newTime;
-                active = !active;
-                foreach (Connection o in outputs)
+                _time = newTime;
+                Active = !Active;
+                foreach (Connection o in _outputs)
                 {
-                    o.setActive(active);
+                    o.SetActive(Active);
                 }
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new ClockComp(state);
         }
@@ -244,29 +249,29 @@ namespace Game.Components
     // represents flip flop
     public class FlipFlopComp : Component
     {
-        bool lastState = false;
+        bool _lastState = false;
         public FlipFlopComp(State state) : base(state)
         {
         }
         // only update state on change from false to true of "ClockIn"
-        public override void update()
+        public override void Update()
         {
-            foreach (Connection o in outputs)
-                    o.setActive(active);
-            if (inputs.Count == 0) return;
-            if (clockIn == null) return;
+            foreach (Connection o in _outputs)
+                o.SetActive(Active);
+            if (_inputs.Count == 0) return;
+            if (_clockIn == null) return;
 
-            if (clockIn.isActive() && !lastState)
+            if (_clockIn.IsActive() && !_lastState)
             {
-                active = inputs[0].isActive();
+                Active = _inputs[0].IsActive();
             }
-            lastState = clockIn.isActive();
+            _lastState = _clockIn.IsActive();
         }
-        public override void addClock(Connection c)
+        public override void AddClock(Connection c)
         {
-            clockIn = c;
+            _clockIn = c;
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new FlipFlopComp(state);
         }
@@ -278,20 +283,20 @@ namespace Game.Components
         public ButtonComp(State state) : base(state)
         {
         }
-        public override void update()
+        public override void Update()
         {
         }
 
         // used by grid to toggle button on key press
-        public void toggle()
+        public void Toggle()
         {
-            active = !active;
-            foreach (Connection o in outputs)
+            Active = !Active;
+            foreach (Connection o in _outputs)
             {
-                o.setActive(active);
+                o.SetActive(Active);
             }
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new ButtonComp(state);
         }
@@ -300,24 +305,24 @@ namespace Game.Components
     // display input as number
     public class Seg7Comp : Component
     {
-        private int value;
+        private int _value;
         public Seg7Comp(State state) : base(state)
         {
         }
         // read input and save as int
-        public override void update()
+        public override void Update()
         {
             int num = 0;
-            for (int i = 0; i < inputs.Count; i++)
+            for (int i = 0; i < _inputs.Count; i++)
             {
-                if (inputs[i].isActive())
+                if (_inputs[i].IsActive())
                 {
                     num += (int)Math.Pow(2, i);
                 }
             }
-            value = num;
+            _value = num;
         }
-        public static Component newComponent(State state)
+        public static Component NewComponent(State state)
         {
             return new Seg7Comp(state);
         }

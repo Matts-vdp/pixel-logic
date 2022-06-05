@@ -1,26 +1,27 @@
-using Raylib_cs;
 using System.Numerics;
+
+using Raylib_cs;
 
 namespace Game.Components
 {
     // represents a grid of components converts the grid matrix to components using connected components
     public class Field : ComponentCreator
     {
-        private Grid grid;            // contains wich block is placed where
+        private readonly Grid _grid;            // contains wich block is placed where
 
-        public ComponentList list;      // stores the mapping of block types to components
+        public ComponentList CList;      // stores the mapping of block types to components
 
-        public State state;
+        public State State;
         // used to create new grid
         public Field(int w, int h, IFile file) : this(w, h, new ComponentList(file)) { }
 
         public Field(Grid grid, ComponentList list)
         {
-            this.list = list;
-            this.grid = grid;
-            state = new State(grid.width, grid.height);
-            offColor = Color.GREEN;
-            onColor = Color.GREEN;
+            this.CList = list;
+            this._grid = grid;
+            State = new State(grid.Width, grid.Height);
+            OffColor = Color.GREEN;
+            OnColor = Color.GREEN;
         }
 
         // used to create new grid with same componentList 
@@ -34,34 +35,34 @@ namespace Game.Components
         public Field(string name, string txt, IFile file)
         {
             // load json
-            this.name = Path.GetFileName(name);
-            SaveData save = SaveData.fromJson(txt);
-            grid = new Grid(save.width, save.height, save.fromArray());
-            list = save.readComponents(grid.grid, file);
-            state = new State(save.width, save.height);
-            offColor = Color.GREEN;
-            onColor = Color.GREEN;
+            this.Name = Path.GetFileName(name);
+            SaveData save = SaveData.FromJson(txt);
+            _grid = new Grid(save.Width, save.Height, save.FromArray());
+            CList = save.ReadComponents(_grid.Matrix, file);
+            State = new State(save.Width, save.Height);
+            OffColor = Color.GREEN;
+            OnColor = Color.GREEN;
         }
         // saves grid to saves/circuit/filename
-        public void save(string filename, IFile file)
+        public void Save(string filename, IFile file)
         {
-            file.WriteAllTextAsync("saves/circuit/" + filename, toSave().toJson());
+            file.WriteAllTextAsync("saves/circuit/" + filename, ToSave().ToJson());
         }
         // loads grid from saves/circuit/save.json
-        public void load(string filename, string txt, IFile file)
+        public void Load(string filename, string txt, IFile file)
         {
-            clear();
-            paste(new Field(filename, txt, file));
+            Clear();
+            Paste(new Field(filename, txt, file));
         }
 
         // creates a saveData object from this grid object
-        private SaveData toSave()
+        private SaveData ToSave()
         {
-            return new SaveData(grid.width, grid.height, grid.grid, list.custom);
+            return new SaveData(_grid.Width, _grid.Height, _grid.Matrix, CList.Custom);
         }
 
         // converts world coordinates to grid coordinates
-        public static int toGrid(float pos, int gridsize, int off)
+        public static int ToGrid(float pos, int gridsize, int off)
         {
             pos = (pos + off) / gridsize;
             return (int)pos;
@@ -70,89 +71,89 @@ namespace Game.Components
 
         // CHANGE GRID
 
-        public bool add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
+        public bool Add(Vector2 pos, int t, int gridsize, int xoff, int yoff)
         {
-            int x = toGrid(pos.X, gridsize, xoff);
-            int y = toGrid(pos.Y, gridsize, yoff);
-            bool change = grid.set(x, y, t);
+            int x = ToGrid(pos.X, gridsize, xoff);
+            int y = ToGrid(pos.Y, gridsize, yoff);
+            bool change = _grid.Set(x, y, t);
             if (change)
-                state.setState(new Pos(x, y), false);
+                State.SetState(new Pos(x, y), false);
             return change;
         }
 
         // remove block from grid
-        public bool del(Vector2 pos, int gridsize, int xoff, int yoff)
+        public bool Del(Vector2 pos, int gridsize, int xoff, int yoff)
         {
-            int x = toGrid(pos.X, gridsize, xoff);
-            int y = toGrid(pos.Y, gridsize, yoff);
-            bool change = grid.set(x, y, (int)types.NONE);
+            int x = ToGrid(pos.X, gridsize, xoff);
+            int y = ToGrid(pos.Y, gridsize, yoff);
+            bool change = _grid.Set(x, y, (int)Types.NONE);
             if (change)
-                state.setState(new Pos(x, y), false);
+                State.SetState(new Pos(x, y), false);
             return change;
         }
 
         // clear grid
-        private void clear()
+        private void Clear()
         {
-            grid.clear();
-            state = new State(grid.width, grid.height);
+            _grid.Clear();
+            State = new State(_grid.Width, _grid.Height);
         }
         //------------------------------------------------------------------
 
         // CONVERT TO COMPONENTS
         // create components from grid matrix
-        public Circuit buildObjects()
+        public Circuit BuildObjects()
         {
-            Dictionary<int, Component> components = new Dictionary<int, Component>();
-            List<ButtonComp> buttons = new List<ButtonComp>();
-            List<Connection> connections = new List<Connection>();
+            Dictionary<int, Component> components = new();
+            List<ButtonComp> buttons = new();
+            List<Connection> connections = new();
 
-            int[,] labels = grid.connectedComponents();
-            crossConnect(labels, connections);
-            makeComponents(labels, components, buttons);
-            makeConnections(labels, components, connections);
+            int[,] labels = _grid.ConnectedComponents();
+            CrossConnect(labels, connections);
+            MakeComponents(labels, components, buttons);
+            MakeConnections(labels, components, connections);
 
-            return new Circuit(name, components, buttons, connections);
+            return new Circuit(Name, components, buttons, connections);
         }
 
         // connect wires with a cross connection between them
-        private void crossConnect(int[,] labels, List<Connection> connections)
+        private void CrossConnect(int[,] labels, List<Connection> connections)
         {
-            for (int x = 0; x < grid.width; x++)
+            for (int x = 0; x < _grid.Width; x++)
             {
-                for (int y = 0; y < grid.height; y++)
+                for (int y = 0; y < _grid.Height; y++)
                 {
                     if (labels[x, y] != -2) { continue; }
-                    Connection c = list.NewConnection(grid[x, y], new Pos(x, y), state);
+                    Connection c = CList.NewConnection(_grid[x, y], new Pos(x, y), State);
                     connections.Add(c);
-                    if (grid[x - 1, y] == (int)types.WIRE && grid[x + 1, y] == (int)types.WIRE)
+                    if (_grid[x - 1, y] == (int)Types.WIRE && _grid[x + 1, y] == (int)Types.WIRE)
                     {
-                        Grid.changeLabel(labels[y, x + 1], labels[x - 1, y], labels, grid.width, grid.height);
+                        Grid.ChangeLabel(labels[y, x + 1], labels[x - 1, y], labels, _grid.Width, _grid.Height);
                     }
-                    if (grid[x, y - 1] == (int)types.WIRE && grid[x, y + 1] == (int)types.WIRE)
+                    if (_grid[x, y - 1] == (int)Types.WIRE && _grid[x, y + 1] == (int)Types.WIRE)
                     {
-                        Grid.changeLabel(labels[x, y + 1], labels[x, y - 1], labels, grid.width, grid.height);
+                        Grid.ChangeLabel(labels[x, y + 1], labels[x, y - 1], labels, _grid.Width, _grid.Height);
                     }
                 }
             }
         }
         // create the components from the grid
-        private void makeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons)
+        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons)
         {
-            for (int x = 0; x < grid.width; x++)
+            for (int x = 0; x < _grid.Width; x++)
             {
-                for (int y = 0; y < grid.height; y++)
+                for (int y = 0; y < _grid.Height; y++)
                 {
-                    if (labels[x, y] <= 0 || grid[x, y] == 0) { continue; }
+                    if (labels[x, y] <= 0 || _grid[x, y] == 0) { continue; }
                     if (components.ContainsKey(labels[x, y]))
                     {
-                        components[labels[x, y]].add(new Pos(x, y));
+                        components[labels[x, y]].Add(new Pos(x, y));
                     }
                     else
                     {
-                        Component c = list.NewComponent(grid[x, y], state);
-                        c.add(new Pos(x, y));
-                        if (grid[x, y] == (int)types.BUT)
+                        Component c = CList.NewComponent(_grid[x, y], State);
+                        c.Add(new Pos(x, y));
+                        if (_grid[x, y] == (int)Types.BUT)
                         {
                             buttons.Add((ButtonComp)c);
                         }
@@ -162,29 +163,29 @@ namespace Game.Components
             }
         }
         // create the connections between components
-        private void makeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections)
+        private void MakeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections)
         {
-            for (int x = 0; x < grid.width; x++)
+            for (int x = 0; x < _grid.Width; x++)
             {
-                for (int y = 0; y < grid.height; y++)
+                for (int y = 0; y < _grid.Height; y++)
                 {
                     if (labels[x, y] != -1) { continue; }
                     bool wiref = false;
                     bool otherf = false;
-                    Pos[] neighbors = {new Pos(x, y - 1), new Pos(x - 1, y), new Pos(x, y + 1), new Pos(x + 1, y) };
-                    Connection con = list.NewConnection(grid[x, y], new Pos(x, y), state);
+                    Pos[] neighbors = { new Pos(x, y - 1), new Pos(x - 1, y), new Pos(x, y + 1), new Pos(x + 1, y) };
+                    Connection con = CList.NewConnection(_grid[x, y], new Pos(x, y), State);
                     foreach (Pos pos in neighbors)
                     {
-                        int block = grid[pos.x, pos.y];
+                        int block = _grid[pos.X, pos.Y];
                         if (block == 0) { continue; }
-                        if (!wiref && block == (int)types.WIRE)
+                        if (!wiref && block == (int)Types.WIRE)
                         {
-                            con.addWire(components[labels[pos.x, pos.y]]);
+                            con.AddWire(components[labels[pos.X, pos.Y]]);
                             wiref = true;
                         }
-                        else if (!otherf && labels[pos.x, pos.y] >= 0 && block != (int)types.WIRE)
+                        else if (!otherf && labels[pos.X, pos.Y] >= 0 && block != (int)Types.WIRE)
                         {
-                            con.addOther(components[labels[pos.x, pos.y]]);
+                            con.AddOther(components[labels[pos.X, pos.Y]]);
                             otherf = true;
                         }
                     }
@@ -196,75 +197,77 @@ namespace Game.Components
 
         // COPY PASTE
         // copy part of grid to new grid object
-        public Field copy(int xstart, int ystart, int xend, int yend)
+        public Field Copy(int xstart, int ystart, int xend, int yend)
         {
-            Grid newGrid = grid.copy(xstart, ystart, xend, yend);
-            Field newField = new Field(newGrid, list);
-            newField.name = name;
+            Grid newGrid = _grid.Copy(xstart, ystart, xend, yend);
+            Field newField = new(newGrid, CList)
+            {
+                Name = Name
+            };
             return newField;
         }
         // copy and remove in original
-        public Field cut(int xstart, int ystart, int xend, int yend)
+        public Field Cut(int xstart, int ystart, int xend, int yend)
         {
-            Field newField = copy(xstart, ystart, xend, yend);
-            grid.clear(xstart, ystart, xend, yend);
+            Field newField = Copy(xstart, ystart, xend, yend);
+            _grid.Clear(xstart, ystart, xend, yend);
             return newField;
         }
         // merge customcomponents of componentlist adds missing components
         // and changes references to already imported components 
-        private void mergeComponents(Field other)
+        private void MergeComponents(Field other)
         {
-            foreach (int key in other.list.custom.Keys)
+            foreach (int key in other.CList.Custom.Keys)
             {
-                int index = list.add(other.list.custom[key].name);
-                Grid.changeLabel(key, index, other.grid.grid, other.grid.height, other.grid.width);
+                int index = CList.Add(other.CList.Custom[key].Name);
+                Grid.ChangeLabel(key, index, other._grid.Matrix, other._grid.Height, other._grid.Width);
             }
         }
         // paste other grid into this grid
-        public void paste(Field other, Vector2 pos, int gridsize, int xoff, int yoff)
+        public void Paste(Field other, Vector2 pos, int gridsize, int xoff, int yoff)
         {
             // add custom components
-            mergeComponents(other);
-            int x = toGrid(pos.X, gridsize, xoff);
-            int y = toGrid(pos.Y, gridsize, yoff);
-            grid.paste(other.grid, x, y);
+            MergeComponents(other);
+            int x = ToGrid(pos.X, gridsize, xoff);
+            int y = ToGrid(pos.Y, gridsize, yoff);
+            _grid.Paste(other._grid, x, y);
         }
         // paste other grid in this grid at 0, 0
-        private void paste(Field other)
+        private void Paste(Field other)
         {
-            paste(other, Vector2.Zero, 1, 0, 0);
+            Paste(other, Vector2.Zero, 1, 0, 0);
         }
 
         //------------------------------------------------------------------
         // CUSTOM COMPONENT
         // creates a subcomponent from this grid
-        public override Component createComponent(State state)
+        public override Component CreateComponent(State state)
         {
-            return buildObjects().toComponent(state);
+            return BuildObjects().ToComponent(state);
         }
         //------------------------------------------------------------------
 
         // draw all components
-        public void draw(int gridsize, int xoff, int yoff)
+        public void Draw(int gridsize, int xoff, int yoff)
         {
-            for (int y = 0; y < grid.height; y++)
+            for (int y = 0; y < _grid.Height; y++)
             {
-                for (int x = 0; x < grid.width; x++)
+                for (int x = 0; x < _grid.Width; x++)
                 {
-                    if (grid[x, y] != 0)
+                    if (_grid[x, y] != 0)
                     {
                         int xpos = x * gridsize - xoff;
                         int ypos = y * gridsize - yoff; ;
-                        list.draw(grid[x, y], xpos, ypos, gridsize, state.getState(new Pos(x, y)));
+                        CList.Draw(_grid[x, y], xpos, ypos, gridsize, State.GetState(new Pos(x, y)));
                     }
                 }
             }
         }
-        public override void draw(int x, int y, int gridsize, bool state)
+        public override void Draw(int x, int y, int gridsize, bool state)
         {
-            Color color = state ? onColor : offColor;
+            Color color = state ? OnColor : OffColor;
             Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
-            Raylib.DrawText(name[0].ToString(), x + gridsize / 3, y, gridsize, Color.BLACK);
+            Raylib.DrawText(Name[0].ToString(), x + gridsize / 3, y, gridsize, Color.BLACK);
         }
     }
 }

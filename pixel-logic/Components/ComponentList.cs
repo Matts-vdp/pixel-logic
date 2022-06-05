@@ -2,7 +2,7 @@ using Raylib_cs;
 namespace Game.Components
 {
     // contains the mapping of basic types to int
-    public enum types
+    public enum Types
     {
         NONE,
         OUT,
@@ -24,98 +24,142 @@ namespace Game.Components
     // used to create components and store Custom Components
     public class ComponentList
     {
-        public Dictionary<int, ConnectionCreator> connections = new Dictionary<int, ConnectionCreator>{
-            {(int)types.IN, new ConnectionCreator(
+        public Dictionary<int, ConnectionCreator> Connections = new()
+        {
+            {
+                (int)Types.IN,
+                new ConnectionCreator(
                     "In",
-                    new Color(179, 0, 0, 255), 
+                    new Color(179, 0, 0, 255),
                     new Color(255, 0, 0, 255),
-                    InConnection.newConnection
-            )},
-            {(int)types.OUT, new ConnectionCreator(
+                    InConnection.NewConnection
+            )
+            },
+            {
+                (int)Types.OUT,
+                new ConnectionCreator(
                     "Out",
-                    new Color(61, 88, 143, 255), 
+                    new Color(61, 88, 143, 255),
                     new Color(130, 154, 201, 255),
-                    OutConnection.newConnection
-            )},
-            {(int)types.CLKIN, new ConnectionCreator(
+                    OutConnection.NewConnection
+            )
+            },
+            {
+                (int)Types.CLKIN,
+                new ConnectionCreator(
                     "ClkIn",
-                    new Color(179, 40, 40, 255), 
+                    new Color(179, 40, 40, 255),
                     new Color(255, 40, 40, 255),
-                    ClockIn.newConnection
-            )},
-            {(int)types.CROSS, new ConnectionCreator(
+                    ClockIn.NewConnection
+            )
+            },
+            {
+                (int)Types.CROSS,
+                new ConnectionCreator(
                     "Cross",
-                    Color.GRAY, 
-                    Color.GRAY, 
-                    CrossConnection.newConnection
-            )},
+                    Color.GRAY,
+                    Color.GRAY,
+                    CrossConnection.NewConnection
+            )
+            },
         };
-        public Dictionary<int, ComponentCreator> basic = new Dictionary<int, ComponentCreator>{
-            {(int)types.WIRE, new BasicComponentCreator(
+        public Dictionary<int, ComponentCreator> Basic = new()
+        {
+            {
+                (int)Types.WIRE,
+                new BasicComponentCreator(
                     "Wire",
-                    new Color(153, 102, 51, 255), 
-                    Color.YELLOW, 
-                    WireComp.newComponent
-            )},
-            {(int)types.AND, new BasicComponentCreator(
+                    new Color(153, 102, 51, 255),
+                    Color.YELLOW,
+                    WireComp.NewComponent
+            )
+            },
+            {
+                (int)Types.AND,
+                new BasicComponentCreator(
                     "And",
-                    new Color(230, 115, 0, 255), 
-                    new Color(255, 153, 51, 255), 
-                    AndComp.newComponent
-            )},
-            {(int)types.OR, new BasicComponentCreator(
+                    new Color(230, 115, 0, 255),
+                    new Color(255, 153, 51, 255),
+                    AndComp.NewComponent
+            )
+            },
+            {
+                (int)Types.OR,
+                new BasicComponentCreator(
                     "Or",
-                    new Color(0, 0, 204, 255), 
-                    new Color(26, 26, 255, 255), 
-                    OrComp.newComponent
-            )},
-            {(int)types.XOR, new BasicComponentCreator(
+                    new Color(0, 0, 204, 255),
+                    new Color(26, 26, 255, 255),
+                    OrComp.NewComponent
+            )
+            },
+            {
+                (int)Types.XOR,
+                new BasicComponentCreator(
                     "Xor",
-                    new Color(89, 0, 179, 255), 
+                    new Color(89, 0, 179, 255),
                     new Color(140, 26, 255, 255),
-                    XorComp.newComponent
-            )},
-            {(int)types.NOT, new BasicComponentCreator(
+                    XorComp.NewComponent
+            )
+            },
+            {
+                (int)Types.NOT,
+                new BasicComponentCreator(
                     "Not",
-                    new Color(153, 0, 153, 255), 
-                    new Color(255, 0, 255, 255), 
-                    NotComp.newComponent
-            )},
-            {(int)types.BATTERY, new BasicComponentCreator(
+                    new Color(153, 0, 153, 255),
+                    new Color(255, 0, 255, 255),
+                    NotComp.NewComponent
+            )
+            },
+            {
+                (int)Types.BATTERY,
+                new BasicComponentCreator(
                     "Battery",
-                    new Color(255, 255, 255, 255), 
-                    new Color(255, 255, 255, 255), 
-                    BatteryComp.newComponent
-            )},
-            {(int)types.CLK, new BasicComponentCreator(
+                    new Color(255, 255, 255, 255),
+                    new Color(255, 255, 255, 255),
+                    BatteryComp.NewComponent
+            )
+            },
+            {
+                (int)Types.CLK,
+                new BasicComponentCreator(
                     "Clock",
-                    new Color(153, 153, 0, 255), 
-                    new Color(204, 204, 51, 255), 
-                    ClockComp.newComponent
-            )},
-            {(int)types.FF, new BasicComponentCreator(
+                    new Color(153, 153, 0, 255),
+                    new Color(204, 204, 51, 255),
+                    ClockComp.NewComponent
+            )
+            },
+            {
+                (int)Types.FF,
+                new BasicComponentCreator(
                     "FlipFlop",
-                    new Color(0, 122, 153, 255), 
-                    new Color(0, 204, 255, 255), 
-                    FlipFlopComp.newComponent
-            )},
-            {(int)types.BUT, new BasicComponentCreator(
+                    new Color(0, 122, 153, 255),
+                    new Color(0, 204, 255, 255),
+                    FlipFlopComp.NewComponent
+            )
+            },
+            {
+                (int)Types.BUT,
+                new BasicComponentCreator(
                     "Button",
-                    new Color(255, 140, 102, 255), 
-                    new Color(255, 179, 102, 255), 
-                    ButtonComp.newComponent
-            )},
-            {(int)types.SEG, new BasicComponentCreator(
+                    new Color(255, 140, 102, 255),
+                    new Color(255, 179, 102, 255),
+                    ButtonComp.NewComponent
+            )
+            },
+            {
+                (int)Types.SEG,
+                new BasicComponentCreator(
                     "Display",
-                    new Color(242, 242, 242, 255), 
-                    new Color(242, 242, 242, 255), 
-                    Seg7Comp.newComponent
-            )},
+                    new Color(242, 242, 242, 255),
+                    new Color(242, 242, 242, 255),
+                    Seg7Comp.NewComponent
+            )
+            },
         };
 
-        public Dictionary<int, ComponentCreator> custom = new Dictionary<int, ComponentCreator>();
+        public Dictionary<int, ComponentCreator> Custom = new();
 
-        private IFile _file;
+        private readonly IFile _file;
 
         public ComponentList(IFile file)
         {
@@ -124,82 +168,76 @@ namespace Game.Components
 
         public int Count
         {
-            get {return basic.Count + custom.Count + connections.Count;}
+            get { return Basic.Count + Custom.Count + Connections.Count; }
         }
 
-        public string getName(int i)
+        public string GetName(int i)
         {
-            if (connections.ContainsKey(i)) 
-                return connections[i].name;
-            else if (basic.ContainsKey(i)) 
-                return basic[i].name;
-            return custom[i].name;
+            if (Connections.ContainsKey(i))
+                return Connections[i].Name;
+            else if (Basic.ContainsKey(i))
+                return Basic[i].Name;
+            return Custom[i].Name;
         }
 
-        private int findIndex(string name)
+        private int FindIndex(string name)
         {
-            foreach (int i in custom.Keys)
+            foreach (int i in Custom.Keys)
             {
-                if (custom[i].name == name)
+                if (Custom[i].Name == name)
                     return i;
             }
             return -1;
         }
 
-        public int add(string filename)
+        public int Add(string filename)
         {
-            string name = Path.GetFileNameWithoutExtension(filename);
-            int index = findIndex(filename);
+            int index = FindIndex(filename);
             if (index != -1) return index;
-            index = Count+1;
+            index = Count + 1;
             string ext = Path.GetExtension(filename);
             string txt = _file.ReadAllText(filename);
             ComponentCreator c;
-            switch (ext)
-            {
-                case ".json":
-                    c = new Field(filename, txt, _file);
-                    break;
-                default:
-                    c = new CCode(filename, txt);
-                    break;
-            }
-            custom.Add(index, c);
+            if (ext == ".json")
+                c = new Field(filename, txt, _file);
+            else
+                c = new CCode(filename, txt);
+            Custom.Add(index, c);
             return index;
         }
 
-        
+
 
         public Component NewComponent(int type, State state)
         {
-            if (basic.ContainsKey(type))
-                return basic[type].createComponent(state);
-            return custom[type].createComponent(state);
+            if (Basic.ContainsKey(type))
+                return Basic[type].CreateComponent(state);
+            return Custom[type].CreateComponent(state);
         }
         public Connection NewConnection(int type, Pos pos, State state)
         {
-            return connections[type].createConnection(pos, state);
+            return Connections[type].CreateConnection(pos, state);
         }
-        public void draw(int type, int x, int y, int gridsize, bool state)
+        public void Draw(int type, int x, int y, int gridsize, bool state)
         {
-            if (connections.ContainsKey(type)) 
-                connections[type].draw(x, y, gridsize, state);
-            else if (basic.ContainsKey(type)) 
-                basic[type].draw(x, y, gridsize, state);
+            if (Connections.ContainsKey(type))
+                Connections[type].Draw(x, y, gridsize, state);
+            else if (Basic.ContainsKey(type))
+                Basic[type].Draw(x, y, gridsize, state);
             else
-                custom[type].draw(x, y, gridsize, state);
+                Custom[type].Draw(x, y, gridsize, state);
         }
     }
 
     public abstract class CustomCreator
     {
-        public string name = "";
-        public Color offColor;
-        public Color onColor;
+        public string Name = "";
+        public Color OffColor;
+        public Color OnColor;
 
-        public virtual void draw(int x, int y, int gridsize, bool state) 
+        public virtual void Draw(int x, int y, int gridsize, bool state)
         {
-            Color color = state? onColor: offColor;
+            Color color = state ? OnColor : OffColor;
             Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
         }
     }

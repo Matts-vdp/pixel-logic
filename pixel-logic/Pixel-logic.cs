@@ -1,6 +1,8 @@
-﻿using Raylib_cs;
-using System.Numerics;
+﻿using System.Numerics;
+
 using Game.Components;
+
+using Raylib_cs;
 
 namespace Game
 {
@@ -17,7 +19,8 @@ namespace Game
     }
 
     // contains the main game loop
-    class PixelLogic {
+    class PixelLogic
+    {
         // main game loop
         public static void Main()
         {
@@ -25,7 +28,7 @@ namespace Game
             Raylib.InitWindow(800, 800, "Pixel Logic");
             Raylib.SetWindowMinSize(300, 300);
             Raylib.SetTargetFPS(60);
-            Simulation gm = new Simulation(new FileReader());
+            Simulation gm = new(new FileReader());
 
             while (!Raylib.WindowShouldClose())
             {
@@ -35,13 +38,13 @@ namespace Game
 
                 // check input
                 gm.Input();
-                gm.filecheck();
+                gm.Filecheck();
 
                 // update objects
-                gm.update();
+                gm.Update();
 
                 // draw
-                gm.draw();
+                gm.Draw();
                 Raylib.EndDrawing();
             }
             Raylib.CloseWindow();
