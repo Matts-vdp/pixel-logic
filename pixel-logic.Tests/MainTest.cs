@@ -1,13 +1,14 @@
-using Xunit;
 using Game;
 
-namespace pixel_logic.Tests;
+using Xunit;
+
+namespace Pixel_logic.Tests;
 
 public class MainTest
 {
     [Fact]
     public void Test1()
     {
-        
+
     }
 }

@@ -1,24 +1,24 @@
 using Game.Components;
 
-namespace pixel_logic.Tests;
+namespace Pixel_logic.Tests;
 
 public class File : IFile
 {
-    private string txt;
-    public string result = "";
+    private readonly string _txt;
+    public string Result = "";
     public File() : this("")
     {
     }
     public File(string txt)
     {
-        this.txt = txt;
+        _txt = txt;
     }
     public string ReadAllText(string filename)
     {
-        return txt;
+        return _txt;
     }
     public void WriteAllTextAsync(string filename, string txt)
     {
-        result = txt;
+        Result = txt;
     }
 }

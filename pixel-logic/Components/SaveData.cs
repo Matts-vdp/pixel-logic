@@ -6,91 +6,91 @@ namespace Game.Components
     // used for saving a grid to json
     public struct BlockPos
     {
-        public Pos pos { get; set; }
-        public int block { get; set; }
+        public Pos P { get; set; }
+        public int Block { get; set; }
         public BlockPos(int x, int y, int b)
         {
-            pos = new Pos(x, y);
-            block = b;
+            P = new Pos(x, y);
+            Block = b;
         }
     }
 
     // used to store a grid and its componentlist to json
     public class SaveData
     {
-        public int width { get; set; }
-        public int height { get; set; }
-        public List<BlockPos> blocks { get; set; }
-        public Dictionary<int, string> components { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public List<BlockPos> Blocks { get; set; }
+        public Dictionary<int, string> Components { get; set; }
 
         public SaveData(int width, int height, int[,] grid, Dictionary<int, ComponentCreator> custom)
         {
-            this.width = width;
-            this.height = height;
-            blocks = toArray(grid);
-            Dictionary<int, bool> block = new Dictionary<int, bool>();
-            foreach (BlockPos bp in blocks)
+            Width = width;
+            Height = height;
+            Blocks = ToArray(grid);
+            Dictionary<int, bool> block = new();
+            foreach (BlockPos bp in Blocks)
             {
-                block[bp.block] = true;
+                block[bp.Block] = true;
             }
-            components = toSave(block, custom);
+            Components = ToSave(block, custom);
         }
-        public SaveData() : this(1, 1, new int[1,1], new Dictionary<int, ComponentCreator>()) { }
-        
+        public SaveData() : this(1, 1, new int[1, 1], new Dictionary<int, ComponentCreator>()) { }
+
 
         //SAVE
-        private Dictionary<int, string> toSave(Dictionary<int, bool> blocks, Dictionary<int, ComponentCreator> custom)
+        private static Dictionary<int, string> ToSave(Dictionary<int, bool> blocks, Dictionary<int, ComponentCreator> custom)
         {
-            Dictionary<int, string> names = new Dictionary<int, string>();
+            Dictionary<int, string> names = new();
             foreach (int key in custom.Keys)
             {
                 if (blocks.ContainsKey(key))
-                    names[key] = custom[key].name;
+                    names[key] = custom[key].Name;
             }
             return names;
         }
 
         // converts grid into a list of BlockPos because json cant serialize int[,] 
-        private List<BlockPos> toArray(int[,] grid)
+        private List<BlockPos> ToArray(int[,] grid)
         {
-            List<BlockPos> pos = new List<BlockPos>();
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
+            List<BlockPos> pos = new();
+            for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
                     if (grid[x, y] != 0)
                         pos.Add(new BlockPos(x, y, grid[x, y]));
             return pos;
         }
-        
-        public string toJson()
+
+        public string ToJson()
         {
             return JsonSerializer.Serialize<SaveData>(this);
         }
 
-        
+
         //LOAD
         // converts list of BlockPos into grid because json cant serialize int[,]
-        public int[,] fromArray()
+        public int[,] FromArray()
         {
-            int[,] world = new int[height, width];
-            foreach (BlockPos p in blocks)
+            int[,] world = new int[Height, Width];
+            foreach (BlockPos p in Blocks)
             {
-                world[p.pos.y, p.pos.x] = p.block;
+                world[p.P.Y, p.P.X] = p.Block;
             }
             return world;
         }
         // loads the custom components from save into ComponentList
-        public ComponentList readComponents(int[,] grid, IFile file)
+        public ComponentList ReadComponents(int[,] grid, IFile file)
         {
-            ComponentList cList = new ComponentList(file);
-            foreach (int key in components.Keys)
+            ComponentList cList = new(file);
+            foreach (int key in Components.Keys)
             {
-                int newIndex = cList.add(components[key]);
-                grid = Grid.changeLabel(key, newIndex, grid, width, height);
+                int newIndex = cList.Add(Components[key]);
+                grid = Grid.ChangeLabel(key, newIndex, grid, Width, Height);
             }
             return cList;
         }
-    
-        public static SaveData fromJson(string text)
+
+        public static SaveData FromJson(string text)
         {
             SaveData? save = JsonSerializer.Deserialize<SaveData>(text);
             if (save != null) return save;

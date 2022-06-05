@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+
 using Raylib_cs;
 
 namespace Game.Components
@@ -8,66 +9,64 @@ namespace Game.Components
     // the attributes and functions of this class can be used in the script
     public class Input
     {
-        public List<bool> i;    //input connections
-        public List<bool> o;    // output connections
+        public List<bool> I;    //input connections
+        public List<bool> O;    // output connections
         public long PC;         // program counter, has to be incremented manually
         public Dictionary<string, object> MEM; // can be used to store state between calls
-        
-        public Input(): this(new List<bool>(), 0, new Dictionary<string, object>()){}
+
+        public Input() : this(new List<bool>(), 0, new Dictionary<string, object>()) { }
         public Input(List<bool> l, long num, Dictionary<string, object> mem)
         {
-            i = l;
-            o = new List<bool>();
+            I = l;
+            O = new List<bool>();
             PC = num;
             MEM = mem;
         }
+        #pragma warning disable 
         // returns the state of the input at 'i' 
         // returns false when out of range
-        public bool get(int i)
+        public bool Get(int i)
         {
-            if (i < this.i.Count)
-            {
-                return this.i[i];
-            }
-            return false;
+            return i < I.Count ? I[i] : false;
         }
 
         // sets the state of the output at 'o'
         // adds more outputs if necessary
-        public void set(int i, bool val)
+        public void Set(int i, bool val)
         {
-            while (i >= o.Count)
+            while (i >= O.Count)
             {
-                o.Add(false);
+                O.Add(false);
             }
-            o[i] = val;
+            O[i] = val;
         }
 
         // converts a List of bools to a uint
-        public uint toInt(List<bool> l)
+        public uint ToInt(List<bool> l)
         {
             uint num = 0;
             for (int j = l.Count - 1; j >= 0; j--)
             {
-                num = num << 1;
+                num <<= 1;
                 num += l[j] ? (uint)1 : 0;
             }
             return num;
         }
 
-        public List<bool> fromInt(long num) {
-            return fromInt((uint) num);
+        public List<bool> FromInt(long num)
+        {
+            return FromInt((uint)num);
         }
         // converts a int to a list of bools
-        public List<bool> fromInt(uint num)
+        public List<bool> FromInt(uint num)
         {
             int j = 0;
-            List<bool> l = new List<bool>();
+            List<bool> l = new();
             while (num != 0)
             {
                 bool b = (num & (uint)1) == (uint)1;
                 l.Add(b);
-                num = num >> 1;
+                num >>= 1;
                 j++;
             }
             return l;
@@ -75,19 +74,19 @@ namespace Game.Components
 
         // converts a list to a array
         // usefull because List is not available in the script
-        public bool[] toArray(List<bool> list)
+        public bool[] ToArray(List<bool> list)
         {
             return list.ToArray<bool>();
         }
 
         // converts array back to list to use as output
-        public List<bool> fromArray(bool[] arr)
+        public List<bool> FromArray(bool[] arr)
         {
-            return arr.ToList<bool>();
+            return arr.ToList();
         }
 
         // saves a object to memory
-        public void save(string name, object value)
+        public void Save(string name, object value)
         {
             if (MEM.ContainsKey(name))
                 MEM[name] = value;
@@ -96,29 +95,30 @@ namespace Game.Components
         }
 
         // loads a object from memory
-        public object load(string name)
+        public object Load(string name)
         {
             return MEM[name];
         }
+        #pragma warning restore
     }
 
     // used to store the script and to instantiate components
     public class CCode : ComponentCreator
     {
-        private Script<List<bool>> script;
-        private string ext;      // file extension
-        
-        
+        private readonly Script<List<bool>> _script;
+        private readonly string _ext;      // file extension
+
+
         public CCode(string filename, string txt)
         {
-            script = loadCs(txt);
-            name = filename;
-            ext = Path.GetExtension(filename);
-            onColor = Color.GRAY;
-            offColor = Color.GRAY;
+            _script = LoadCs(txt);
+            Name = filename;
+            _ext = Path.GetExtension(filename);
+            OnColor = Color.GRAY;
+            OffColor = Color.GRAY;
         }
         // loads a script from file storage
-        public Script<List<bool>> loadCs(string txt)
+        private static Script<List<bool>> LoadCs(string txt)
         {
             var opt = ScriptOptions.Default;
             opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
@@ -129,25 +129,25 @@ namespace Game.Components
         }
 
         // runs the script with the given inputs and returns the output of the script
-        public List<bool> run(Input input)
+        public List<bool> Run(Input input)
         {
-            ScriptState<List<bool>> state = script.RunAsync(input).Result;
+            ScriptState<List<bool>> state = _script.RunAsync(input).Result;
             return state.ReturnValue;
         }
 
         // creates a component with this script
-        public override Component createComponent(State state)
+        public override Component CreateComponent(State state)
         {
-            if (ext == ".cpl")
+            if (_ext == ".cpl")
                 return new CondComp(this, state);
             return new ProgComp(this, state);
         }
 
-        public override void draw(int x, int y, int gridsize, bool state)
+        public override void Draw(int x, int y, int gridsize, bool state)
         {
-            Color color = state? onColor: offColor;
+            Color color = state ? OnColor : OffColor;
             Raylib.DrawRectangle(x, y, gridsize, gridsize, color);
-            Raylib.DrawText(name[0].ToString(), x+gridsize/3, y, gridsize, Color.BLACK);
+            Raylib.DrawText(Name[0].ToString(), x + gridsize / 3, y, gridsize, Color.BLACK);
         }
     }
 

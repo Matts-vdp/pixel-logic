@@ -4,62 +4,66 @@ namespace Game.Components
     // base class containing shared logic for all connections
     public abstract class Connection
     {
-        protected Component? output;
-        protected Component? input;
-        protected Pos pos;             // location in grid
-        protected bool active {
-            get {
-                return state.getState(pos);
+        protected Component? _output;
+        protected Component? _input;
+        protected Pos _pos;             // location in grid
+        protected bool Active
+        {
+            get
+            {
+                return _state.GetState(_pos);
             }
-            set {
-                state.setState(pos, value);
-            }}
+            set
+            {
+                _state.SetState(_pos, value);
+            }
+        }
 
-        private bool changed;       // state changed since last read
+        private bool _changed;       // state changed since last read
 
-        protected State state;
+        protected State _state;
         protected Connection(Pos p, State state)
         {
-            this.state = state;
-            pos = p;
-            active = false;
-            changed = true;
+            this._state = state;
+            _pos = p;
+            Active = false;
+            _changed = true;
         }
         // connect input component
-        protected void addInput(Component inp)
+        protected void AddInput(Component inp)
         {
-            inp.addOutput(this);
-            input = inp;
+            inp.AddOutput(this);
+            _input = inp;
         }
         // connect output component
-        protected void addOutput(Component outp)
+        protected void AddOutput(Component outp)
         {
-            outp.addInput(this);
-            output = outp;
+            outp.AddInput(this);
+            _output = outp;
         }
-        public bool isActive()
+        public bool IsActive()
         {
-            changed = false;
-            return active;
+            _changed = false;
+            return Active;
         }
-        public void setActive(bool value)
+        public void SetActive(bool value)
         {
-            changed = value != active;
-            active = value;
+            _changed = value != Active;
+            Active = value;
         }
-        public bool isChanged()
+        public bool IsChanged()
         {
-            return changed;
+            return _changed;
         }
 
         // checks if both sides of the connection are filled
-        public bool isFull()
+        public bool IsFull()
         {
-            return (input != null) && (output != null);
+            return (_input != null) && (_output != null);
         }
 
-        public abstract void addWire(Component c);
-        public abstract void addOther(Component c);
+        public abstract void AddWire(Component c);
+        public abstract void AddOther(Component c);
     }
 
     // used to pass a signal from a component to a wire
@@ -68,15 +72,15 @@ namespace Game.Components
         public OutConnection(Pos p, State state) : base(p, state)
         {
         }
-        public override void addWire(Component c)
+        public override void AddWire(Component c)
         {
-            addOutput(c);
+            AddOutput(c);
         }
-        public override void addOther(Component c)
+        public override void AddOther(Component c)
         {
-            addInput(c);
+            AddInput(c);
         }
-        public static Connection newConnection(Pos p, State state)
+        public static Connection NewConnection(Pos p, State state)
         {
             return new OutConnection(p, state);
         }
@@ -89,15 +93,15 @@ namespace Game.Components
         {
         }
 
-        public override void addWire(Component c)
+        public override void AddWire(Component c)
         {
-            addInput(c);
+            AddInput(c);
         }
-        public override void addOther(Component c)
+        public override void AddOther(Component c)
         {
-            addOutput(c);
+            AddOutput(c);
         }
-        public static Connection newConnection(Pos p, State state)
+        public static Connection NewConnection(Pos p, State state)
         {
             return new InConnection(p, state);
         }
@@ -110,16 +114,16 @@ namespace Game.Components
         {
         }
 
-        public override void addWire(Component c)
+        public override void AddWire(Component c)
         {
-            addInput(c);
+            AddInput(c);
         }
-        public override void addOther(Component c)
+        public override void AddOther(Component c)
         {
-            output = c;
-            c.addClock(this);
+            _output = c;
+            c.AddClock(this);
         }
-        public static Connection newConnection(Pos p, State state)
+        public static Connection NewConnection(Pos p, State state)
         {
             return new ClockIn(p, state);
         }
@@ -132,13 +136,13 @@ namespace Game.Components
         {
         }
 
-        public override void addWire(Component c)
+        public override void AddWire(Component c)
         {
         }
-        public override void addOther(Component c)
+        public override void AddOther(Component c)
         {
         }
-        public static Connection newConnection(Pos p, State state)
+        public static Connection NewConnection(Pos p, State state)
         {
             return new CrossConnection(p, state);
         }

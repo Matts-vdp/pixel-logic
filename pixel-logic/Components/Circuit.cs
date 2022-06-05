@@ -1,30 +1,30 @@
 using Raylib_cs;
 namespace Game.Components
 {
-    public class Circuit 
+    public class Circuit
     {
-        public string name;
-        private Dictionary<int, Component> components;  // stores all components
-        private List<ButtonComp> buttons;                   // stores buttons for input handling
-        private List<Connection> connections;           // stores all connections between components
+        public string Name;
+        private readonly Dictionary<int, Component> _components;  // stores all components
+        private readonly List<ButtonComp> _buttons;                   // stores buttons for input handling
+        private readonly List<Connection> _connections;           // stores all connections between components
 
-        public Circuit(string name, Dictionary<int, Component> components, List<ButtonComp> buttons, List<Connection> connections) 
+        public Circuit(string name, Dictionary<int, Component> components, List<ButtonComp> buttons, List<Connection> connections)
         {
-            this.name = name;
-            this.components = components;
-            this.buttons = buttons;
-            this.connections = connections;
+            this.Name = name;
+            this._components = components;
+            this._buttons = buttons;
+            this._connections = connections;
         }
 
-        public Component toComponent(State state)
+        public Component ToComponent(State state)
         {
-            List<Connection> inp = new List<Connection>();
-            List<Connection> outp = new List<Connection>();
+            List<Connection> inp = new();
+            List<Connection> outp = new();
             Connection? clock = null;
 
-            foreach (Connection i in connections)
+            foreach (Connection i in _connections)
             {
-                if (!i.isFull())
+                if (!i.IsFull())
                 {
                     if (i.GetType() == typeof(InConnection))
                     {
@@ -43,28 +43,28 @@ namespace Game.Components
             return new SubComponent(this, inp, outp, clock, state);
         }
         // update components
-        public void update()
+        public void Update()
         {
-            foreach (Component c in components.Values)
+            foreach (Component c in _components.Values)
             {
-                if (!(c is WireComp))
-                    c.update();
+                if (c is not WireComp)
+                    c.Update();
             }
-            foreach (Component c in components.Values)
+            foreach (Component c in _components.Values)
             {
                 if (c is WireComp)
-                    c.update();
+                    c.Update();
             }
         }
         // handle keyboard input
         public void Input()
         {
             int key = 49;
-            for (int i = 0; i < buttons.Count && i < 9; i++)
+            for (int i = 0; i < _buttons.Count && i < 9; i++)
             {
                 if (Raylib.IsKeyPressed((KeyboardKey)(key + i)))
                 {
-                    buttons[i].toggle();
+                    _buttons[i].Toggle();
                 }
             }
 
