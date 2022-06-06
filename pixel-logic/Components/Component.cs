@@ -305,7 +305,6 @@ namespace Game.Components
     // display input as number
     public class Seg7Comp : Component
     {
-        private int _value;
         public Seg7Comp(State state) : base(state)
         {
         }
@@ -320,7 +319,7 @@ namespace Game.Components
                     num += (int)Math.Pow(2, i);
                 }
             }
-            _value = num;
+            _state.SetText(_blocks, num.ToString());
         }
         public static Component NewComponent(State state)
         {

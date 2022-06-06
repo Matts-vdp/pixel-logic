@@ -78,6 +78,7 @@ namespace Game.Components
             bool change = _grid.Set(x, y, t);
             if (change)
                 State.SetState(new Pos(x, y), false);
+                State.DrawText.Remove(new Pos(x,y));
             return change;
         }
 
@@ -89,6 +90,7 @@ namespace Game.Components
             bool change = _grid.Set(x, y, (int)Types.NONE);
             if (change)
                 State.SetState(new Pos(x, y), false);
+                State.DrawText.Remove(new Pos(x,y));
             return change;
         }
 
@@ -267,10 +269,16 @@ namespace Game.Components
                     if (_grid[x, y] != 0)
                     {
                         int xpos = x * gridsize - xoff;
-                        int ypos = y * gridsize - yoff; ;
+                        int ypos = y * gridsize - yoff;
                         CList.Draw(_grid[x, y], xpos, ypos, gridsize, State.GetState(new Pos(x, y)));
                     }
                 }
+            }
+            foreach (Pos p in State.DrawText.Keys)
+            {
+                int xpos = p.X * gridsize - xoff;
+                int ypos = p.Y * gridsize - yoff;
+                Raylib.DrawText(State.DrawText[p], xpos+gridsize/3, ypos, gridsize, Color.BLACK);
             }
         }
         public override void Draw(int x, int y, int gridsize, bool state)

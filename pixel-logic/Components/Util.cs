@@ -15,6 +15,8 @@ namespace Game.Components
     public class State
     {
         private readonly bool[,] _state;
+        public Dictionary<Pos, string> DrawText = new();
+
         public State(int w, int h)
         {
             _state = new bool[w, h];
@@ -26,6 +28,14 @@ namespace Game.Components
         public bool GetState(Pos p)
         {
             return _state[p.X, p.Y];
+        }
+
+        public void SetText(List<Pos> positions, string text)
+        {
+            foreach(Pos p in positions)
+            {
+                DrawText[p] = text;
+            }
         }
     }
 
