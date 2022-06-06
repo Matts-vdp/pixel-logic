@@ -128,7 +128,7 @@ namespace Game.Components
                     connections.Add(c);
                     if (_grid[x - 1, y] == (int)Types.WIRE && _grid[x + 1, y] == (int)Types.WIRE)
                     {
-                        Grid.ChangeLabel(labels[y, x + 1], labels[x - 1, y], labels, _grid.Width, _grid.Height);
+                        Grid.ChangeLabel(labels[x+1, y], labels[x - 1, y], labels, _grid.Width, _grid.Height);
                     }
                     if (_grid[x, y - 1] == (int)Types.WIRE && _grid[x, y + 1] == (int)Types.WIRE)
                     {

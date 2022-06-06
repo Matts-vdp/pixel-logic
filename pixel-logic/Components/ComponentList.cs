@@ -69,7 +69,7 @@ namespace Game.Components
                 (int)Types.WIRE,
                 new BasicComponentCreator(
                     "Wire",
-                    new Color(153, 102, 51, 255),
+                    new Color(163, 120, 60, 255),
                     Color.YELLOW,
                     WireComp.NewComponent
             )

@@ -54,8 +54,8 @@ namespace Game.Components
         private List<BlockPos> ToArray(int[,] grid)
         {
             List<BlockPos> pos = new();
-            for (int y = 0; y < Height; y++)
-                for (int x = 0; x < Width; x++)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
                     if (grid[x, y] != 0)
                         pos.Add(new BlockPos(x, y, grid[x, y]));
             return pos;
@@ -74,7 +74,7 @@ namespace Game.Components
             int[,] world = new int[Height, Width];
             foreach (BlockPos p in Blocks)
             {
-                world[p.P.Y, p.P.X] = p.Block;
+                world[p.P.X, p.P.Y] = p.Block;
             }
             return world;
         }
