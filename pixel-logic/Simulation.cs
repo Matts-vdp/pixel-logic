@@ -254,6 +254,7 @@ namespace Game
             if (_rebuild && Raylib.GetTime() - _time > DELAY)
             {
                 _token.Cancel();
+                Task.WaitAll();
                 _token = new CancellationTokenSource();
                 CancellationToken ct = _token.Token;
 
@@ -266,6 +267,7 @@ namespace Game
                         if (UpdateDelay > 0)
                             Thread.Sleep(UpdateDelay);
                     }
+                    // _grid.State.DrawText.Clear();
                 }, ct);
 
                 _rebuild = false;

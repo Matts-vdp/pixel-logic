@@ -28,6 +28,8 @@ namespace Game.Components
             _pos = p;
             Active = false;
             _changed = true;
+            if (!IsSub())
+                _state.DrawText[_pos] = "";
         }
         // connect input component
         protected void AddInput(Component inp)
@@ -41,6 +43,12 @@ namespace Game.Components
             outp.AddInput(this);
             _output = outp;
         }
+
+        protected virtual bool IsSub()
+        {
+            return false;
+        }
+
         public bool IsActive()
         {
             _changed = false;
@@ -75,10 +83,22 @@ namespace Game.Components
         public override void AddWire(Component c)
         {
             AddOutput(c);
+            if (IsSub())
+                _state.DrawText[_pos] = "I";
+            else 
+                _state.DrawText[_pos] = "";
         }
         public override void AddOther(Component c)
         {
             AddInput(c);
+            if (IsSub())
+                _state.DrawText[_pos] = "I";
+            else 
+                _state.DrawText[_pos] = "";
+        }
+        protected override bool IsSub()
+        {
+            return (_input == null) && (_output != null);
         }
         public static Connection NewConnection(Pos p, State state)
         {
@@ -96,11 +116,24 @@ namespace Game.Components
         public override void AddWire(Component c)
         {
             AddInput(c);
+            if (IsSub())
+                _state.DrawText[_pos] = "O";
+            else 
+                _state.DrawText[_pos] = "";
         }
         public override void AddOther(Component c)
         {
             AddOutput(c);
+            if (IsSub())
+                _state.DrawText[_pos] = "O";
+            else 
+                _state.DrawText[_pos] = "";
         }
+        protected override bool IsSub()
+        {
+            return (_input == null) && (_output != null);
+        }
+        
         public static Connection NewConnection(Pos p, State state)
         {
             return new InConnection(p, state);
@@ -117,11 +150,23 @@ namespace Game.Components
         public override void AddWire(Component c)
         {
             AddInput(c);
+            if (IsSub())
+                _state.DrawText[_pos] = "C";
+            else 
+                _state.DrawText[_pos] = "";
         }
         public override void AddOther(Component c)
         {
             _output = c;
             c.AddClock(this);
+            if (IsSub())
+                _state.DrawText[_pos] = "C";
+            else 
+                _state.DrawText[_pos] = "";
+        }
+        protected override bool IsSub()
+        {
+            return (_input != null) && (_output == null);
         }
         public static Connection NewConnection(Pos p, State state)
         {
