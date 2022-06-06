@@ -10,14 +10,15 @@ namespace Game.Components
 
         public Circuit(string name, Dictionary<int, Component> components, List<ButtonComp> buttons, List<Connection> connections)
         {
-            this.Name = name;
-            this._components = components;
-            this._buttons = buttons;
-            this._connections = connections;
+            Name = name;
+            _components = components;
+            _buttons = buttons;
+            _connections = connections;
         }
 
         public Component ToComponent(State state)
         {
+            
             List<Connection> inp = new();
             List<Connection> outp = new();
             Connection? clock = null;

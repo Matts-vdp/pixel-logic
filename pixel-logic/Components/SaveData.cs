@@ -71,7 +71,7 @@ namespace Game.Components
         // converts list of BlockPos into grid because json cant serialize int[,]
         public int[,] FromArray()
         {
-            int[,] world = new int[Height, Width];
+            int[,] world = new int[Width, Height];
             foreach (BlockPos p in Blocks)
             {
                 world[p.P.X, p.P.Y] = p.Block;

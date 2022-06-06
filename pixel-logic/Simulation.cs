@@ -30,7 +30,7 @@ namespace Game
         {
             this._file = file;
             _grid = new Field(200, 200, file);
-            _circuit = _grid.BuildObjects();
+            _circuit = _grid.BuildNewObjects();
         }
 
         // processes all mouse input
@@ -157,7 +157,7 @@ namespace Game
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
             {
-                _cloneCircuit = _cloneGrid?.BuildObjects();
+                _cloneCircuit = _cloneGrid?.BuildNewObjects();
                 DrawCloneGrid();
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_V))

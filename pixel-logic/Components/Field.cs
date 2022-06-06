@@ -102,29 +102,38 @@ namespace Game.Components
 
         // CONVERT TO COMPONENTS
         // create components from grid matrix
+
+        public Circuit BuildNewObjects()
+        {
+            return BuildObjects(new State(_grid.Width, _grid.Height));
+        }
         public Circuit BuildObjects()
+        {
+            return BuildObjects(State);
+        }
+        public Circuit BuildObjects(State state)
         {
             Dictionary<int, Component> components = new();
             List<ButtonComp> buttons = new();
             List<Connection> connections = new();
 
             int[,] labels = _grid.ConnectedComponents();
-            CrossConnect(labels, connections);
-            MakeComponents(labels, components, buttons);
-            MakeConnections(labels, components, connections);
+            CrossConnect(labels, connections, state);
+            MakeComponents(labels, components, buttons, state);
+            MakeConnections(labels, components, connections, state);
 
             return new Circuit(Name, components, buttons, connections);
         }
 
         // connect wires with a cross connection between them
-        private void CrossConnect(int[,] labels, List<Connection> connections)
+        private void CrossConnect(int[,] labels, List<Connection> connections, State state)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
                 for (int y = 0; y < _grid.Height; y++)
                 {
                     if (labels[x, y] != -2) { continue; }
-                    Connection c = CList.NewConnection(_grid[x, y], new Pos(x, y), State);
+                    Connection c = CList.NewConnection(_grid[x, y], new Pos(x, y), state);
                     connections.Add(c);
                     if (_grid[x - 1, y] == (int)Types.WIRE && _grid[x + 1, y] == (int)Types.WIRE)
                     {
@@ -138,7 +147,7 @@ namespace Game.Components
             }
         }
         // create the components from the grid
-        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons)
+        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons, State state)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
@@ -151,7 +160,7 @@ namespace Game.Components
                     }
                     else
                     {
-                        Component c = CList.NewComponent(_grid[x, y], State);
+                        Component c = CList.NewComponent(_grid[x, y], state);
                         c.Add(new Pos(x, y));
                         if (_grid[x, y] == (int)Types.BUT)
                         {
@@ -163,7 +172,7 @@ namespace Game.Components
             }
         }
         // create the connections between components
-        private void MakeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections)
+        private void MakeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections, State state)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
@@ -173,7 +182,7 @@ namespace Game.Components
                     bool wiref = false;
                     bool otherf = false;
                     Pos[] neighbors = { new Pos(x, y - 1), new Pos(x - 1, y), new Pos(x, y + 1), new Pos(x + 1, y) };
-                    Connection con = CList.NewConnection(_grid[x, y], new Pos(x, y), State);
+                    Connection con = CList.NewConnection(_grid[x, y], new Pos(x, y), state);
                     foreach (Pos pos in neighbors)
                     {
                         int block = _grid[pos.X, pos.Y];
@@ -220,7 +229,7 @@ namespace Game.Components
             foreach (int key in other.CList.Custom.Keys)
             {
                 int index = CList.Add(other.CList.Custom[key].Name);
-                Grid.ChangeLabel(key, index, other._grid.Matrix, other._grid.Height, other._grid.Width);
+                Grid.ChangeLabel(key, index, other._grid.Matrix, other._grid.Width, other._grid.Height);
             }
         }
         // paste other grid into this grid
@@ -243,7 +252,8 @@ namespace Game.Components
         // creates a subcomponent from this grid
         public override Component CreateComponent(State state)
         {
-            return BuildObjects().ToComponent(state);
+            state = new State(_grid.Width, _grid.Height);
+            return BuildObjects(state).ToComponent(state);
         }
         //------------------------------------------------------------------
 
