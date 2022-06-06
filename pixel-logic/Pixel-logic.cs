@@ -47,6 +47,7 @@ namespace Game
                 gm.Draw();
                 Raylib.EndDrawing();
             }
+            gm.Stop();
             Raylib.CloseWindow();
         }
     }
