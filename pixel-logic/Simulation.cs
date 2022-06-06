@@ -23,14 +23,32 @@ namespace Game
         private double _time = 0;
         private const double DELAY = 0.2;
         private bool _rebuild = false;
-
+        private CancellationTokenSource _token;
         private readonly IFile _file;
+        private int _updateDelay = 100;
+        private const int MaxUpdateDelay = 10000;
+        private int UpdateDelay
+        {
+            get
+            {
+                return _updateDelay;
+            }
+            set
+            {
+                _updateDelay = value;
+                if (_updateDelay > MaxUpdateDelay)
+                    _updateDelay = MaxUpdateDelay;
+                else if (_updateDelay < 0)
+                    _updateDelay = 0;
+            }
+        }
 
         public Simulation(IFile file)
         {
             this._file = file;
             _grid = new Field(200, 200, file);
             _circuit = _grid.BuildNewObjects();
+            _token = new();
         }
 
         // processes all mouse input
@@ -174,6 +192,15 @@ namespace Game
             {
                 _grid.CList.Add(_filename);
             }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_U))
+            {
+                UpdateDelay += 2;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_J))
+            {
+                UpdateDelay -= 2;
+            }
+
             return rebuild;
         }
 
@@ -199,6 +226,7 @@ namespace Game
                 Raylib.DrawText(_grid.CList.GetName(i + 1), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
             Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
+            Raylib.DrawText(UpdateDelay.ToString()+"ms", Raylib.GetScreenWidth() - 80, 20, 20, Color.WHITE);
         }
 
         // display the gridcell selected by the mouse
@@ -225,10 +253,23 @@ namespace Game
         {
             if (_rebuild && Raylib.GetTime() - _time > DELAY)
             {
-                _circuit = _grid.BuildObjects();
+                _token.Cancel();
+                _token = new CancellationTokenSource();
+                CancellationToken ct = _token.Token;
+
+                Task task = Task.Run(() =>
+                {
+                    _circuit = _grid.BuildObjects();
+                    while (!ct.IsCancellationRequested)
+                    {
+                        _circuit.Update();
+                        if (UpdateDelay > 0)
+                            Thread.Sleep(UpdateDelay);
+                    }
+                }, ct);
+
                 _rebuild = false;
             }
-            _circuit.Update();
         }
         // draw gameobjects
         public void Draw()
@@ -236,6 +277,11 @@ namespace Game
             _grid.Draw(_gridsize, _xoff, _yoff);
             DrawMouse();
             DrawUI();
+        }
+
+        public void Stop()
+        {
+            _token.Cancel();
         }
 
         // handle files being dragged in
