@@ -272,6 +272,7 @@ namespace Game.Components
             int x = ToGrid(pos.X, gridsize, xoff);
             int y = ToGrid(pos.Y, gridsize, yoff);
             _grid.Paste(other._grid, x, y);
+            State.DrawText.Clear();
         }
         // paste other grid in this grid at 0, 0
         private void Paste(Field other)

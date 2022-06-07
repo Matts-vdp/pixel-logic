@@ -167,6 +167,7 @@ namespace Game
                 string filename = "saves/circuit/save.json";
                 string txt = File.ReadAllText(filename);
                 _grid.Load(filename, txt, _file);
+                rebuild = true;
             }
             // copy paste
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_C) || Raylib.IsKeyPressed(KeyboardKey.KEY_X))
