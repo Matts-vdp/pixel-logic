@@ -221,16 +221,26 @@ namespace Game
         // draws game UI
         private void DrawUI()
         {
+            int font = 20;
+            int xstart = 5;
+            int xstartName = 20;
+            int ystart = 20;
+            int rsize = 10;
             // draw components
             for (int i = 0; i < _grid.CList.Count; i++)
             {
                 bool sel = (i + 1) == _selected;
-                Raylib.DrawText(_grid.CList.GetName(i + 1), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
+                int ypos = ystart* (i + 1);
+                string name = _grid.CList.GetName(i + 1);
+                Color color = _grid.CList.GetColor(i+1, sel);
+                if (sel)
+                    Raylib.DrawRectangle(xstart, ypos+font/4, rsize, rsize, color);
+                Raylib.DrawText(name, xstartName, ypos, font, color);
             }
 
             // draw info
-            int xstart = Raylib.GetScreenWidth() - 100;
-            int ystart = 20;
+            xstart = Raylib.GetScreenWidth() - 110;
+            ystart = 20;
             int fontsize = 20;
             int offset = 20;
             

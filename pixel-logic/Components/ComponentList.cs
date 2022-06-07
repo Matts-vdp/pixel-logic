@@ -206,7 +206,14 @@ namespace Game.Components
             return index;
         }
 
-
+        public Color GetColor(int i, bool on)
+        {
+            if (Connections.ContainsKey(i))
+                return on? Connections[i].OnColor: Connections[i].OffColor;
+            else if (Basic.ContainsKey(i))
+                return on? Basic[i].OnColor: Basic[i].OffColor;
+            return on? Custom[i].OnColor: Custom[i].OffColor;
+        }
 
         public Component NewComponent(int type, State state)
         {
