@@ -196,12 +196,18 @@ namespace Game.Components
             if (index != -1) return index;
             index = Count + 1;
             string ext = Path.GetExtension(filename);
-            string txt = _file.ReadAllText(filename);
+            
             ComponentCreator c;
             if (ext == ".json")
+            {
+                string txt = _file.ReadAllText("saves/circuit/"+filename);
                 c = new Field(filename, txt, _file);
+            }
             else
+            {
+                string txt = _file.ReadAllText("saves/customCode/"+filename);
                 c = new CCode(filename, txt);
+            }
             Custom.Add(index, c);
             return index;
         }

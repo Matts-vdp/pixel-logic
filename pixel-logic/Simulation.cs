@@ -10,7 +10,6 @@ namespace Game
     public class Simulation
     {
         private int _gridsize = 32;   // size of grid cells
-        private int _selected = 1;    // selected item of the list on the left
         private int _xoff = 0;        // camera offset x
         private int _yoff = 0;        // camera offset y
         private int _xsel = -1;       // selection start x
@@ -59,6 +58,23 @@ namespace Game
             }
         }
 
+        private int _sel = 1;
+        private int Selected
+        {
+            get
+            {
+                return _sel;
+            }
+            set
+            {
+                _sel = value;
+                if (_sel > _grid.CList.Count)
+                    _sel = _grid.CList.Count;
+                else if (_sel < 1)
+                    _sel = 1;
+            }
+        }
+
         private Task? _updater;
         private string _simstate = "SIM";
 
@@ -77,7 +93,7 @@ namespace Game
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
             {
                 Vector2 pos = Raylib.GetMousePosition();
-                if (_grid.Add(pos, _selected, _gridsize, _xoff, _yoff))
+                if (_grid.Add(pos, Selected, _gridsize, _xoff, _yoff))
                     rebuild = true;
             }
             if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_RIGHT))
@@ -86,13 +102,7 @@ namespace Game
                 if (_grid.Del(pos, _gridsize, _xoff, _yoff))
                     rebuild = true;
             }
-            _selected -= (int)Raylib.GetMouseWheelMove();
-            int max = _grid.CList.Count;
-            if (_selected > max)
-            {
-                _selected = max;
-            }
-            if (_selected < 1) { _selected = 1; }
+            Selected -= (int)Raylib.GetMouseWheelMove();
             return rebuild;
         }
 
@@ -100,6 +110,14 @@ namespace Game
         private bool InputKeyboard()
         {
             bool rebuild = false;
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_T))
+            {
+                Selected -= 1;
+            }
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_G))
+            {
+                Selected += 1;
+            }
             //zoom
             if (Raylib.IsKeyDown(KeyboardKey.KEY_KP_ADD))
             {
@@ -255,7 +273,7 @@ namespace Game
             // draw components
             for (int i = 0; i < _grid.CList.Count; i++)
             {
-                bool sel = (i + 1) == _selected;
+                bool sel = (i + 1) == Selected;
                 int ypos = ystart* (i + 1);
                 string name = _grid.CList.GetName(i + 1);
                 Color color = _grid.CList.GetColor(i+1, sel);
