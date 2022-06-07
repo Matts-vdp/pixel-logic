@@ -131,7 +131,7 @@ namespace Game.Components
         }
         protected override bool IsSub()
         {
-            return (_input == null) && (_output != null);
+            return (_input != null) && (_output == null);
         }
         
         public static Connection NewConnection(Pos p, State state)
@@ -166,7 +166,7 @@ namespace Game.Components
         }
         protected override bool IsSub()
         {
-            return (_input != null) && (_output == null);
+            return (_input == null) && (_output != null);
         }
         public static Connection NewConnection(Pos p, State state)
         {

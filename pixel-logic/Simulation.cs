@@ -226,7 +226,8 @@ namespace Game
             // create subcomponent
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_I))
             {
-                _grid.CList.Add(_filename);
+                string name = Path.GetFileName(_filename);
+                _grid.CList.Add(name);
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_U))
             {
@@ -255,7 +256,7 @@ namespace Game
             rebuild = InputKeyboard() || rebuild;
             if (rebuild)
             {
-                this._rebuild = true;
+                _rebuild = true;
                 _time = Raylib.GetTime();
             }
             _circuit.Input(); // handle extra input of grid
@@ -377,6 +378,7 @@ namespace Game
                 else if (Raylib.IsFileExtension(files[0], ".cpl") || Raylib.IsFileExtension(files[0], ".ppl"))
                 {
                     string name = Path.GetFileName(files[0]);
+                    name = Path.GetFileName(name);
                     _grid.CList.Add(name);
                 }
                 Raylib.ClearDroppedFiles();

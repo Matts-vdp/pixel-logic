@@ -10,19 +10,25 @@ You can place components by drawing pixels. These pixels are then converted to c
 ## Controls
 | Keys          | Action            |
 |---------------|-------------------|
-| left click    | place             |
-| right click   | remove            |
-| scroll wheel  | select component  |
+| left click    | Place             |
+| right click   | Remove            |
+| scroll wheel  | Select component  |
+| T             | Select component above |
+| G             | Select component below |
 | arrows        | Move Camera       |
 | +,-           | Zoom              |
-| 0-9           | toggle buttons    |
-| S             | save entire grid to saves/circuit/saves.json   |
-| L             | load entire grid from saves/circuit/saves.json |
-| hold C + drag | copy selected     |
-| hold X + drag | cut selected      |
-| hold V        | show clipboard    |
-| release V     | place clipboard   |
-| I             | import last dragged file as subcomponent (only works with .json files in saves)|
+| 0-9           | Toggle buttons    |
+| S             | Save entire grid to saves/circuit/saves.json   |
+| L             | Load entire grid from saves/circuit/saves.json |
+| hold C + drag | Copy selected     |
+| hold X + drag | Cut selected      |
+| hold V        | Show clipboard    |
+| release V     | Place clipboard   |
+| I             | Import last dragged file as subcomponent (only works with .json files in saves)|
+| U             | Increase update delay  |
+| J             | Decrease update delay  |
+| Y             | Increase Clock period  |
+| H             | Decrease Clock period  |
 
 
 
@@ -65,7 +71,7 @@ There are 2 types of custom components
 #### **Sub Components**
 Sub components are components that combine a circuit into a single component. 
 
-They can be created by dragging a file containing a saved circuit into the window. This has to be a .json file located in *saves*. 
+They can be created by dragging a file containing a saved circuit into the window. This has to be a *.json* file located in *saves/circuit*. 
 After this press the **I** key. When succesfull the filename should appear as a new option in the component list. 
 You can place and use it as normal.
 
@@ -84,17 +90,19 @@ You will see a **C** on the **ClkIn**.
 Programmable components are components that contain a custom C# script. 
 They can be loaded by dragging the correct file into the window. When succesfull a new Option will appear in the component list.
 
-There are 2 types defined by there file extension.
+There are 2 types defined by their file extension.
 - **.cpl**: Runs every time a input changes.
 - **.ppl**: Runs every time the clock input changes from false to true.
 
-Your script has access to a *List\<bool>* object containing the state of the inputs in variable i. You can set the outputs by returning a *List\<bool>* object. There are some helper functions and extra variables you have access to. For more information please look at the **Input** class in *CodeCompilation.cs*.
+Your script has access to a *List\<bool>* object containing the state of the inputs in variable **I**. You can set the outputs by returning a *List\<bool>* object. There are some helper functions and extra variables you have access to. For more information please look at the **Input** class in *CodeCompilation.cs*.
 
 
 ## Example
-For this example we are going to build a basic 3 bit counter. Here is a schematic of a 1 bit module. If you're not sure there is a image of a possible solution at the end.
+For this example we are going to build a basic 3 bit counter. Here is a schematic of a 1 bit module. 
 
 <img src="https://github.com/Matts-vdp/pixel-logic/blob/master/preview/countsh.png" width="300">
+
+If you're not sure there is a image of a possible solution at the end.
 
 Let's begin.
 ### Step 1: Build a 1 bit counter
@@ -122,7 +130,7 @@ Now that we created the 1 bit counter expanding it is very easy.
 3. Hold **V** and position the new counter where you want. 
 4. Release **V** to paste the counter.
 5. Connect the **Next** connection to the **Enable** of the next 1 bit counter. These names can be seen in the schematic shown at the start of the example.
-6. Repeat 1-5 one more time.
+6. Repeat step 1-5 one more time.
 7. Connect the **ClkIn** of all the counters to the **Out** of the **Clock**.
 8. Press the **1** button. You should see the 3 bit counter working correctly.
 
@@ -144,7 +152,7 @@ Our circuit works well but there are a lot of parts on the screen. To minimize t
 5. Remove all **wires** from the **ClkIn**.
 6. Make sure all newly placed connections have an **O**, **I** or **C** drawn on them. You can see my version of this at the end of this step.
 7. Copy the 1 bit counter with its connections.
-8. Go to the *saves* folder.
+8. Go to the *saves/circuit* folder.
 9. Rename *clipboard.json* to anything you want.
 10. Drag the file into the program window.
 11. Make sure the window has focus and press **I**. You should see your filename appear in the component list.
@@ -178,15 +186,15 @@ Let's take a look at how this works.
 // if it is then increment the current count
 // PC is a variable that is passed to the script 
 // that can be used to store a int value between calls
-if (get(0)) // get returns the state of the input
+if (Get(0)) // get returns the state of the input
 {
     PC++;
 }
 // convert PC to a list of booleans and set it as output
-return fromInt(PC); 
+return FromInt(PC); 
 ```
-4. Drag the file into the window. You should see a new component called **counter** appear.
-5. Place the **counter** and add the needed **In**, **Out** and **ClkIn** connections.
+4. Drag the file into the window. You should see a new component called **count.ppl** appear.
+5. Place the **count.ppl** and add the needed **In**, **Out** and **ClkIn** connections.
 6. Connect it to a **button** and **clock**.
 
 You have now created a counter using a programmable component.
