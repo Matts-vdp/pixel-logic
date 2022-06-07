@@ -60,7 +60,7 @@ namespace Game
         }
 
         private Task? _updater;
-        private string _simstate = "Simulating";
+        private string _simstate = "SIM";
 
         public Simulation(IFile file)
         {
@@ -265,21 +265,22 @@ namespace Game
             }
 
             // draw info
-            int xbegin = Raylib.GetScreenWidth() - 110;
-            int xbeginText = Raylib.GetScreenWidth() - 200;
+            int xbegin = Raylib.GetScreenWidth() - 85;
+            int xbeginText = xbegin - 85;
             int ybegin = 20;
             int fontsize = 20;
-            int offset = 20;
+            int offset = 25;
             
-            Raylib.DrawFPS(xbegin, ybegin);
+            Raylib.DrawText("FPS:", xbeginText, ybegin, fontsize, Color.GRAY);
+            Raylib.DrawText(Raylib.GetFPS().ToString(), xbegin, ybegin, fontsize, Color.WHITE);
             ybegin += offset;
-            Raylib.DrawText("Update:", xbeginText, ybegin, fontsize, Color.WHITE);
+            Raylib.DrawText("Update:", xbeginText, ybegin, fontsize, Color.GRAY);
             Raylib.DrawText(UpdateDelay.ToString()+"ms", xbegin, ybegin, fontsize, Color.WHITE);
             ybegin += offset;
-            Raylib.DrawText("Clock:", xbeginText, ybegin, fontsize, Color.WHITE);
+            Raylib.DrawText("Clock:", xbeginText, ybegin, fontsize, Color.GRAY);
             Raylib.DrawText(ClockDelay.ToString()+"ms", xbegin, ybegin, fontsize, Color.WHITE);
             ybegin += offset;
-            Raylib.DrawText("State:", xbeginText, ybegin, fontsize, Color.WHITE);
+            Raylib.DrawText("State:", xbeginText, ybegin, fontsize, Color.GRAY);
             Raylib.DrawText(_simstate, xbegin, ybegin, fontsize, Color.WHITE);
         }
 
@@ -315,16 +316,16 @@ namespace Game
 
                 _updater = Task.Run(() =>
                 {
-                    _simstate = "Building";
+                    _simstate = "BUILD";
                     _circuit = _grid.BuildObjects(ct);
-                    _simstate = "Simulating";
+                    _simstate = "SIM";
                     while (!ct.IsCancellationRequested)
                     {
                         _circuit.Update(ct, ClockDelay);
                         if (UpdateDelay > 0)
                             Thread.Sleep(UpdateDelay);
                     }
-                    _simstate = "Building";
+                    _simstate = "BUILD";
                 }, ct);
 
                 _rebuild = false;
