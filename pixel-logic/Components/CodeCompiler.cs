@@ -102,6 +102,8 @@ namespace Game.Components
         #pragma warning restore
     }
 
+
+
     // used to store the script and to instantiate components
     public class CCode : ComponentCreator
     {
@@ -121,8 +123,8 @@ namespace Game.Components
         private static Script<List<bool>> LoadCs(string txt)
         {
             var opt = ScriptOptions.Default;
-            opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
-            opt.AddImports("System");
+            // opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
+            // opt.AddImports("System");
             var script = CSharpScript.Create<List<bool>>(txt, opt, typeof(Input));
             script.Compile(); // compile on load for faster further use
             return script;
