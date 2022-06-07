@@ -42,6 +42,9 @@ namespace Game
             }
         }
 
+        private Task? _updater;
+        private string _simstate = "Simulating";
+
         public Simulation(IFile file)
         {
             _file = file;
@@ -218,13 +221,24 @@ namespace Game
         // draws game UI
         private void DrawUI()
         {
+            // draw components
             for (int i = 0; i < _grid.CList.Count; i++)
             {
                 bool sel = (i + 1) == _selected;
                 Raylib.DrawText(_grid.CList.GetName(i + 1), 20, 20 * (i + 1), 20, sel ? Color.WHITE : Color.GRAY);
             }
-            Raylib.DrawFPS(Raylib.GetScreenWidth() - 80, 0);
-            Raylib.DrawText(UpdateDelay.ToString()+"ms", Raylib.GetScreenWidth() - 80, 20, 20, Color.WHITE);
+
+            // draw info
+            int xstart = Raylib.GetScreenWidth() - 100;
+            int ystart = 20;
+            int fontsize = 20;
+            int offset = 20;
+            
+            Raylib.DrawFPS(xstart, ystart);
+            ystart += offset;
+            Raylib.DrawText(UpdateDelay.ToString()+"ms", xstart, ystart, fontsize, Color.WHITE);
+            ystart += offset;
+            Raylib.DrawText(_simstate, xstart, ystart, fontsize, Color.WHITE);
         }
 
         // display the gridcell selected by the mouse
@@ -252,21 +266,23 @@ namespace Game
             if (_rebuild && Raylib.GetTime() - _time > DELAY)
             {
                 _token.Cancel();
-                Task.WaitAll();
+                _updater?.Wait();
                 _token.Dispose();
                 _token = new CancellationTokenSource();
                 CancellationToken ct = _token.Token;
 
-                Task task = Task.Run(() =>
+                _updater = Task.Run(() =>
                 {
+                    _simstate = "Building";
                     _circuit = _grid.BuildObjects(ct);
+                    _simstate = "Simulating";
                     while (!ct.IsCancellationRequested)
                     {
                         _circuit.Update(ct);
                         if (UpdateDelay > 0)
                             Thread.Sleep(UpdateDelay);
                     }
-                    // _grid.State.DrawText.Clear();
+                    _simstate = "Building";
                 }, ct);
 
                 _rebuild = false;
