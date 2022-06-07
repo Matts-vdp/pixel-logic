@@ -25,7 +25,7 @@ namespace Game
         private bool _rebuild = false;
         private CancellationTokenSource _token;
         private readonly IFile _file;
-        private int _updateDelay = 100;
+        private int _updateDelay = 10;
         private const int MaxUpdateDelay = 10000;
         private int UpdateDelay
         {

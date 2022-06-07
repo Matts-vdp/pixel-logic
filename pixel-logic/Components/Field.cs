@@ -166,6 +166,7 @@ namespace Game.Components
                         c.Add(new Pos(x, y));
                         if (_grid[x, y] == (int)Types.BUT)
                         {
+                            state.DrawText[new Pos(x,y)] = (buttons.Count+1).ToString();
                             buttons.Add((ButtonComp)c);
                         }
                         components.Add(labels[x, y], c);

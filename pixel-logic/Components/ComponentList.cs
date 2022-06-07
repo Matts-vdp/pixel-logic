@@ -69,7 +69,7 @@ namespace Game.Components
                 (int)Types.WIRE,
                 new BasicComponentCreator(
                     "Wire",
-                    new Color(163, 120, 60, 255),
+                    Color.BROWN,
                     Color.YELLOW,
                     WireComp.NewComponent
             )
@@ -150,8 +150,8 @@ namespace Game.Components
                 (int)Types.SEG,
                 new BasicComponentCreator(
                     "Display",
-                    new Color(242, 242, 242, 255),
-                    new Color(242, 242, 242, 255),
+                    new Color(200, 200, 200, 255),
+                    new Color(200, 200, 200, 255),
                     Seg7Comp.NewComponent
             )
             },
