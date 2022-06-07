@@ -41,6 +41,23 @@ namespace Game
                     _updateDelay = 0;
             }
         }
+        private int _clockDelay = 1000;
+        private const int MaxClockDelay = 10000;
+        private int ClockDelay
+        {
+            get
+            {
+                return _clockDelay;
+            }
+            set
+            {
+                _clockDelay = value;
+                if (_clockDelay > MaxClockDelay)
+                    _clockDelay = MaxClockDelay;
+                else if (_clockDelay < 0)
+                    _clockDelay = 0;
+            }
+        }
 
         private Task? _updater;
         private string _simstate = "Simulating";
@@ -201,6 +218,14 @@ namespace Game
             {
                 UpdateDelay -= 2;
             }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_Y))
+            {
+                ClockDelay += 2;
+            }
+            if (Raylib.IsKeyDown(KeyboardKey.KEY_H))
+            {
+                ClockDelay -= 2;
+            }
 
             return rebuild;
         }
@@ -241,14 +266,20 @@ namespace Game
 
             // draw info
             int xbegin = Raylib.GetScreenWidth() - 110;
+            int xbeginText = Raylib.GetScreenWidth() - 200;
             int ybegin = 20;
             int fontsize = 20;
             int offset = 20;
             
             Raylib.DrawFPS(xbegin, ybegin);
             ybegin += offset;
+            Raylib.DrawText("Update:", xbeginText, ybegin, fontsize, Color.WHITE);
             Raylib.DrawText(UpdateDelay.ToString()+"ms", xbegin, ybegin, fontsize, Color.WHITE);
             ybegin += offset;
+            Raylib.DrawText("Clock:", xbeginText, ybegin, fontsize, Color.WHITE);
+            Raylib.DrawText(ClockDelay.ToString()+"ms", xbegin, ybegin, fontsize, Color.WHITE);
+            ybegin += offset;
+            Raylib.DrawText("State:", xbeginText, ybegin, fontsize, Color.WHITE);
             Raylib.DrawText(_simstate, xbegin, ybegin, fontsize, Color.WHITE);
         }
 
@@ -289,7 +320,7 @@ namespace Game
                     _simstate = "Simulating";
                     while (!ct.IsCancellationRequested)
                     {
-                        _circuit.Update(ct);
+                        _circuit.Update(ct, ClockDelay);
                         if (UpdateDelay > 0)
                             Thread.Sleep(UpdateDelay);
                     }

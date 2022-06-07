@@ -219,25 +219,22 @@ namespace Game.Components
     // represents clock
     public class ClockComp : Component
     {
-        double _time;
-        const float DELAY = 0.5f;
         public ClockComp(State state) : base(state)
         {
             Active = false;
-            _time = Raylib.GetTime();
         }
+
+        public void SetState(bool state)
+        {
+            Active = state;
+        }
+
         // switches every "DELAY' seconds between true and false
         public override void Update()
         {
-            double newTime = Raylib.GetTime();
-            if ((newTime - _time) > DELAY)
+            foreach (Connection o in _outputs)
             {
-                _time = newTime;
-                Active = !Active;
-                foreach (Connection o in _outputs)
-                {
-                    o.SetActive(Active);
-                }
+                o.SetActive(Active);
             }
         }
         public static Component NewComponent(State state)
