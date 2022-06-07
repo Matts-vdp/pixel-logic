@@ -109,31 +109,44 @@ namespace Game.Components
         {
             return BuildObjects(new State(_grid.Width, _grid.Height));
         }
-        public Circuit BuildObjects()
+        public Circuit BuildObjects(CancellationToken ct)
         {
-            return BuildObjects(State);
+            return BuildObjects(State, ct);
         }
-        public Circuit BuildObjects(State state)
+        public Circuit BuildObjects(State state, CancellationToken? ct = null)
         {
             Dictionary<int, Component> components = new();
             List<ButtonComp> buttons = new();
             List<Connection> connections = new();
 
-            int[,] labels = _grid.ConnectedComponents();
-            CrossConnect(labels, connections, state);
-            MakeComponents(labels, components, buttons, state);
-            MakeConnections(labels, components, connections, state);
+            if (ct is CancellationToken token1)
+                token1.ThrowIfCancellationRequested();
+            int[,] labels = _grid.ConnectedComponents(ct);
+
+            if (ct is CancellationToken token2)
+                token2.ThrowIfCancellationRequested();
+            CrossConnect(labels, connections, state, ct);
+
+            if (ct is CancellationToken token3)
+                token3.ThrowIfCancellationRequested();
+            MakeComponents(labels, components, buttons, state, ct);
+
+            if (ct is CancellationToken token4)
+                token4.ThrowIfCancellationRequested();
+            MakeConnections(labels, components, connections, state, ct);
 
             return new Circuit(Name, components, buttons, connections);
         }
 
         // connect wires with a cross connection between them
-        private void CrossConnect(int[,] labels, List<Connection> connections, State state)
+        private void CrossConnect(int[,] labels, List<Connection> connections, State state, CancellationToken? ct)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
                 for (int y = 0; y < _grid.Height; y++)
                 {
+                    if (ct is CancellationToken token)
+                        token.ThrowIfCancellationRequested();
                     if (labels[x, y] != -2) { continue; }
                     Connection c = CList.NewConnection(_grid[x, y], new Pos(x, y), state);
                     connections.Add(c);
@@ -149,12 +162,14 @@ namespace Game.Components
             }
         }
         // create the components from the grid
-        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons, State state)
+        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons, State state, CancellationToken? ct)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
                 for (int y = 0; y < _grid.Height; y++)
                 {
+                    if (ct is CancellationToken token)
+                        token.ThrowIfCancellationRequested();
                     if (labels[x, y] <= 0 || _grid[x, y] == 0) { continue; }
                     if (components.ContainsKey(labels[x, y]))
                     {
@@ -175,12 +190,14 @@ namespace Game.Components
             }
         }
         // create the connections between components
-        private void MakeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections, State state)
+        private void MakeConnections(int[,] labels, Dictionary<int, Component> components, List<Connection> connections, State state, CancellationToken? ct)
         {
             for (int x = 0; x < _grid.Width; x++)
             {
                 for (int y = 0; y < _grid.Height; y++)
                 {
+                    if (ct is CancellationToken token)
+                        token.ThrowIfCancellationRequested();
                     if (labels[x, y] != -1) { continue; }
                     bool wiref = false;
                     bool otherf = false;

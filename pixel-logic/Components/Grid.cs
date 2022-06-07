@@ -74,7 +74,7 @@ namespace Game.Components
 
         // use connected components algorithm to group blocks of the same type
         // that are connected to each other into the same component
-        public int[,] ConnectedComponents()
+        public int[,] ConnectedComponents(CancellationToken? ct = null)
         {
             int[,] labels = new int[Width, Height];
             int label = 1;
@@ -86,6 +86,8 @@ namespace Game.Components
                 {
                     for (int y = 0; y < Height; y++)
                     {
+                        if (ct is CancellationToken token)
+                            token.ThrowIfCancellationRequested();
                         if (Matrix[x, y] == 0) continue;
                         if (labels[x, y] == 0 && (Matrix[x, y] == (int)Types.OUT || Matrix[x, y] == (int)Types.IN || Matrix[x, y] == (int)Types.CLKIN))
                         {

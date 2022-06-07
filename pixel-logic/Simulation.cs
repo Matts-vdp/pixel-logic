@@ -16,7 +16,6 @@ namespace Game
         private int _xsel = -1;       // selection start x
         private int _ysel = -1;       // selection start y
         private Field? _cloneGrid;            // stores grid after copy
-        private Circuit? _cloneCircuit;
         private readonly Field _grid;                 // main grid
         private Circuit _circuit;            // build components
         private string _filename = "";       // remembers last dragged filename
@@ -45,7 +44,7 @@ namespace Game
 
         public Simulation(IFile file)
         {
-            this._file = file;
+            _file = file;
             _grid = new Field(200, 200, file);
             _circuit = _grid.BuildNewObjects();
             _token = new();
@@ -175,7 +174,6 @@ namespace Game
             }
             if (Raylib.IsKeyDown(KeyboardKey.KEY_V))
             {
-                _cloneCircuit = _cloneGrid?.BuildNewObjects();
                 DrawCloneGrid();
             }
             if (Raylib.IsKeyReleased(KeyboardKey.KEY_V))
@@ -255,15 +253,16 @@ namespace Game
             {
                 _token.Cancel();
                 Task.WaitAll();
+                _token.Dispose();
                 _token = new CancellationTokenSource();
                 CancellationToken ct = _token.Token;
 
                 Task task = Task.Run(() =>
                 {
-                    _circuit = _grid.BuildObjects();
+                    _circuit = _grid.BuildObjects(ct);
                     while (!ct.IsCancellationRequested)
                     {
-                        _circuit.Update();
+                        _circuit.Update(ct);
                         if (UpdateDelay > 0)
                             Thread.Sleep(UpdateDelay);
                     }

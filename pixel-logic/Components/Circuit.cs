@@ -44,15 +44,19 @@ namespace Game.Components
             return new SubComponent(this, inp, outp, clock, state);
         }
         // update components
-        public void Update()
+        public void Update(CancellationToken? ct = null)
         {
             foreach (Component c in _components.Values)
             {
+                if (ct is CancellationToken token)
+                    token.ThrowIfCancellationRequested();
                 if (c is not WireComp)
                     c.Update();
             }
             foreach (Component c in _components.Values)
             {
+                if (ct is CancellationToken token)
+                    token.ThrowIfCancellationRequested();
                 if (c is WireComp)
                     c.Update();
             }

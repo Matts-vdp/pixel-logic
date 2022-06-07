@@ -285,6 +285,10 @@ namespace Game.Components
         }
         public override void Update()
         {
+            foreach (Connection o in _outputs)
+            {
+                o.SetActive(Active);
+            }
         }
 
         // used by grid to toggle button on key press
