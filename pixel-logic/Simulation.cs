@@ -221,11 +221,12 @@ namespace Game
         // draws game UI
         private void DrawUI()
         {
-            int font = 20;
-            int xstart = 5;
-            int xstartName = 20;
-            int ystart = 20;
-            int rsize = 10;
+            const int font = 20;
+            const int xstart = 5;
+            const int xstartName = 20;
+            const int ystart = 20;
+            const int rsize = 10;
+
             // draw components
             for (int i = 0; i < _grid.CList.Count; i++)
             {
@@ -239,16 +240,16 @@ namespace Game
             }
 
             // draw info
-            xstart = Raylib.GetScreenWidth() - 110;
-            ystart = 20;
+            int xbegin = Raylib.GetScreenWidth() - 110;
+            int ybegin = 20;
             int fontsize = 20;
             int offset = 20;
             
-            Raylib.DrawFPS(xstart, ystart);
-            ystart += offset;
-            Raylib.DrawText(UpdateDelay.ToString()+"ms", xstart, ystart, fontsize, Color.WHITE);
-            ystart += offset;
-            Raylib.DrawText(_simstate, xstart, ystart, fontsize, Color.WHITE);
+            Raylib.DrawFPS(xbegin, ybegin);
+            ybegin += offset;
+            Raylib.DrawText(UpdateDelay.ToString()+"ms", xbegin, ybegin, fontsize, Color.WHITE);
+            ybegin += offset;
+            Raylib.DrawText(_simstate, xbegin, ybegin, fontsize, Color.WHITE);
         }
 
         // display the gridcell selected by the mouse
