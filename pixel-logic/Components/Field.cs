@@ -117,6 +117,7 @@ namespace Game.Components
         {
             Dictionary<int, Component> components = new();
             List<ButtonComp> buttons = new();
+            List<ClockComp> clocks = new();
             List<Connection> connections = new();
 
             if (ct is CancellationToken token1)
@@ -129,13 +130,13 @@ namespace Game.Components
 
             if (ct is CancellationToken token3)
                 token3.ThrowIfCancellationRequested();
-            MakeComponents(labels, components, buttons, state, ct);
+            MakeComponents(labels, components, buttons, clocks, state, ct);
 
             if (ct is CancellationToken token4)
                 token4.ThrowIfCancellationRequested();
             MakeConnections(labels, components, connections, state, ct);
 
-            return new Circuit(Name, components, buttons, connections);
+            return new Circuit(Name, components, buttons, clocks, connections);
         }
 
         // connect wires with a cross connection between them
@@ -162,7 +163,14 @@ namespace Game.Components
             }
         }
         // create the components from the grid
-        private void MakeComponents(int[,] labels, Dictionary<int, Component> components, List<ButtonComp> buttons, State state, CancellationToken? ct)
+        private void MakeComponents(
+            int[,] labels, 
+            Dictionary<int, Component> components, 
+            List<ButtonComp> buttons, 
+            List<ClockComp> clocks,
+            State state, 
+            CancellationToken? ct
+            )
         {
             for (int x = 0; x < _grid.Width; x++)
             {
@@ -183,6 +191,10 @@ namespace Game.Components
                         {
                             state.DrawText[new Pos(x,y)] = (buttons.Count+1).ToString();
                             buttons.Add((ButtonComp)c);
+                        }
+                        if (_grid[x, y] == (int)Types.CLK)
+                        {
+                            clocks.Add((ClockComp)c);
                         }
                         components.Add(labels[x, y], c);
                     }
