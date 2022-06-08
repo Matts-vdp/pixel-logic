@@ -252,6 +252,7 @@ namespace Game.Components
         {
             Field newField = Copy(xstart, ystart, xend, yend);
             _grid.Clear(xstart, ystart, xend, yend);
+            State.DrawText.Clear();
             return newField;
         }
         // merge customcomponents of componentlist adds missing components
