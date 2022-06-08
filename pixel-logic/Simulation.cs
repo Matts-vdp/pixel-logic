@@ -343,7 +343,7 @@ namespace Game
                     {
                         _circuit.Update(ct, ClockDelay);
                         if (UpdateDelay > 0)
-                            Thread.Sleep(UpdateDelay);
+                            ct.WaitHandle.WaitOne(UpdateDelay);
                     }
                     _simstate = "BUILD";
                 }, ct);
