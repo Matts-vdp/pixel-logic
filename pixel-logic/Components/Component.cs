@@ -67,6 +67,9 @@ namespace Game.Components
             Value value = new();
             foreach (Connection i in _inputs)
             {
+                Value inp = i.IsActive();
+                if (inp.Count ==0)
+                    inp[0] = false;
                 value.Add(i.IsActive());
             }
             // set active
@@ -91,13 +94,17 @@ namespace Game.Components
         public override void Update()
         {
             Value value = new();
-
-            foreach (Connection inp in _inputs)
+            if (_inputs.Count > 0)
             {
-                Value other = inp.IsActive();
-                for (int i = 0; i < other.Count; i++)
+                value.Add(_inputs[0].IsActive());
+                foreach (Connection inp in _inputs)
                 {
-                    value[i] = value[i] & other[i];
+                    Value other = inp.IsActive();
+                    int mx = Math.Max(value.Count, other.Count);
+                    for (int i = 0; i < mx; i++)
+                    {
+                        value[i] = value[i] & other[i];
+                    }
                 }
             }
             Active = value;
@@ -186,14 +193,17 @@ namespace Game.Components
         public override void Update()
         {
             Value value = new();
-
-            // or al inputs
-            foreach (Connection inp in _inputs)
+            if (_inputs.Count > 0)
             {
-                Value other = inp.IsActive();
-                for (int i=0; i<other.Count; i++)
+                // value.Add(_inputs[0].IsActive());
+                foreach (Connection inp in _inputs)
                 {
-                    value[i] = value[i] ^ other[i];
+                    Value other = inp.IsActive();
+                    int mx = Math.Max(value.Count, other.Count);
+                    for (int i = 0; i < mx; i++)
+                    {
+                        value[i] = value[i] ^ other[i];
+                    }
                 }
             }
 
@@ -351,6 +361,44 @@ namespace Game.Components
         public static Component NewComponent(State state)
         {
             return new Seg7Comp(state);
+        }
+    }
+
+    public class SplitComp : Component
+    {
+        public SplitComp(State state) : base(state) { }
+        public override void Update()
+        {
+            // combine all inputs
+            Value value = new();
+            foreach (Connection i in _inputs)
+            {
+                value.Add(i.IsActive());
+            }
+
+            // push to output
+            for (int i=0; i<_outputs.Count-1; i++)
+            {
+                Value val = new();
+                val[0] = value[i];
+                _outputs[i].SetActive(val);
+            }
+            int last = _outputs.Count-1;
+            if (last > 0)
+            {
+                Value lastVal = new();
+                if (value.Count > last)
+                {
+                    // add others to the last output
+                    value.Values.RemoveRange(0, last);
+                    lastVal.Add(value);
+                }
+                _outputs[last].SetActive(lastVal);
+            }
+        }
+        public static Component NewComponent(State state)
+        {
+            return new SplitComp(state);
         }
     }
 

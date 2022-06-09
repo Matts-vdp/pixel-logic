@@ -19,6 +19,7 @@ namespace Game.Components
         FF,
         BUT,
         SEG,
+        SPLIT,
     }
 
     // used to create components and store Custom Components
@@ -153,6 +154,15 @@ namespace Game.Components
                     new Color(200, 200, 200, 255),
                     new Color(200, 200, 200, 255),
                     Seg7Comp.NewComponent
+            )
+            },
+            {
+                (int)Types.SPLIT,
+                new BasicComponentCreator(
+                    "Splitter",
+                    new Color(247, 143, 247, 255),
+                    new Color(247, 143, 247, 255),
+                    SplitComp.NewComponent
             )
             },
         };

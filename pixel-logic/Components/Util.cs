@@ -70,7 +70,7 @@ namespace Game.Components
         public State(int w, int h)
         {
             _state = new Value[w, h];
-            for (int y=0; y<w; y++)
+            for (int y=0; y<h; y++)
                 for (int x=0; x<w; x++)
                     _state[x,y] = new();
         }
@@ -84,7 +84,10 @@ namespace Game.Components
         }
         public bool GetBoolState(Pos p)
         {
-            return _state[p.X, p.Y][0];
+            Value val = _state[p.X, p.Y];
+            foreach (bool b in val.Values)
+                if (b) return true;
+            return false;
         }
         public Value GetState(Pos p)
         {
