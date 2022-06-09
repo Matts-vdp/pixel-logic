@@ -55,6 +55,7 @@ namespace Game.Components
         public void Reset()
         {
             Values.Clear();
+            Values.Add(false);
         }
         public void Add(Value value)
         {

@@ -11,13 +11,13 @@ public class CustomCodeTest
     public void InputGetSet()
     {
         Input input = new();
-        input.I.Add(true);
-        Assert.True(input.Get(0));
-        Assert.False(input.Get(1));
+        input.I[0].Values.Add(true);
+        Assert.True(input.Get(0)[0]);
+        Assert.False(input.Get(1)[0]);
         input.Set(0, false);
-        Assert.False(input.O[0]);
+        Assert.False(input.O[0][0]);
         input.Set(1, true);
-        Assert.True(input.O[1]);
+        Assert.True(input.O[1][0]);
     }
     [Fact]
     public void InputInt()
@@ -52,14 +52,11 @@ public class CustomCodeTest
     [Fact]
     public void CCode()
     {
-        string code = "I[0] = false; return I;";
+        string code = "Set(0, true); return O;";
         CCode ccode = new("test.cpl", code);
-        Input input = new()
-        {
-            I = new List<bool> { true, false }
-        };
-        List<bool> result = ccode.Run(input);
-        List<bool> truth = new() { false, false };
+        Input input = new();
+        List<bool> result = ccode.Run(input)[0].Values;
+        List<bool> truth = new() { true, false };
         Assert.Equal(truth, result);
     }
     [Fact]
@@ -77,13 +74,13 @@ public class CustomCodeTest
         clock.AddOther(comp);
 
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
-        clock.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        clock.SetActive(Value.True());
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
 
     [Fact]
@@ -99,11 +96,11 @@ public class CustomCodeTest
         output.AddOther(comp);
 
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(new Value());
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
 }

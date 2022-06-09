@@ -24,7 +24,7 @@ namespace Game.Components
         protected State _state;
         protected Connection(Pos p, State state)
         {
-            this._state = state;
+            _state = state;
             _pos = p;
             state.ResetState(_pos);
             _changed = true;

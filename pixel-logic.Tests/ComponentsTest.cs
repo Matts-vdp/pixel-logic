@@ -24,15 +24,11 @@ public class ComponentsTest
         State state = new(10, 10);
         Connection conn = new OutConnection(new Pos(), state);
         Assert.True(conn.IsChanged());
-        Assert.False(conn.IsActive());
+        Assert.False(conn.IsActive()[0]);
         Assert.False(conn.IsChanged());
-        conn.SetActive(true);
+        conn.SetActive(Value.True());
         Assert.True(conn.IsChanged());
-        Assert.True(conn.IsActive());
-        Assert.False(conn.IsChanged());
-        conn.SetActive(true);
-        Assert.False(conn.IsChanged());
-        Assert.True(conn.IsActive());
+        Assert.True(conn.IsActive()[0]);
     }
 
     [Fact]
@@ -45,12 +41,12 @@ public class ComponentsTest
         Connection output = new InConnection(new Pos(0, 2), state);
         input.AddWire(wire);
         output.AddWire(wire);
-        Assert.False(input.IsActive());
-        Assert.False(output.IsActive());
-        input.SetActive(true);
-        Assert.False(output.IsActive());
+        Assert.False(input.IsActive()[0]);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
+        Assert.False(output.IsActive()[0]);
         wire.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
     [Fact]
     public void And()
@@ -65,13 +61,13 @@ public class ComponentsTest
         input2.AddOther(comp);
         output.AddOther(comp);
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
-        input2.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input2.SetActive(Value.True());
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
     [Fact]
     public void Not()
@@ -84,10 +80,10 @@ public class ComponentsTest
         input.AddOther(comp);
         output.AddOther(comp);
         comp.Update();
-        Assert.True(output.IsActive());
-        input.SetActive(true);
+        Assert.True(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
+        Assert.False(output.IsActive()[0]);
     }
 
     [Fact]
@@ -103,13 +99,13 @@ public class ComponentsTest
         input2.AddOther(comp);
         output.AddOther(comp);
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.True(output.IsActive());
-        input2.SetActive(true);
+        Assert.True(output.IsActive()[0]);
+        input2.SetActive(Value.True());
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
 
     [Fact]
@@ -125,13 +121,13 @@ public class ComponentsTest
         input2.AddOther(comp);
         output.AddOther(comp);
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.True(output.IsActive());
-        input2.SetActive(true);
+        Assert.True(output.IsActive()[0]);
+        input2.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
+        Assert.False(output.IsActive()[0]);
     }
 
     [Fact]
@@ -143,7 +139,7 @@ public class ComponentsTest
         Connection output = new OutConnection(new Pos(0, 0), state);
         output.AddOther(comp);
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
     [Fact]
     public void FlipFlop()
@@ -158,15 +154,15 @@ public class ComponentsTest
         clock.AddOther(comp);
         output.AddOther(comp);
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
-        clock.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        clock.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
+        Assert.False(output.IsActive()[0]);
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
 
     [Fact]
@@ -178,12 +174,12 @@ public class ComponentsTest
         Connection output = new OutConnection(new Pos(0, 3), state);
         output.AddOther(comp);
         comp.Update();
-        Assert.False(output.IsActive());
+        Assert.False(output.IsActive()[0]);
         comp.Toggle();
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
         comp.Toggle();
         comp.Update();
-        Assert.False(output.IsActive());
+        Assert.False(output.IsActive()[0]);
     }
 }

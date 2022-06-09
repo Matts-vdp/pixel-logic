@@ -76,14 +76,14 @@ public class FieldTest
         clk.AddOther(comp);
         clk.AddWire(wire);
         comp.Update();
-        Assert.False(output.IsActive());
-        input.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        input.SetActive(Value.True());
         comp.Update();
-        Assert.False(output.IsActive());
-        clk.SetActive(true);
+        Assert.False(output.IsActive()[0]);
+        clk.SetActive(Value.True());
         comp.Update();
         comp.Update();
-        Assert.True(output.IsActive());
+        Assert.True(output.IsActive()[0]);
     }
 
     [Fact]

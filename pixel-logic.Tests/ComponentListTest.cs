@@ -15,9 +15,9 @@ public class ComponentListTest
         {
             Name = "test"
         };
-        list.Custom.Add(15, g);
+        list.Custom.Add(17, g);
         Assert.Equal(cnt + 1, list.Count);
-        Assert.Equal("test", list.GetName(15));
+        Assert.Equal("test", list.GetName(17));
     }
 
     [Fact]
