@@ -9,25 +9,23 @@ namespace Game.Components
     // the attributes and functions of this class can be used in the script
     public class Input
     {
-        public List<bool> I;    //input connections
-        public List<bool> O;    // output connections
+        public List<Value> I;    //input connections
+        public List<Value> O;    // output connections
         public long PC;         // program counter, has to be incremented manually
         public Dictionary<string, object> MEM; // can be used to store state between calls
-
-        public Input() : this(new List<bool>(), 0, new Dictionary<string, object>()) { }
-        public Input(List<bool> l, long num, Dictionary<string, object> mem)
+        public Input()
         {
-            I = l;
-            O = new List<bool>();
-            PC = num;
-            MEM = mem;
+            I = new();
+            O = new();
+            PC = 0;
+            MEM = new();
         }
         #pragma warning disable 
         // returns the state of the input at 'i' 
         // returns false when out of range
-        public bool Get(int i)
+        public Value Get(int i)
         {
-            return i < I.Count ? I[i] : false;
+            return i < I.Count ? I[i] : new();
         }
 
         // sets the state of the output at 'o'
@@ -36,9 +34,10 @@ namespace Game.Components
         {
             while (i >= O.Count)
             {
-                O.Add(false);
+                O.Add(new());
             }
-            O[i] = val;
+            Value value = O[i];
+            value[0] = val;
         }
 
         // converts a List of bools to a uint
@@ -107,7 +106,7 @@ namespace Game.Components
     // used to store the script and to instantiate components
     public class CCode : ComponentCreator
     {
-        private readonly Script<List<bool>> _script;
+        private readonly Script<List<Value>> _script;
         private readonly string _ext;      // file extension
 
 
@@ -120,20 +119,20 @@ namespace Game.Components
             OffColor = Color.GRAY;
         }
         // loads a script from file storage
-        private static Script<List<bool>> LoadCs(string txt)
+        private static Script<List<Value>> LoadCs(string txt)
         {
             var opt = ScriptOptions.Default;
-            // opt.AddReferences(typeof(List<bool>).Assembly, typeof(Input).Assembly);
+            // opt.AddReferences(typeof(List<Value>).Assembly, typeof(Input).Assembly);
             // opt.AddImports("System");
-            var script = CSharpScript.Create<List<bool>>(txt, opt, typeof(Input));
+            var script = CSharpScript.Create<List<Value>>(txt, opt, typeof(Input));
             script.Compile(); // compile on load for faster further use
             return script;
         }
 
         // runs the script with the given inputs and returns the output of the script
-        public List<bool> Run(Input input)
+        public List<Value> Run(Input input)
         {
-            ScriptState<List<bool>> state = _script.RunAsync(input).Result;
+            ScriptState<List<Value>> state = _script.RunAsync(input).Result;
             return state.ReturnValue;
         }
 

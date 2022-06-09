@@ -7,7 +7,7 @@ namespace Game.Components
         protected Component? _output;
         protected Component? _input;
         protected Pos _pos;             // location in grid
-        protected bool Active
+        protected Value Active
         {
             get
             {
@@ -26,7 +26,7 @@ namespace Game.Components
         {
             this._state = state;
             _pos = p;
-            Active = false;
+            state.ResetState(_pos);
             _changed = true;
             if (!IsSub())
                 _state.DrawText[_pos] = "";
@@ -49,14 +49,14 @@ namespace Game.Components
             return false;
         }
 
-        public bool IsActive()
+        public Value IsActive()
         {
             _changed = false;
             return Active;
         }
-        public void SetActive(bool value)
+        public void SetActive(Value value)
         {
-            _changed = value != Active;
+            _changed = true;
             Active = value;
         }
         public bool IsChanged()

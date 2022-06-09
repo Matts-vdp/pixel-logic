@@ -8,7 +8,7 @@ namespace Game.Components
         protected List<Connection> _inputs;     // all input connections
         protected List<Connection> _outputs;    // output connections
         protected Connection? _clockIn;         // clock connection if present
-        protected bool Active
+        protected Value Active
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Game.Components
             _blocks = new List<Pos>();
             _inputs = new List<Connection>();
             _outputs = new List<Connection>();
-            this._state = state;
+            _state = state;
         }
         // add new block to the component
         public void Add(Pos p)
@@ -63,17 +63,15 @@ namespace Game.Components
         // pass input to output, true if inputs true and false
         public override void Update()
         {
-            bool value = false;
+            // combine all inputs
+            Value value = new();
             foreach (Connection i in _inputs)
             {
-                if (i.IsActive())
-                {
-                    value = true;
-                    break;
-                }
-                value = false;
+                value.Add(i.IsActive());
             }
+            // set active
             Active = value;
+            // push to output
             foreach (Connection o in _outputs)
             {
                 o.SetActive(value);
@@ -92,15 +90,15 @@ namespace Game.Components
         // output = input0 && input1 && ...
         public override void Update()
         {
-            bool value = false;
-            foreach (Connection i in _inputs)
+            Value value = new();
+
+            foreach (Connection inp in _inputs)
             {
-                if (!i.IsActive())
+                Value other = inp.IsActive();
+                for (int i = 0; i < other.Count; i++)
                 {
-                    value = false;
-                    break;
+                    value[i] = value[i] & other[i];
                 }
-                value = true;
             }
             Active = value;
             foreach (Connection o in _outputs)
@@ -121,16 +119,22 @@ namespace Game.Components
         // output = ! input
         public override void Update()
         {
-            bool value = false;
-            foreach (Connection i in _inputs)
+            Value value = new();
+
+            // or al inputs
+            foreach (Connection inp in _inputs)
             {
-                if (!i.IsActive())
+                Value other = inp.IsActive();
+                for (int i = 0; i < other.Count; i++)
                 {
-                    value = true;
-                    break;
+                    value[i] = value[i] | other[i];
                 }
-                value = false;
             }
+            // invert input
+            for (int i = 0; i < value.Count; i++)
+                value[i] = !value[i];
+
+            // push to output
             Active = value;
             foreach (Connection o in _outputs)
             {
@@ -150,16 +154,19 @@ namespace Game.Components
         // output = input0 || input1 ...
         public override void Update()
         {
-            bool value = false;
-            foreach (Connection i in _inputs)
+            Value value = new();
+
+            // or al inputs
+            foreach (Connection inp in _inputs)
             {
-                if (i.IsActive())
+                Value other = inp.IsActive();
+                for (int i = 0; i < other.Count; i++)
                 {
-                    value = true;
-                    break;
+                    value[i] = value[i] | other[i];
                 }
-                value = false;
             }
+
+            // push to output
             Active = value;
             foreach (Connection o in _outputs)
             {
@@ -178,14 +185,23 @@ namespace Game.Components
         public XorComp(State state) : base(state) { }
         public override void Update()
         {
-            bool i1 = false;
-            bool i2 = false;
-            if (_inputs.Count > 0) { i1 = _inputs[0].IsActive(); }
-            if (_inputs.Count > 1) { i2 = _inputs[1].IsActive(); }
-            Active = i1 ^ i2;
+            Value value = new();
+
+            // or al inputs
+            foreach (Connection inp in _inputs)
+            {
+                Value other = inp.IsActive();
+                for (int i=0; i<other.Count; i++)
+                {
+                    value[i] = value[i] ^ other[i];
+                }
+            }
+
+            // push to output
+            Active = value;
             foreach (Connection o in _outputs)
             {
-                o.SetActive(Active);
+                o.SetActive(value);
             }
         }
         public static Component NewComponent(State state)
@@ -199,15 +215,16 @@ namespace Game.Components
     {
         public BatteryComp(State state) : base(state)
         {
-            Active = true;
+            Active = Value.True();
         }
         // set all outputs to 1
         public override void Update()
         {
-            Active = true;
+            Value value = Value.True();
+            Active = value;
             foreach (Connection o in _outputs)
             {
-                o.SetActive(true);
+                o.SetActive(value);
             }
         }
         public static Component NewComponent(State state)
@@ -221,12 +238,13 @@ namespace Game.Components
     {
         public ClockComp(State state) : base(state)
         {
-            Active = false;
+            Active.Reset();
         }
 
         public void SetState(bool state)
         {
-            Active = state;
+            Value value = Active;
+            value[0] = state;
         }
 
         // switches every "DELAY' seconds between true and false
@@ -258,11 +276,11 @@ namespace Game.Components
             if (_inputs.Count == 0) return;
             if (_clockIn == null) return;
 
-            if (_clockIn.IsActive() && !_lastState)
+            if (_clockIn.IsActive()[0] && !_lastState)
             {
                 Active = _inputs[0].IsActive();
             }
-            _lastState = _clockIn.IsActive();
+            _lastState = _clockIn.IsActive()[0];
         }
         public override void AddClock(Connection c)
         {
@@ -291,7 +309,8 @@ namespace Game.Components
         // used by grid to toggle button on key press
         public void Toggle()
         {
-            Active = !Active;
+            Value value = Active;
+            value[0] = !value[0];
             foreach (Connection o in _outputs)
             {
                 o.SetActive(Active);
@@ -312,10 +331,17 @@ namespace Game.Components
         // read input and save as int
         public override void Update()
         {
-            int num = 0;
-            for (int i = 0; i < _inputs.Count; i++)
+            // combine all inputs
+            Value value = new();
+            foreach (Connection i in _inputs)
             {
-                if (_inputs[i].IsActive())
+                value.Add(i.IsActive());
+            }
+            // convert to int
+            int num = 0;
+            for (int i = 0; i < value.Count; i++)
+            {
+                if (value[i])
                 {
                     num += (int)Math.Pow(2, i);
                 }

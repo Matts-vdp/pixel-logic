@@ -77,7 +77,7 @@ namespace Game.Components
             int y = ToGrid(pos.Y, gridsize, yoff);
             bool change = _grid.Set(x, y, t);
             if (change)
-                State.SetState(new Pos(x, y), false);
+                State.ResetState(new Pos(x, y));
                 State.DrawText.Remove(new Pos(x,y));
             return change;
         }
@@ -89,7 +89,7 @@ namespace Game.Components
             int y = ToGrid(pos.Y, gridsize, yoff);
             bool change = _grid.Set(x, y, (int)Types.NONE);
             if (change)
-                State.SetState(new Pos(x, y), false);
+                State.ResetState(new Pos(x, y));
                 State.DrawText.Remove(new Pos(x,y));
             return change;
         }
@@ -302,7 +302,7 @@ namespace Game.Components
                     {
                         int xpos = x * gridsize - xoff;
                         int ypos = y * gridsize - yoff;
-                        CList.Draw(_grid[x, y], xpos, ypos, gridsize, State.GetState(new Pos(x, y)));
+                        CList.Draw(_grid[x, y], xpos, ypos, gridsize, State.GetBoolState(new Pos(x, y)));
                     }
                 }
             }

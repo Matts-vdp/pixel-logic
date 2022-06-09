@@ -9,9 +9,9 @@ namespace Game.Components
         public ConnectionCreator(string name, Color offColor, Color onColor, Func<Pos, State, Connection> func)
         {
             NewConnection = func;
-            this.OffColor = offColor;
-            this.OnColor = onColor;
-            this.Name = name;
+            OffColor = offColor;
+            OnColor = onColor;
+            Name = name;
         }
         public Connection CreateConnection(Pos p, State state)
         {

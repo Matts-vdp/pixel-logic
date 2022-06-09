@@ -12,20 +12,81 @@ namespace Game.Components
         }
     }
 
+
+    public struct Value
+    {
+        public readonly List<bool> Values;
+        public bool this[int i]
+        {
+            get
+            {
+                if (i < Values.Count)
+                    return Values[i];
+                return false;
+            }
+            set
+            {
+                while (i >= Values.Count)
+                    Values.Add(false);
+                Values[i] = value;
+            }
+        }
+
+        public readonly int Count
+        {
+            get
+            {
+                return Values.Count;
+            }
+        }
+
+        public Value()
+        {
+            Values = new();
+        }
+
+        public static Value True()
+        {
+            Value newValue = new();
+            newValue[0] = true;
+            return newValue;
+        }
+
+        public void Reset()
+        {
+            Values.Clear();
+        }
+        public void Add(Value value)
+        {
+            Values.AddRange(value.Values);
+        }
+    }
+
     public class State
     {
-        private readonly bool[,] _state;
+        private readonly Value[,] _state;
         public Dictionary<Pos, string> DrawText = new();
 
         public State(int w, int h)
         {
-            _state = new bool[w, h];
+            _state = new Value[w, h];
+            for (int y=0; y<w; y++)
+                for (int x=0; x<w; x++)
+                    _state[x,y] = new();
         }
-        public void SetState(Pos p, bool newState)
+        public void SetState(Pos p, Value newState)
         {
             _state[p.X, p.Y] = newState;
         }
-        public bool GetState(Pos p)
+        public void ResetState(Pos p)
+        {
+            _state[p.X, p.Y].Reset();
+        }
+        public bool GetBoolState(Pos p)
+        {
+            return _state[p.X, p.Y][0];
+        }
+        public Value GetState(Pos p)
         {
             return _state[p.X, p.Y];
         }

@@ -13,12 +13,12 @@ namespace Game.Components
 
         protected CodeComponent(CCode ccode, State state) : base(state)
         {
-            this._ccode = ccode;
+            _ccode = ccode;
         }
         // returns inputs as list of states
-        private List<bool> GetInputs()
+        private List<Value> GetInputs()
         {
-            List<bool> inp = new();
+            List<Value> inp = new();
             foreach (Connection c in _inputs)
             {
                 inp.Add(c.IsActive());
@@ -26,13 +26,15 @@ namespace Game.Components
             return inp;
         }
         // sets the outputs with list of states
-        private void SetOutput(List<bool> states)
+        private void SetOutput(List<Value> states)
         {
             for (int i = 0; i < _outputs.Count; i++)
             {
-                bool status = false;
+                Value status;
                 if (i < states.Count)
                     status = states[i];
+                else
+                    status = new();
                 _outputs[i].SetActive(status);
             }
         }
@@ -40,7 +42,7 @@ namespace Game.Components
         protected void Run()
         {
             _input.I = GetInputs();
-            List<bool> output = _ccode.Run(_input);
+            List<Value> output = _ccode.Run(_input);
             SetOutput(output);
         }
     }
@@ -59,12 +61,11 @@ namespace Game.Components
 
         public override void Update()
         {
-            if (_clockIn == null) return;
-            if (_clockIn.IsActive() && !_lastState)
-            {
+            if (_clockIn == null) 
+                return;
+            if (_clockIn.IsActive()[0] && !_lastState)
                 Run();
-            }
-            _lastState = _clockIn.IsActive();
+            _lastState = _clockIn.IsActive()[0];
         }
 
     }
