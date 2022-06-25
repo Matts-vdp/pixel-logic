@@ -248,7 +248,7 @@ namespace Game.Components
     {
         public ClockComp(State state) : base(state)
         {
-            Active.Reset();
+            // Active.Reset();
         }
 
         public void SetState(bool state)

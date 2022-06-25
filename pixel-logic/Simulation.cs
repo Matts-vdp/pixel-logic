@@ -337,7 +337,7 @@ namespace Game
                 _updater = Task.Run(() =>
                 {
                     _simstate = "BUILD";
-                    _circuit = _grid.BuildObjects(ct);
+                    _circuit = _grid.BuildObjects(_grid.State, ct);
                     _simstate = "SIM";
                     while (!ct.IsCancellationRequested)
                     {

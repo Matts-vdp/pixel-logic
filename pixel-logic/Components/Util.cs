@@ -77,29 +77,44 @@ namespace Game.Components
         }
         public void SetState(Pos p, Value newState)
         {
-            _state[p.X, p.Y] = newState;
+            lock (this)
+            {
+                _state[p.X, p.Y] = newState;
+            }
         }
         public void ResetState(Pos p)
         {
-            _state[p.X, p.Y].Reset();
+            lock (this)
+            {
+                _state[p.X, p.Y].Reset();
+            }
         }
         public bool GetBoolState(Pos p)
         {
-            Value val = _state[p.X, p.Y];
-            foreach (bool b in val.Values)
-                if (b) return true;
-            return false;
+            lock (this)
+            {
+                Value val = _state[p.X, p.Y];
+                for (int i=0; i<val.Count; i++)
+                    if (val[i]) return true;
+                return false;
+            }
         }
         public Value GetState(Pos p)
         {
-            return _state[p.X, p.Y];
+            lock (this)
+            {
+                return _state[p.X, p.Y];
+            }
         }
 
         public void SetText(List<Pos> positions, string text)
         {
-            foreach(Pos p in positions)
+            lock (this)
             {
-                DrawText[p] = text;
+                foreach(Pos p in positions)
+                {
+                    DrawText[p] = text;
+                }
             }
         }
     }
