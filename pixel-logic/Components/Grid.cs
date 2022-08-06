@@ -2,6 +2,7 @@ using System.Numerics;
 
 namespace Game.Components
 {
+    // used to represent the grid and possible operations on the grid
     public class Grid
     {
         public int Width;

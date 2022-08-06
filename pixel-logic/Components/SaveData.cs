@@ -38,7 +38,6 @@ namespace Game.Components
         public SaveData() : this(1, 1, new int[1, 1], new Dictionary<int, ComponentCreator>()) { }
 
 
-        //SAVE
         private static Dictionary<int, string> ToSave(Dictionary<int, bool> blocks, Dictionary<int, ComponentCreator> custom)
         {
             Dictionary<int, string> names = new();
@@ -67,7 +66,6 @@ namespace Game.Components
         }
 
 
-        //LOAD
         // converts list of BlockPos into grid because json cant serialize int[,]
         public int[,] FromArray()
         {
@@ -78,7 +76,8 @@ namespace Game.Components
             }
             return world;
         }
-        // loads the custom components from save into ComponentList
+        
+        
         public ComponentList ReadComponents(int[,] grid, IFile file)
         {
             ComponentList cList = new(file);

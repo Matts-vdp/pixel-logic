@@ -4,7 +4,8 @@ using Raylib_cs;
 
 namespace Game.Components
 {
-    // represents a grid of components converts the grid matrix to components using connected components
+    // represents a grid of components couples the grid to a state
+    // stores the data to create a circuit
     public class Field : ComponentCreator
     {
         private readonly Grid _grid;            // contains wich block is placed where
@@ -17,8 +18,8 @@ namespace Game.Components
 
         public Field(Grid grid, ComponentList list)
         {
-            this.CList = list;
-            this._grid = grid;
+            CList = list;
+            _grid = grid;
             State = new State(grid.Width, grid.Height);
             OffColor = Color.GREEN;
             OnColor = Color.GREEN;
@@ -313,6 +314,7 @@ namespace Game.Components
                 Raylib.DrawText(State.DrawText[p], xpos+gridsize/3, ypos, gridsize, Color.BLACK);
             }
         }
+        // draw as subcomponent
         public override void Draw(int x, int y, int gridsize, bool state)
         {
             Color color = state ? OnColor : OffColor;

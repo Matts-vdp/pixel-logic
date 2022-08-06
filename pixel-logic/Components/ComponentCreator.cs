@@ -2,12 +2,13 @@ using Raylib_cs;
 
 namespace Game.Components
 {
-
+    // used to define a common Creator for all basic and custom components
     public abstract class ComponentCreator : CustomCreator
     {
         public abstract Component CreateComponent(State state);
     }
-    // represents a class that can be used as a Custom Component
+
+    // Used to create basic components
     public class BasicComponentCreator : ComponentCreator
     {
         public Func<State, Component> NewComponent;

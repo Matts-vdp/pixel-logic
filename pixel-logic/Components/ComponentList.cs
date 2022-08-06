@@ -24,6 +24,7 @@ namespace Game.Components
     // used to create components and store Custom Components
     public class ComponentList
     {
+        // contains all basic connections
         public Dictionary<int, ConnectionCreator> Connections = new()
         {
             {
@@ -63,6 +64,7 @@ namespace Game.Components
             )
             },
         };
+        // contains all basic componmments
         public Dictionary<int, ComponentCreator> Basic = new()
         {
             {
@@ -157,6 +159,7 @@ namespace Game.Components
             },
         };
 
+        // contains all custom components
         public Dictionary<int, ComponentCreator> Custom = new();
 
         private readonly IFile _file;
@@ -242,6 +245,7 @@ namespace Game.Components
         }
     }
 
+    // Defines a base Creator class that can be extended to create creators for Components or Connections
     public abstract class CustomCreator
     {
         public string Name = "";

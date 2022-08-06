@@ -1,6 +1,7 @@
 using Raylib_cs;
 namespace Game.Components
 {
+    // used to simulate the logic 
     public class Circuit
     {
         public string Name;

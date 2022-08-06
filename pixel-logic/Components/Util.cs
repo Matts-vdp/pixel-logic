@@ -12,6 +12,8 @@ namespace Game.Components
         }
     }
 
+    // Contains the state of all locations in the grid
+    // also used to display a text on top of the blocks
     public class State
     {
         private readonly bool[,] _state;
@@ -51,6 +53,7 @@ namespace Game.Components
         }
     }
 
+    // common interface to abstract filesystem
     public interface IFile
     {
         public string ReadAllText(string filename);
